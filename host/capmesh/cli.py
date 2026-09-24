@@ -172,6 +172,25 @@ def demo(simulated: bool, timeout: float):
     from .agent.demo import run_adversarial_demo
     asyncio.run(run_adversarial_demo(simulated=simulated, live_timeout=timeout))
 
+@main.command()
+@click.option("--host", default="0.0.0.0", help="Bind IP address")
+@click.option("--port", default=8088, type=int, help="Port to listen on")
+def serve_http(host: str, port: int):
+
+    """Start a CapMesh HTTP capability provider daemon on the network."""
+    from .provider.http_server import CapMeshHTTPServer
+    server = CapMeshHTTPServer(host=host, port=port)
+    console.print(f"[bold green]Starting CapMesh HTTP Provider on {host}:{port}...[/bold green]")
+    console.print(f"Endpoints: [cyan]GET /manifest[/cyan], [cyan]POST /invoke[/cyan], [cyan]GET /receipt[/cyan]")
+    server.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Stopping server...[/yellow]")
+        server.stop()
+
 if __name__ == "__main__":
     main()
+
 

@@ -665,11 +665,61 @@
           <ul style="list-style: none; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 2;">
             <li>📁 <a href="../host/capmesh/agent/policy.py" style="color: var(--accent);">agent/policy.py</a> — Autonomous policy router & ceiling enforcer</li>
             <li>📁 <a href="../host/capmesh/agent/demo.py" style="color: var(--accent);">agent/demo.py</a> — 60-second adversarial judging demonstration</li>
+            <li>📁 <a href="../host/capmesh/provider/http_server.py" style="color: var(--accent);">provider/http_server.py</a> — Standalone HTTP network provider daemon</li>
             <li>📁 <a href="../host/capmesh/protocol/models.py" style="color: var(--accent);">protocol/models.py</a> — Manifest, Request, Receipt & DeliveryProof models</li>
             <li>📁 <a href="../host/capmesh/protocol/auth.py" style="color: var(--accent);">protocol/auth.py</a> — Cryptographic signer & delivery proof verifier</li>
             <li>📁 <a href="../host/capmesh/payment/verifier.py" style="color: var(--accent);">payment/verifier.py</a> — Solana Devnet, Channels & Multi-chain adapters</li>
-            <li>📁 <a href="../tests/test_protocol.py" style="color: var(--accent);">tests/test_protocol.py</a> — Automated integration test suite (9 tests)</li>
+            <li>📁 <a href="../tests/test_protocol.py" style="color: var(--accent);">tests/test_protocol.py</a> — Hardware & BLE integration test suite (12 tests)</li>
+            <li>📁 <a href="../tests/test_network_http.py" style="color: var(--accent);">tests/test_network_http.py</a> — Real TCP socket network test suite (7 tests)</li>
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Automated Test Results -->
+    <section id="tests">
+      <div class="section-title">
+        <span>✅</span> 8. Automated Multi-Transport Test Suite (19/19 Passing)
+      </div>
+      <div class="section-desc">
+        All physical hardware and network protocols are verified through end-to-end automated pytest suites in a continuous feedback loop.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Live Hardware & BLE Suite (12 Tests)</div>
+          <p style="margin: 0.5rem 0; color: var(--text-muted); font-size: 0.88rem;">Tested against physical ESP32-C6 over Bluetooth Low Energy:</p>
+          <ul style="list-style: none; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; color: #4ade80;">
+            <li>✓ test_01_discovery_and_manifest: PASSED</li>
+            <li>✓ test_02_valid_invocation (Pad Readback 2/2): PASSED</li>
+            <li>✓ test_03_replay_attack_rejected (REPLAY_DETECTED): PASSED</li>
+            <li>✓ test_04_invalid_signature_rejected (UNAUTHORIZED): PASSED</li>
+            <li>✓ test_05_expired_request_rejected (AUTH_EXPIRED): PASSED</li>
+            <li>✓ test_06_unknown_capability_rejected: PASSED</li>
+            <li>✓ test_07_laptop_provider_capabilities: PASSED</li>
+            <li>✓ test_08_agent_policy_engine_routing: PASSED</li>
+            <li>✓ test_09_solana_devnet_verifier: PASSED</li>
+            <li>✓ test_10_solana_payment_channel_verifier: PASSED</li>
+            <li>✓ test_11_multichain_payment_verifier: PASSED</li>
+            <li>✓ test_12_untrusted_rogue_provider_rejected: PASSED</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Network HTTP Socket Suite (7 Tests)</div>
+          <p style="margin: 0.5rem 0; color: var(--text-muted); font-size: 0.88rem;">Tested against live HTTP TCP network sockets:</p>
+          <ul style="list-style: none; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; color: #4ade80;">
+            <li>✓ test_01_http_discovery_manifest: PASSED</li>
+            <li>✓ test_02_http_valid_invocation: PASSED</li>
+            <li>✓ test_03_http_receipt_polling: PASSED</li>
+            <li>✓ test_04_http_replay_attack_rejected: PASSED</li>
+            <li>✓ test_05_http_expired_request_rejected: PASSED</li>
+            <li>✓ test_06_http_unknown_capability_rejected: PASSED</li>
+            <li>✓ test_07_agent_policy_engine_over_network: PASSED</li>
+          </ul>
+          <div style="margin-top: 1rem; padding: 0.5rem; background: #064e3b; border-radius: 6px; font-size: 0.8rem; text-align: center; color: #a7f3d0; font-weight: 600;">
+            100% Transport Parity: BLE & HTTP share identical request/receipt semantics.
+          </div>
         </div>
       </div>
     </section>
@@ -678,9 +728,10 @@
 
   <footer>
     <div class="container">
-      CapMesh Proof of Concept • Developed for TUM Blockchain & AI Hackathon (Munich, Oct 2026) • All Tests Passing
+      CapMesh Proof of Concept • Developed for TUM Blockchain & AI Hackathon (Munich, Oct 2026) • 19/19 Automated Tests Passing
     </div>
   </footer>
+
 
 </body>
 </html>
