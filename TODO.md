@@ -2,14 +2,14 @@
 
 ## Target Milestones
 
-- [ ] **Phase 0: Establish Hardware Truth**
+- [x] **Phase 0: Establish Hardware Truth**
   - [x] Identify exact board and chip (ESP32-C6FH4 v0.2, 4MB Flash).
   - [x] Confirm serial port access (`/dev/ttyACM0`, dialout group ok).
   - [x] Identify ESP-IDF toolchain (`v6.1.0` in `/home/epic/.espressif/v6.1/esp-idf`).
   - [x] Verify host Bluetooth controller (`hci0`, Central & Peripheral supported).
   - [x] Locate onboard LED pin (GPIO 8).
-  - [ ] Build and flash minimal blink firmware to confirm physical LED works locally.
-  - [ ] User confirmation of local LED blink.
+  - [x] Build and flash minimal blink firmware to confirm physical LED works locally.
+  - [x] Verified serial boot logs and 5-cycle blink sequence.
 
 - [ ] **Phase 1: BLE Transport & Basic Capability Invocation**
   - [ ] Configure ESP-IDF NimBLE peripheral service with Custom Service UUID.
