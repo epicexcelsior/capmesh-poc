@@ -1,16 +1,26 @@
 #include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
-#include "driver/gpio.h"
+#include "esp_mac.h"
+#include "capabilities/led_capability.h"
+#include "protocol/capmesh_dispatcher.h"
+#include "transport/ble_transport.h"
+#include "transport/http_transport.h"
+#include "esp_netif.h"
+#include "esp_event.h"
 
-static const char *TAG = "CAPMESH_BOOT";
-
-#define LED_GPIO 8
+static const char *TAG = "CAPMESH_APP";
 
 void app_main(void)
 {
+    ESP_LOGI(TAG, "==================================================");
+    ESP_LOGI(TAG, "  CapMesh ESP32-C6 Provider Node Booting         ");
+    ESP_LOGI(TAG, "==================================================");
+
+    // 1. Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -18,35 +28,31 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    ESP_LOGI(TAG, "========================================");
-    ESP_LOGI(TAG, "  CapMesh Phase 0: Hardware Truth Test  ");
-    ESP_LOGI(TAG, "  Target: ESP32-C6 (GPIO %d LED)       ", LED_GPIO);
-    ESP_LOGI(TAG, "========================================");
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    gpio_config_t io_conf = {
-        .pin_bit_mask = (1ULL << LED_GPIO),
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    ESP_ERROR_CHECK(gpio_config(&io_conf));
+    // 2. Derive unique device ID from Base MAC
+    uint8_t mac[6];
+    esp_read_mac(mac, ESP_MAC_BT);
+    char device_id[32];
+    snprintf(device_id, sizeof(device_id), "esp32-c6-%02x%02x", mac[4], mac[5]);
+    ESP_LOGI(TAG, "Device ID: %s (Base MAC: %02x:%02x:%02x:%02x:%02x:%02x)",
+             device_id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-    ESP_LOGI(TAG, "Starting initial 5-blink verification...");
-    for (int i = 1; i <= 5; i++) {
-        gpio_set_level(LED_GPIO, 1);
-        ESP_LOGI(TAG, "LED ON (blink %d/5)", i);
-        vTaskDelay(pdMS_TO_TICKS(300));
-        gpio_set_level(LED_GPIO, 0);
-        ESP_LOGI(TAG, "LED OFF (blink %d/5)", i);
-        vTaskDelay(pdMS_TO_TICKS(300));
-    }
+    // 3. Initialize Capabilities (Actuators)
+    ESP_ERROR_CHECK(led_capability_init());
 
-    ESP_LOGI(TAG, "Phase 0 local blink test complete! Entering standby heartbeat...");
-    while (1) {
-        gpio_set_level(LED_GPIO, 1);
-        vTaskDelay(pdMS_TO_TICKS(100));
-        gpio_set_level(LED_GPIO, 0);
-        vTaskDelay(pdMS_TO_TICKS(1900));
-    }
+    // 4. Initialize Protocol Dispatcher
+    ESP_ERROR_CHECK(capmesh_dispatcher_init(device_id));
+    capmesh_dispatcher_set_auth_required(true);
+
+    // 5. Initialize BLE Transport
+    ESP_ERROR_CHECK(capmesh_ble_transport_init(device_id));
+
+    // 6. Initialize Wi-Fi SoftAP + HTTP Transport
+    char ap_ssid[32];
+    snprintf(ap_ssid, sizeof(ap_ssid), "CAPMESH_%02X%02X", mac[4], mac[5]);
+    ESP_ERROR_CHECK(capmesh_http_transport_init(ap_ssid));
+
+    ESP_LOGI(TAG, "CapMesh Dual Transport Node online! (BLE: %s, Wi-Fi: %s)", device_id, ap_ssid);
 }

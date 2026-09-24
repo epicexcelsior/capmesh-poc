@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capmesh"
+version = "0.1.0"
+description = "CapMesh Host Agent, CLI and Protocol SDK"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "bleak>=0.21.0",
+    "cryptography>=41.0.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "requests>=2.31.0"
+]
+
+[project.scripts]
+capmesh = "capmesh.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]

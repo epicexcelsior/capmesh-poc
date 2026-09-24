@@ -1,5 +1,22 @@
 idf_component_register(
-    SRCS "main.c"
-    PRIV_REQUIRES nvs_flash esp_driver_gpio
-    INCLUDE_DIRS "."
+    SRCS
+        "main.c"
+        "capabilities/led_capability.c"
+        "protocol/capmesh_dispatcher.c"
+        "transport/ble_transport.c"
+        "transport/http_transport.c"
+    PRIV_REQUIRES
+        nvs_flash
+        esp_driver_gpio
+        bt
+        cjson
+        mbedtls
+        esp_timer
+        esp_hw_support
+        esp_wifi
+        esp_netif
+        esp_event
+        esp_http_server
+    INCLUDE_DIRS
+        "."
 )
