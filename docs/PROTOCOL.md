@@ -11,8 +11,10 @@ A provider advertises its identity and capabilities via a manifest.
 ```json
 {
   "protocol": "capmesh/0.1",
-  "device_id": "esp32-c6-96a0",
+  "device_id": "esp32-c6-96a2",
   "transport": "ble",
+  "trust_tier": "verified",
+  "attestation": "esp32-puf-attestation-0x96a2",
   "capabilities": [
     {
       "id": "led.blink",
@@ -82,7 +84,7 @@ A client invokes a capability by sending an invocation payload.
 
 ## 3. Invocation Receipt / Response
 
-When execution finishes (or fails), the provider returns a receipt.
+When execution finishes (or fails), the provider returns a receipt with physical delivery proof:
 
 ### Schema
 
@@ -97,15 +99,24 @@ When execution finishes (or fails), the provider returns a receipt.
     "duration": 5,
     "count": 5
   },
-  "started_at": 1727185002,
-  "completed_at": 1727185007,
   "result": {
     "blinks_completed": 5
   },
+  "delivery_proof": {
+    "observer_id": "esp32_gpio8_hw_pad",
+    "expected_state": "PULSED",
+    "observed_state": "ACTIVE_HIGH",
+    "verified_samples": 5,
+    "total_samples": 5,
+    "readback_verified": true
+  },
+  "started_at": 1727185002,
+  "completed_at": 1727185007,
   "authorization_ref": "hmac-sha256:4a7f01c8...",
   "receipt_signature": "e89b21f..."
 }
 ```
+
 
 ### Error Schema
 

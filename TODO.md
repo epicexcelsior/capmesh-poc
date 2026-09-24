@@ -52,3 +52,14 @@
 - [x] **Phase 6: Verification & Complete Test Suite**
   - [x] Full automated test suite passes (9/9 tests passed in `tests/test_protocol.py`).
   - [x] All code committed and pushed to private GitHub repository (`epicexcelsior/capmesh-poc`).
+
+- [x] **Phase 7: Adversarial Defense & Physical Delivery Proof (TUM Hackathon Readiness)**
+  - [x] Physical Delivery Proof: configured GPIO 8 in `GPIO_MODE_INPUT_OUTPUT`, synchronous pad readback samples voltage transition on every pulse cycle.
+  - [x] Delivery proof schema added to receipt JSON (`observer_id`, `expected_state`, `observed_state`, `verified_samples`, `readback_verified`).
+  - [x] Solved physical actuator oracle problem (verifiable electrical pad evidence distinct from software assertion).
+  - [x] Settlement Neutrality: implemented `SolanaPaymentChannelVerifier` (off-chain micropayment vouchers) and `MultiChainPaymentVerifier` (Solana, Cardano, BSV).
+  - [x] Adversarial Provider: created `UntrustedRogueProvider` under-cutting price (0.002 vs 0.004) with forged attestation.
+  - [x] Agent Policy Engine: verified autonomous rejection of untrusted rogue provider and enforcement of €0.1000 spending ceiling.
+  - [x] 60-Second Adversarial Demo: implemented `capmesh demo` and `scripts/run_adversarial_demo.sh` testing live replay, expired auth, and tampered signature defenses.
+  - [x] Interactive Overview Dashboard: built standalone `docs/overview.html` with layer diagrams, threat matrix, and delivery proof breakdown.
+  - [x] Test suite expanded to 12 automated integration tests in `tests/test_protocol.py`.

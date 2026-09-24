@@ -51,9 +51,43 @@ idf.py build
 idf.py -p /dev/ttyACM0 flash monitor
 ```
 
-### 3. Scan and Invoke via BLE
+### 3. Run the 60-Second Adversarial Judging Demo
 
 ```bash
-capmesh scan
-capmesh invoke <device-id> led.blink --duration 5
+# Execute the full autonomous agent decision, settlement, physical actuation, and live attack suite:
+capmesh demo
+
+# Or use the standalone bash runner:
+./scripts/run_adversarial_demo.sh
 ```
+
+### 4. Interactive Architecture & Technical Brief
+
+Open [`docs/overview.html`](file:///home/epic/Documents/Projects/capmesh/docs/overview.html) in any browser for an interactive dashboard visualizing the 6-layer model, threat defense matrix, physical delivery proof, and sequence diagrams:
+
+```bash
+xdg-open docs/overview.html
+```
+
+### 5. Manual CLI Operations
+
+```bash
+# Scan for nearby providers (BLE + Local)
+capmesh scan
+
+# Retrieve capability manifest
+capmesh manifest esp32-c6-96a2
+
+# Manually invoke with hardware pad readback verification
+capmesh invoke esp32-c6-96a2 led.blink --duration 2 --count 3
+
+# Autonomous agent policy routing with budget limits
+capmesh policy-run visual_signal --max-price 0.01
+```
+
+## Key Technical Highlights
+
+1. **Transport-Independent Protocol**: Identical JSON requests (`capmesh/0.1`) execute over BLE GATT characteristics and Wi-Fi HTTP endpoints without duplicating capability code.
+2. **Physical Delivery Proof (Actuator Oracle Solved)**: GPIO 8 configured in `GPIO_MODE_INPUT_OUTPUT` continuously samples the electrical pad level to verify voltage changes during physical actuation, returning `delivery_proof` in the signed receipt.
+3. **On-Chip Adversarial Defense**: Firmware actively detects and blocks replay attacks (nonce cache), expired requests (monotonic epoch tracking), and forged tokens (RFC 2104 HMAC-SHA256).
+4. **Settlement Neutrality**: Pluggable `PaymentVerifier` interface supporting Solana Devnet L1 transactions, off-chain micropayment channel vouchers, and extensible multi-chain adapters.

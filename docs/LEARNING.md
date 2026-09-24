@@ -53,9 +53,37 @@ Instead:
 
 ## 7. Current Security Guarantees vs Mocks
 
-| Security Property | Phase 0-2 (Initial) | Phase 3 (Auth Milestone) | Phase 5 (Solana Adapter) |
+| Security Property | Phase 0-2 (Initial) | Phase 3 (Auth Milestone) | Phase 5-7 (Production / Demo) |
 |---|---|---|---|
-| Replay Protection | None (Mock) | Nonce + Timestamp Window | Nonce + Timestamp Window |
-| Tamper Resistance | None (Plain JSON) | HMAC-SHA256 Signature | Ed25519 / Bounded Token |
-| Payment Settlement | Free / Mock USDC | Free / Mock USDC | Solana Devnet Signature |
+| Replay Protection | None (Mock) | Nonce + Timestamp Window | Nonce Cache + Monotonic Epoch Window |
+| Tamper Resistance | None (Plain JSON) | HMAC-SHA256 Signature | RFC 2104 HMAC-SHA256 Canonical Token |
+| Physical Delivery Proof | Software assertion | Software assertion | Hardware Input Buffer Pad Readback |
+| Payment Settlement | Free / Mock USDC | Free / Mock USDC | Solana Devnet L1 + Micropayment Channels |
+| Provider Trust | Assumed Trust | Assumed Trust | Cryptographic Trust Tiers & Attestations |
+
+## 8. The Physical Actuator Oracle Problem & Hardware Readback
+
+A software-signed receipt stating "the LED blinked" or "the lock opened" only proves the software claims it executed.
+To solve this oracle vulnerability:
+1. The microcontroller configures the actuator pin in `GPIO_MODE_INPUT_OUTPUT`.
+2. While driving output signals, the hardware input buffer samples the physical voltage level on the electrical pad.
+3. If an electrical short, disconnection, or hardware stall occurs, readback fails.
+4. The signed receipt embeds structured delivery proof (`expected_state`, `observed_state`, `verified_samples`, `readback_verified`).
+
+## 9. Off-Chain Micropayment Channels vs L1 Transactions
+
+Paying $0.001 per invocation cannot sustain on-chain L1 gas fees (~$0.0007 + priority fees) or wait for block confirmation times:
+1. The agent escrows a budget ceiling (e.g. €0.10) in an on-chain channel once.
+2. The agent issues incrementing, signed sequence vouchers (e.g. €0.004) directly to the provider over BLE.
+3. The provider verifies vouchers locally in sub-milliseconds without touching internet or RPC.
+4. When the session terminates, the final voucher is redeemed on-chain in a single batch settlement.
+
+## 10. Adversarial Demonstrations for Hackathons
+
+Judges are inundated with happy-path demos. CapMesh stands out by demonstrating real-time defense against adversarial attacks:
+1. **Replay Attack**: Capturing and resending an authorization token fails immediately with `REPLAY_DETECTED`.
+2. **Expired Authorization**: Submitting an authorization with a past timestamp fails with `AUTH_EXPIRED`.
+3. **Parameter Tampering**: Altering execution parameters without a valid private key fails with `UNAUTHORIZED`.
+4. **Rogue Node**: An untrusted provider offering lower prices is rejected by the agent's trust policy before any money is spent.
+
 | Hardware Identity | Static Device Name | Shared Secret / Device Key | Public Key Authority |

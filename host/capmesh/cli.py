@@ -120,6 +120,9 @@ def invoke(device_id: str, capability: str, duration: int, count: int, data: str
 
         sig_valid = verify_receipt(receipt)
         table.add_row("Receipt Verified:", "[green]VALID (HMAC-SHA256)[/green]" if sig_valid else "[yellow]UNVERIFIED[/yellow]")
+        if receipt.delivery_proof:
+            dp = receipt.delivery_proof
+            table.add_row("Delivery Proof:", f"Observer: {dp.observer_id} | {dp.verified_samples}/{dp.total_samples} cycles readback [green]{dp.observed_state}[/green]")
         console.print(table)
     else:
         console.print(f"[bold red]✗ Execution Failed![/bold red]")
@@ -154,9 +157,21 @@ def policy_run(intent: str, max_price: float, solana_tx: str):
         table.add_row("Execution Result:", json.dumps(receipt.result))
         table.add_row("Receipt Signature:", f"[dim]{receipt.receipt_signature}[/dim]")
         table.add_row("Cryptographic Proof:", "[bold green]VERIFIED AUTHENTIC[/bold green]" if result["receipt_verified"] else "[red]UNVERIFIED[/red]")
+        if result.get("delivery_proof"):
+            dp = result["delivery_proof"]
+            table.add_row("Hardware Delivery Proof:", f"{dp.observer_id}: {dp.verified_samples}/{dp.total_samples} samples verified [green]{dp.observed_state}[/green]")
         console.print(table)
     else:
         console.print(f"[bold red]Policy Execution Failed: {result.get('message')}[/bold red]")
 
+@main.command()
+@click.option("--simulated", is_flag=True, help="Force simulated hardware mode (no BLE dongle required)")
+@click.option("--timeout", default=3.0, help="Scan timeout in seconds")
+def demo(simulated: bool, timeout: float):
+    """Run the 60-second adversarial judging demonstration."""
+    from .agent.demo import run_adversarial_demo
+    asyncio.run(run_adversarial_demo(simulated=simulated, live_timeout=timeout))
+
 if __name__ == "__main__":
     main()
+

@@ -34,11 +34,18 @@ def create_auth_payload(
     
     raise ValueError(f"Unsupported auth_type: {auth_type}")
 
-def verify_receipt(receipt: InvocationReceipt, secret: str = DEFAULT_SECRET) -> bool:
-    """Verify provider's cryptographic signature on receipt."""
+def verify_receipt(receipt: InvocationReceipt, secret: str = DEFAULT_SECRET, require_delivery_proof: bool = False) -> bool:
+    """Verify provider's cryptographic signature and optional physical delivery proof."""
     if receipt.status != "success" or not receipt.receipt_signature:
         return False
     
     msg = f"receipt:{receipt.request_id}:{receipt.provider}:{receipt.started_at}:{receipt.completed_at}"
     expected = compute_hmac_sha256(secret, msg)
-    return hmac.compare_digest(expected, receipt.receipt_signature)
+    if not hmac.compare_digest(expected, receipt.receipt_signature):
+        return False
+        
+    if require_delivery_proof:
+        if receipt.delivery_proof is None or not receipt.delivery_proof.readback_verified:
+            return False
+            
+    return True

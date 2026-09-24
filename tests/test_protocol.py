@@ -6,7 +6,13 @@ from capmesh.protocol.models import InvocationRequest
 from capmesh.protocol.auth import generate_nonce, create_auth_payload, verify_receipt
 from capmesh.provider.local_provider import LaptopProvider
 from capmesh.agent.policy import AgentPolicyEngine
-from capmesh.payment.verifier import MockPaymentVerifier, SolanaDevnetVerifier
+from capmesh.payment.verifier import (
+    MockPaymentVerifier,
+    SolanaDevnetVerifier,
+    SolanaPaymentChannelVerifier,
+    MultiChainPaymentVerifier,
+)
+from capmesh.provider.untrusted_provider import UntrustedRogueProvider
 
 DEVICE_ID = "esp32-c6-96a2"
 
@@ -62,8 +68,11 @@ async def test_02_valid_invocation(ble_adapter):
     assert receipt.request_id == req_id
     assert receipt.provider == DEVICE_ID
     assert receipt.result.get("blinks_completed") == 2
-    assert verify_receipt(receipt) is True, "Receipt HMAC signature was invalid"
-    print(f"\n[PASS] Valid invocation succeeded, receipt signature verified: {receipt.receipt_signature}")
+    assert receipt.delivery_proof is not None, "Delivery proof missing from receipt"
+    assert receipt.delivery_proof.readback_verified is True, "Hardware pad readback failed"
+    assert receipt.delivery_proof.observer_id == "esp32_gpio8_hw_pad"
+    assert verify_receipt(receipt, require_delivery_proof=True) is True, "Receipt HMAC signature or delivery proof was invalid"
+    print(f"\n[PASS] Valid invocation succeeded, pad readback verified ({receipt.delivery_proof.verified_samples}/{receipt.delivery_proof.total_samples}), signature: {receipt.receipt_signature}")
 
 @pytest.mark.asyncio
 async def test_03_replay_attack_rejected(ble_adapter):
@@ -244,3 +253,58 @@ def test_09_solana_devnet_verifier():
     # Fake / invalid transaction
     assert verifier.verify_payment("invalid-nonexistent-signature-1111111111111111", 0.0001, "dest") is False
     print("\n[PASS] SolanaDevnetVerifier verified authentic Devnet transaction and rejected invalid signature")
+
+def test_10_solana_payment_channel_verifier():
+    verifier = SolanaPaymentChannelVerifier(escrow_channel_id="chan-test", max_ceiling=0.05)
+    
+    # 1. Valid first voucher
+    v1 = "channel:chan-test:1:0.01"
+    assert verifier.verify_payment(v1, 0.01, "esp32-c6-96a2") is True
+    
+    # 2. Replay of same sequence number must fail
+    assert verifier.verify_payment(v1, 0.01, "esp32-c6-96a2") is False
+    
+    # 3. Valid incrementing sequence number
+    v2 = "channel:chan-test:2:0.02"
+    assert verifier.verify_payment(v2, 0.02, "esp32-c6-96a2") is True
+    
+    # 4. Voucher exceeding ceiling (0.01 + 0.02 + 0.03 = 0.06 > 0.05) must fail
+    v3 = "channel:chan-test:3:0.03"
+    assert verifier.verify_payment(v3, 0.03, "esp32-c6-96a2") is False
+    print("\n[PASS] SolanaPaymentChannelVerifier enforced sequence order and ceiling limits")
+
+def test_11_multichain_payment_verifier():
+    verifier = MultiChainPaymentVerifier()
+    
+    # Channel voucher
+    assert verifier.verify_payment("channel:chan-01:1:0.001", 0.001, "node1") is True
+    # Mock prefix
+    assert verifier.verify_payment("mock:tx-1234", 0.001, "node1") is True
+    # Cardano / BSV pluggable stubs
+    assert verifier.verify_payment("cardano:tx-addr", 0.001, "node1") is True
+    assert verifier.verify_payment("bsv:tx-addr", 0.001, "node1") is True
+    # Real Solana Devnet tx
+    tx_sig = "48FSxG35ME3RRfMRHgBUNp3HrbxeqwnSpXQUZuMfJQV72nZQcgYJF2ZMPcKVS8Z6Uy49qbssLLGWiq8Ao4kgaoZV"
+    assert verifier.verify_payment(tx_sig, 0.0001, "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA") is True
+    print("\n[PASS] MultiChainPaymentVerifier routed across all pluggable settlement backends")
+
+@pytest.mark.asyncio
+async def test_12_untrusted_rogue_provider_rejected(ble_adapter, laptop_provider):
+    rogue = UntrustedRogueProvider()
+    engine = AgentPolicyEngine(
+        transports=[ble_adapter, rogue, laptop_provider],
+        payment_verifier=MockPaymentVerifier(),
+        spending_ceiling=0.10
+    )
+    
+    # Request visual_signal: rogue offers 0.002, but is UNTRUSTED.
+    # ESP32 offers 0.004 and is VERIFIED.
+    # Policy engine MUST select ESP32 and reject rogue.
+    res = await engine.select_and_invoke("visual_signal", max_price=0.01, require_verified_trust=True)
+    assert res["status"] == "success"
+    assert res["chosen_provider"] == DEVICE_ID
+    assert len(res["rejected_providers"]) > 0
+    assert res["rejected_providers"][0]["provider"] == "rogue-signal-node-99"
+    assert "Trust policy violation" in res["rejected_providers"][0]["reason"]
+    print(f"\n[PASS] Policy Engine rejected cheaper rogue provider ({res['rejected_providers'][0]['provider']}) in favor of verified hardware ({res['chosen_provider']})")
+

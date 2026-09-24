@@ -16,11 +16,18 @@ TAG_MAPPINGS = {
 }
 
 class AgentPolicyEngine:
-    """Autonomous agent capability discovery and deterministic policy execution."""
+    """Autonomous agent capability discovery, trust verification, and deterministic policy execution."""
 
-    def __init__(self, transports: Optional[List[TransportAdapter]] = None, payment_verifier: Optional[PaymentVerifier] = None):
+    def __init__(
+        self,
+        transports: Optional[List[TransportAdapter]] = None,
+        payment_verifier: Optional[PaymentVerifier] = None,
+        spending_ceiling: float = 0.10
+    ):
         self.transports = transports or [BLETransportAdapter(), LaptopProvider()]
         self.payment_verifier = payment_verifier or MockPaymentVerifier()
+        self.spending_ceiling = spending_ceiling
+        self.total_spent = 0.0
 
     async def discover_all(self, timeout: float = 4.0) -> List[Tuple[Manifest, TransportAdapter]]:
         """Discover across all configured transports."""
@@ -40,14 +47,18 @@ class AgentPolicyEngine:
         max_price: float = 0.05,
         parameters: Optional[Dict[str, Any]] = None,
         auth_type: str = "hmac-sha256",
-        solana_tx_sig: Optional[str] = None
+        solana_tx_sig: Optional[str] = None,
+        require_verified_trust: bool = True,
+        require_delivery_proof: bool = True
     ) -> Dict[str, Any]:
         """
         Find providers offering capability_or_tag with price <= max_price.
-        Select cheapest, verify payment policy, invoke, and verify receipt.
+        Enforces trust policy, rejects untrusted providers, selects cheapest verified candidate,
+        enforces spending ceiling, settles payment, executes capability, and verifies delivery proof.
         """
         discovered = await self.discover_all()
         candidates = []
+        rejected = []
 
         allowed_caps = TAG_MAPPINGS.get(capability_or_tag, [capability_or_tag])
 
@@ -55,26 +66,55 @@ class AgentPolicyEngine:
             for cap in manifest.capabilities:
                 if cap.id in allowed_caps:
                     price = float(cap.pricing.amount)
-                    if price <= max_price:
-                        candidates.append({
-                            "manifest": manifest,
-                            "capability": cap,
+                    
+                    # 1. Trust Policy Filter
+                    if require_verified_trust and manifest.trust_tier != "verified":
+                        rejected.append({
+                            "provider": manifest.device_id,
+                            "capability": cap.id,
                             "price": price,
-                            "transport": transport
+                            "reason": f"Trust policy violation: provider trust tier is '{manifest.trust_tier}' (required: 'verified')"
                         })
+                        continue
+
+                    # 2. Price Budget Filter
+                    if price > max_price:
+                        rejected.append({
+                            "provider": manifest.device_id,
+                            "capability": cap.id,
+                            "price": price,
+                            "reason": f"Budget exceeded: {price} > max allowable {max_price}"
+                        })
+                        continue
+
+                    candidates.append({
+                        "manifest": manifest,
+                        "capability": cap,
+                        "price": price,
+                        "transport": transport
+                    })
 
         if not candidates:
             return {
                 "status": "error",
-                "message": f"No providers found offering '{capability_or_tag}' for <= {max_price} USD"
+                "message": f"No eligible providers found for '{capability_or_tag}'",
+                "rejected_providers": rejected
             }
 
-        # Deterministic policy: sort by price ascending (cheapest first)
+        # Deterministic policy: sort by price ascending (cheapest verified first)
         candidates.sort(key=lambda c: c["price"])
         chosen = candidates[0]
         manifest: Manifest = chosen["manifest"]
         cap: Capability = chosen["capability"]
         transport: TransportAdapter = chosen["transport"]
+
+        # 3. Agent Spending Ceiling Check
+        if (self.total_spent + chosen["price"]) > self.spending_ceiling:
+            return {
+                "status": "error",
+                "message": f"Agent spending ceiling exceeded: {self.total_spent + chosen['price']:.4f} > limit {self.spending_ceiling:.4f}",
+                "rejected_providers": rejected
+            }
 
         # Payment verification check if Solana devnet signature provided
         if solana_tx_sig:
@@ -111,7 +151,9 @@ class AgentPolicyEngine:
         )
 
         receipt = await transport.invoke(manifest.device_id, req)
-        receipt_verified = verify_receipt(receipt)
+        receipt_verified = verify_receipt(receipt, require_delivery_proof=require_delivery_proof)
+        if receipt.status == "success" and receipt_verified:
+            self.total_spent += chosen["price"]
 
         return {
             "status": receipt.status,
@@ -121,5 +163,8 @@ class AgentPolicyEngine:
             "price": chosen["price"],
             "currency": cap.pricing.currency,
             "receipt": receipt,
-            "receipt_verified": receipt_verified
+            "receipt_verified": receipt_verified,
+            "delivery_proof": receipt.delivery_proof,
+            "rejected_providers": rejected
         }
+

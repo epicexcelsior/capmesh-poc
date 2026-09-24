@@ -24,6 +24,18 @@
 - **Context**: Solana uses Ed25519 signatures. However, verifying asymmetric signatures on resource-constrained microcontrollers can add setup overhead.
 - **Decision**: Support symmetric HMAC-SHA256 authorization as the primary built-in verification on the ESP32 (using ESP32 hardware SHA engine or mbedtls), while keeping the authorization interface modular so Ed25519 / Solana devnet verifiers can be plugged in on host and device.
 
+### ADR 005: Hardware Pad Readback for Physical Delivery Proof
+- **Status**: Accepted
+- **Context**: A software-only receipt signed by the provider proves only that the firmware claimed actuation, leaving the physical actuator oracle problem unsolved.
+- **Decision**: Configure the actuator GPIO in `GPIO_MODE_INPUT_OUTPUT` mode. On every actuation cycle, synchronous electrical pad voltage levels are sampled via the hardware input buffer. The receipt schema includes structured `delivery_proof` containing `observer_id`, `expected_state`, `observed_state`, `verified_samples`, and `readback_verified`.
+- **Consequences**: Provides verifiable electrical evidence of actuation distinct from software assertions. Extensible to external sensors (photodiodes, limit switches, current sensors).
+
+### ADR 006: Settlement Neutrality and Payment Channels
+- **Status**: Accepted
+- **Context**: Hackathon prize tracks vary (TUM includes Cardano, BSV, and prospective sponsor tracks), and $0.001 micropayments cannot afford per-invocation L1 blockchain gas fees.
+- **Decision**: Abstract payments behind a `PaymentVerifier` interface. Implement `SolanaPaymentChannelVerifier` (escrow ceiling with off-chain signed sequence vouchers) and `MultiChainPaymentVerifier` supporting dynamic chain routing.
+- **Consequences**: Enables sub-cent micropayments, zero firmware dependencies on blockchain SDKs, and fast adaptation to judging track requirements.
+
 ---
 
 ## Future Research Questions

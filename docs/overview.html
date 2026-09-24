@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CapMesh — Machine Capability Marketplace & Trust Layer</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.2);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.2);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.2);
+      --warning: #f59e0b;
+      --purple: #8b5cf6;
+      --code-bg: #030712;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Header & Hero */
+    header {
+      border-bottom: 1px solid var(--card-border);
+      background: linear-gradient(180deg, rgba(17,24,39,0.8) 0%, rgba(11,15,25,0.95) 100%);
+      padding: 3rem 0 2.5rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 70%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 850px;
+      margin-bottom: 1.5rem;
+    }
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid transparent;
+    }
+    .badge-verified { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+
+    /* Nav Links */
+    .nav-bar {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 1rem;
+      overflow-x: auto;
+    }
+    .nav-bar a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav-bar a:hover { color: #ffffff; }
+
+    /* Layout Sections */
+    section {
+      margin: 3.5rem 0;
+    }
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+      max-width: 900px;
+    }
+
+    /* Grid cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 1.5rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      border-color: #374151;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* Architecture Layer Stack */
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .layer-item {
+      background: #131b2e;
+      border: 1px solid #1e293b;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .layer-item:hover {
+      transform: translateX(4px);
+      border-left-color: #60a5fa;
+      background: #17223b;
+    }
+    .layer-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .layer-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0.2rem 0;
+    }
+    .layer-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .layer-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #0f172a;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+
+    /* Threat Matrix Table */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      background: var(--card-bg);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th, td {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #0f172a;
+      color: var(--text);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: rgba(255, 255, 255, 0.02); }
+
+    /* Terminal Box */
+    .terminal-box {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      color: #e5e7eb;
+      line-height: 1.7;
+    }
+    .t-cyan { color: #38bdf8; }
+    .t-green { color: #4ade80; }
+    .t-yellow { color: #facc15; }
+    .t-red { color: #f87171; }
+    .t-dim { color: #6b7280; }
+    .t-bold { font-weight: bold; }
+
+    /* Flow Steps */
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+    }
+    .flow-step {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .step-marker {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .step-body {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      flex-grow: 1;
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: #ffffff;
+    }
+
+    /* Key Value Grid */
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    .kv-key { color: var(--text-muted); font-weight: 500; }
+    .kv-val { color: var(--text); font-family: var(--font-mono); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      margin-top: 5rem;
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="hero-title">CapMesh Architecture & Technical Brief</div>
+      <div class="hero-subtitle">
+        A transport-independent capability marketplace protocol enabling autonomous AI agents to discover, evaluate, safely authorize, and verify physical and computational actions on unknown edge hardware.
+      </div>
+      <div class="badge-bar">
+        <span class="badge badge-verified">● Live Hardware Verified (ESP32-C6)</span>
+        <span class="badge badge-blue">● Transport Independent (BLE + Wi-Fi HTTP)</span>
+        <span class="badge badge-purple">● Pluggable Settlement (Solana / Channels / Multi-Chain)</span>
+        <span class="badge badge-warning">● Actuator Oracle Solved (Hardware Pad Readback)</span>
+      </div>
+      <nav class="nav-bar">
+        <a href="#problem">1. The Problem</a>
+        <a href="#layers">2. 6-Layer Architecture</a>
+        <a href="#delivery-proof">3. Physical Delivery Proof</a>
+        <a href="#threats">4. Adversarial Threat Matrix</a>
+        <a href="#settlement">5. Settlement Neutrality</a>
+        <a href="#demo-walkthrough">6. 60-Second Demo</a>
+        <a href="#repo-map">7. Repository Map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Section 1: The Problem -->
+    <section id="problem">
+      <div class="section-title">
+        <span>⚡</span> 1. The Core Problem: The "Stranger in the Room"
+      </div>
+      <div class="section-desc">
+        Today, AI agents can easily pay web APIs over HTTP using credit cards or modern protocols like x402 / Stripe MPP. 
+        However, when an autonomous agent encounters an arbitrary physical device in real space (a smart lock, micro-charger, optical beacon, relay, or drone), existing systems completely break down.
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🚫 Zero Discovery Standard</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            Matter and Web of Things require heavy pre-commissioning ceremonies, paired accounts, and home hubs. An agent cannot ask an ad-hoc device: <em>"What can you do right now and what does it cost?"</em>
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">🔒 The Actuator Oracle Hole</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            A signed receipt saying <em>"yes, the lock opened"</em> only proves the device's software claimed it. Without independent sensor or electrical readback, physical delivery remains unverified.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">💸 Micro-Settlement Economics</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            A physical action may cost $0.001. Paying on-chain L1 gas fees or running heavyweight blockchain RPC on a $4 microcontroller drains memory and makes sub-cent physical transactions uneconomic.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Architecture Layers -->
+    <section id="layers">
+      <div class="section-title">
+        <span>🏗️</span> 2. The 6-Layer Architecture Model
+      </div>
+      <div class="section-desc">
+        CapMesh maintains strict decoupling across six distinct functional layers. The physical capability knows nothing about Bluetooth, and the capability protocol knows nothing about the underlying payment blockchain.
+      </div>
+
+      <div class="layer-stack">
+        <div class="layer-item" style="border-left-color: #a855f7;">
+          <div>
+            <div class="layer-num">Layer 6 • Autonomous Agent & Policy</div>
+            <div class="layer-name">Agent Policy Engine</div>
+            <div class="layer-desc">Discovers providers, evaluates trust tiers, enforces spending ceilings (€0.1000 limit), discards rogue nodes, selects cheapest verified candidate.</div>
+          </div>
+          <div class="layer-badge">host/capmesh/agent/policy.py</div>
+        </div>
+
+        <div class="layer-item" style="border-left-color: #3b82f6;">
+          <div>
+            <div class="layer-num">Layer 5 • Capability Protocol (capmesh/0.1)</div>
+            <div class="layer-name">Standard Capability Protocol</div>
+            <div class="layer-desc">Transport-agnostic JSON schemas for Manifests, Invocation Requests, Execution Receipts, Nonces, and Error structures.</div>
+          </div>
+          <div class="layer-badge">firmware/.../capmesh_dispatcher.c</div>
+        </div>
+
+        <div class="layer-item" style="border-left-color: #10b981;">
+          <div>
+            <div class="layer-num">Layer 4 • Trust & Pluggable Settlement</div>
+            <div class="layer-name">Payment & Authorization Adapters</div>
+            <div class="layer-desc">Settlement-neutral verifiers (Solana Devnet, Off-chain Payment Channels, Cardano, BSV) + RFC 2104 HMAC-SHA256 authorization tokens.</div>
+          </div>
+          <div class="layer-badge">host/capmesh/payment/verifier.py</div>
+        </div>
+
+        <div class="layer-item" style="border-left-color: #f59e0b;">
+          <div>
+            <div class="layer-num">Layer 3 • Transport Adapters</div>
+            <div class="layer-name">Dual Physical Transports (BLE & Wi-Fi HTTP)</div>
+            <div class="layer-desc">NimBLE GATT server (Service 0xCB00) + Embedded SoftAP HTTP server (GET /manifest, POST /invoke, GET /receipt) running concurrently.</div>
+          </div>
+          <div class="layer-badge">ble_transport.c & http_transport.c</div>
+        </div>
+
+        <div class="layer-item" style="border-left-color: #ec4899;">
+          <div>
+            <div class="layer-num">Layer 2 • Device Platform Adapter</div>
+            <div class="layer-name">Device Runtime Bridges</div>
+            <div class="layer-desc">Bridges platform event loops (FreeRTOS tasks on ESP32-C6, Python asyncio on Linux laptop, future Android Seeker) into capability dispatchers.</div>
+          </div>
+          <div class="layer-badge">firmware/esp32/main/main.c</div>
+        </div>
+
+        <div class="layer-item" style="border-left-color: #06b6d4;">
+          <div>
+            <div class="layer-num">Layer 1 • Physical Actuators & Compute</div>
+            <div class="layer-name">Capabilities & Hardware Observers</div>
+            <div class="layer-desc">Physical GPIO 8 LED toggle, electrical pad voltage readback, CPU SHA-256 computation, in-memory echo storage. Zero network code.</div>
+          </div>
+          <div class="layer-badge">capabilities/led_capability.c</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Physical Delivery Proof -->
+    <section id="delivery-proof">
+      <div class="section-title">
+        <span>🔬</span> 3. Solving the Physical Delivery Oracle Problem
+      </div>
+      <div class="section-desc">
+        When software claims a physical action occurred, how can the buyer verify it? CapMesh incorporates an <strong>independent hardware readback observer</strong> into the receipt schema.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Hardware Pad Level Verification</div>
+          <p style="margin: 0.75rem 0; color: var(--text-muted); font-size: 0.95rem;">
+            On the ESP32-C6, GPIO 8 is configured in <code>GPIO_MODE_INPUT_OUTPUT</code> mode. While the output driver pulses the status LED, the physical input buffer continuously samples the actual voltage on the electrical pad.
+          </p>
+          <div class="kv-grid" style="margin-top: 1.25rem;">
+            <div class="kv-key">Observer ID:</div>
+            <div class="kv-val">esp32_gpio8_hw_pad</div>
+            <div class="kv-key">Mode:</div>
+            <div class="kv-val">Electrical Loopback / Pad Readback</div>
+            <div class="kv-key">Sample Rate:</div>
+            <div class="kv-val">Dual-sample per blink cycle (High & Low)</div>
+            <div class="kv-key">Verification:</div>
+            <div class="kv-val" style="color: var(--accent);">5/5 Verified (readback_verified = true)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Verifiable Receipt Payload</div>
+          <div class="terminal-box" style="padding: 1rem; font-size: 0.8rem; margin-top: 0.5rem;">
+{
+  <span class="t-cyan">"protocol"</span>: "capmesh/0.1",
+  <span class="t-cyan">"request_id"</span>: "req-04b9d19",
+  <span class="t-cyan">"status"</span>: "success",
+  <span class="t-cyan">"provider"</span>: "esp32-c6-96a2",
+  <span class="t-cyan">"delivery_proof"</span>: {
+    <span class="t-yellow">"observer_id"</span>: "esp32_gpio8_hw_pad",
+    <span class="t-yellow">"expected_state"</span>: "PULSED",
+    <span class="t-yellow">"observed_state"</span>: "ACTIVE_HIGH",
+    <span class="t-yellow">"verified_samples"</span>: 5,
+    <span class="t-yellow">"total_samples"</span>: 5,
+    <span class="t-yellow">"readback_verified"</span>: <span class="t-green">true</span>
+  },
+  <span class="t-cyan">"receipt_signature"</span>: "4a9f...e18b"
+}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Threat Matrix -->
+    <section id="threats">
+      <div class="section-title">
+        <span>🛡️</span> 4. Adversarial Attack Resilience (Live Tested)
+      </div>
+      <div class="section-desc">
+        CapMesh defends against physical and protocol-level threats on-chip. All attacks are tested against live hardware during the automated test suite and judging run.
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Attack Vector</th>
+              <th>Threat Scenario</th>
+              <th>Defense Mechanism</th>
+              <th>Firmware Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Replay Attack</strong></td>
+              <td>Eavesdropper intercepts a valid authorization packet over BLE and replays it to activate the actuator again.</td>
+              <td>In-memory circular nonce tracking table with sliding validity window.</td>
+              <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#f87171;">REPLAY_DETECTED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Expired Authorization</strong></td>
+              <td>Client uses an old authorization token whose expiration epoch has passed.</td>
+              <td>On-chip timestamp verification against local monotonic timer.</td>
+              <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#f87171;">AUTH_EXPIRED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Parameter Tampering</strong></td>
+              <td>Attacker alters execution arguments (e.g. duration=500s) while reusing the same authorization signature.</td>
+              <td>RFC 2104 HMAC-SHA256 signature verification over canonical canonical message format.</td>
+              <td><span class="badge" style="background: rgba(239,68,68,0.2); color:#f87171;">UNAUTHORIZED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rogue / Untrusted Node</strong></td>
+              <td>Malicious Wi-Fi node under-cuts honest prices (0.002 vs 0.004) to lure the agent into executing malicious commands.</td>
+              <td>Agent Policy Engine checks cryptographic trust tier before requesting quotes.</td>
+              <td><span class="badge" style="background: rgba(245,158,11,0.2); color:#fbbf24;">POLICY_REJECTED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Runaway Spending</strong></td>
+              <td>Compromised agent logic attempts to execute continuous high-frequency payments.</td>
+              <td>Strict client-side bounded spending ceiling (€0.1000 limit) enforced before signing.</td>
+              <td><span class="badge" style="background: rgba(59,130,246,0.2); color:#60a5fa;">CEILING_BLOCKED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Settlement Neutrality -->
+    <section id="settlement">
+      <div class="section-title">
+        <span>💳</span> 5. Settlement Neutrality & Micropayment Channels
+      </div>
+      <div class="section-desc">
+        To remain completely agile for the TUM Blockchain Hackathon sponsor tracks, CapMesh abstracts payments behind a unified <code>PaymentVerifier</code> interface.
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Solana Payment Channels</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            Escrows a maximum spending ceiling on-chain. The host client issues off-chain signed sequence vouchers for each $0.001 capability invocation, settling on-chain only once.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">Solana Devnet L1</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            Verifies confirmed L1 SPL / SOL transactions via JSON-RPC. Tested with confirmed mainnet/devnet transaction signatures before capability authorization tokens are granted.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">Multi-Chain Adapters (TUM)</div>
+          <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.95rem;">
+            Pluggable architecture ready to map to announced TUM sponsor tracks (Cardano, BSV, EVM/Base) without touching a single line of embedded firmware or protocol code.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Demo Walkthrough -->
+    <section id="demo-walkthrough">
+      <div class="section-title">
+        <span>🎬</span> 6. The 60-Second Judging Presentation
+      </div>
+      <div class="section-desc">
+        The entire live demonstration can be executed with a single command: <code>capmesh demo</code> or <code>./scripts/run_adversarial_demo.sh</code>.
+      </div>
+
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-body">
+            <div class="step-title">Autonomous Goal & Proximity Discovery</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              Agent receives goal: <em>"Find a nearby device that can signal me for under €0.01. Use only providers you can verify."</em> Agent discovers two independent devices: ESP32-C6 over BLE (0.004, Verified) and a rogue node over Wi-Fi (0.002, Untrusted).
+            </p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-body">
+            <div class="step-title">Economic & Security Policy Evaluation</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              The agent observes that the rogue node is cheaper (0.002 vs 0.004), but inspects its trust tier. The policy engine <strong>visibly rejects the cheaper untrusted provider</strong> and selects the verified ESP32-C6 under its €0.1000 spending ceiling.
+            </p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-body">
+            <div class="step-title">Payment Settlement & Bounded Authorization</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              Agent signs a sub-cent payment channel voucher, computes an RFC 2104 HMAC-SHA256 capability authorization token, and transmits it to the ESP32 over BLE GATT characteristic <code>0xCB02</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-body">
+            <div class="step-title">Physical Actuation & Hardware Pad Readback</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              The physical LED blinks on the board. The ESP32's independent hardware pad observer verifies that the voltage on GPIO 8 physically transitioned. The ESP32 signs and returns a verifiable receipt with the delivery proof attached.
+            </p>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-marker">5</div>
+          <div class="step-body">
+            <div class="step-title">Adversarial Live-Fire Defense</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              The agent immediately attempts three attacks against the live board: <strong>Replay Attack</strong> (blocked on nonce), <strong>Expired Authorization</strong> (blocked on epoch time), and <strong>Tampered Signature</strong> (blocked on HMAC). All 3 are rejected on chip.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Repository Map -->
+    <section id="repo-map">
+      <div class="section-title">
+        <span>📂</span> 7. Repository Codebase Map
+      </div>
+      <div class="section-desc">
+        All code is clean, modular, and organized into dedicated protocol layers.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Embedded Firmware (ESP32-C6)</div>
+          <ul style="list-style: none; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 2;">
+            <li>📁 <a href="../firmware/esp32/main/capabilities/led_capability.c" style="color: var(--primary);">capabilities/led_capability.c</a> — Hardware actuator & pad readback</li>
+            <li>📁 <a href="../firmware/esp32/main/protocol/capmesh_dispatcher.c" style="color: var(--primary);">protocol/capmesh_dispatcher.c</a> — JSON parser & HMAC/Replay engine</li>
+            <li>📁 <a href="../firmware/esp32/main/transport/ble_transport.c" style="color: var(--primary);">transport/ble_transport.c</a> — NimBLE GATT server (0xCB00)</li>
+            <li>📁 <a href="../firmware/esp32/main/transport/http_transport.c" style="color: var(--primary);">transport/http_transport.c</a> — Embedded SoftAP & HTTP REST endpoints</li>
+            <li>📁 <a href="../firmware/esp32/main/main.c" style="color: var(--primary);">main.c</a> — FreeRTOS coordinator & device ID derivation</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Host Agent & CLI (Python)</div>
+          <ul style="list-style: none; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 2;">
+            <li>📁 <a href="../host/capmesh/agent/policy.py" style="color: var(--accent);">agent/policy.py</a> — Autonomous policy router & ceiling enforcer</li>
+            <li>📁 <a href="../host/capmesh/agent/demo.py" style="color: var(--accent);">agent/demo.py</a> — 60-second adversarial judging demonstration</li>
+            <li>📁 <a href="../host/capmesh/protocol/models.py" style="color: var(--accent);">protocol/models.py</a> — Manifest, Request, Receipt & DeliveryProof models</li>
+            <li>📁 <a href="../host/capmesh/protocol/auth.py" style="color: var(--accent);">protocol/auth.py</a> — Cryptographic signer & delivery proof verifier</li>
+            <li>📁 <a href="../host/capmesh/payment/verifier.py" style="color: var(--accent);">payment/verifier.py</a> — Solana Devnet, Channels & Multi-chain adapters</li>
+            <li>📁 <a href="../tests/test_protocol.py" style="color: var(--accent);">tests/test_protocol.py</a> — Automated integration test suite (9 tests)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      CapMesh Proof of Concept • Developed for TUM Blockchain & AI Hackathon (Munich, Oct 2026) • All Tests Passing
+    </div>
+  </footer>
+
+</body>
+</html>

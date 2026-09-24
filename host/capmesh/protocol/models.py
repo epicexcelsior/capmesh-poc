@@ -38,6 +38,8 @@ class Manifest:
     capabilities: List[Capability] = field(default_factory=list)
     transport: Optional[str] = None
     address: Optional[str] = None
+    trust_tier: str = "verified"  # "verified", "untrusted", "unknown"
+    attestation: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], address: Optional[str] = None, transport: Optional[str] = None) -> Manifest:
@@ -47,7 +49,9 @@ class Manifest:
             device_id=data.get("device_id", "unknown"),
             capabilities=caps,
             transport=transport,
-            address=address
+            address=address,
+            trust_tier=data.get("trust_tier", "verified"),
+            attestation=data.get("attestation")
         )
 
     def to_json(self) -> str:
@@ -93,6 +97,26 @@ class InvocationRequest:
         return json.dumps(self.to_dict())
 
 @dataclass
+class DeliveryProof:
+    observer_id: str
+    expected_state: str
+    observed_state: str
+    verified_samples: int
+    total_samples: int
+    readback_verified: bool
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> DeliveryProof:
+        return cls(
+            observer_id=data.get("observer_id", "unknown"),
+            expected_state=data.get("expected_state", ""),
+            observed_state=data.get("observed_state", ""),
+            verified_samples=int(data.get("verified_samples", 0)),
+            total_samples=int(data.get("total_samples", 0)),
+            readback_verified=bool(data.get("readback_verified", False))
+        )
+
+@dataclass
 class InvocationReceipt:
     protocol: str
     request_id: str
@@ -103,12 +127,15 @@ class InvocationReceipt:
     result: Optional[Dict[str, Any]] = None
     started_at: Optional[int] = None
     completed_at: Optional[int] = None
+    delivery_proof: Optional[DeliveryProof] = None
     authorization_ref: Optional[str] = None
     receipt_signature: Optional[str] = None
     error: Optional[Dict[str, Any]] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> InvocationReceipt:
+        dp_raw = data.get("delivery_proof")
+        dp = DeliveryProof.from_dict(dp_raw) if dp_raw and isinstance(dp_raw, dict) else None
         return cls(
             protocol=data.get("protocol", "capmesh/0.1"),
             request_id=data.get("request_id", ""),
@@ -119,6 +146,7 @@ class InvocationReceipt:
             result=data.get("result"),
             started_at=data.get("started_at"),
             completed_at=data.get("completed_at"),
+            delivery_proof=dp,
             authorization_ref=data.get("authorization_ref"),
             receipt_signature=data.get("receipt_signature"),
             error=data.get("error")

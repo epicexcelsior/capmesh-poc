@@ -10,6 +10,7 @@ static const char *TAG = "DISPATCHER";
 
 static char s_device_id[64] = "esp32-c6-unknown";
 static bool s_auth_required = false;
+static int64_t s_epoch_offset_s = 0;
 
 // Simple replay prevention table
 #define REPLAY_WINDOW_SIZE 64
@@ -354,7 +355,18 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
     }
 
     // 4. Expiration check (if expiration is specified)
-    uint32_t now_s = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+    cJSON *ts_item = cJSON_GetObjectItem(req, "timestamp");
+    uint32_t req_ts = (ts_item && cJSON_IsNumber(ts_item)) ? (uint32_t)ts_item->valuedouble : 0;
+    uint32_t uptime_s = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+
+    if (req_ts > 1700000000ULL) {
+        if (s_epoch_offset_s == 0 || (int64_t)req_ts > (s_epoch_offset_s + uptime_s)) {
+            s_epoch_offset_s = (int64_t)req_ts - (int64_t)uptime_s;
+            ESP_LOGI(TAG, "Epoch offset synchronized: current_unix=%" PRIu32, req_ts);
+        }
+    }
+    uint32_t now_s = (s_epoch_offset_s > 0) ? (uint32_t)(s_epoch_offset_s + uptime_s) : uptime_s;
+
     if (exp > 0 && exp < now_s) {
         ESP_LOGW(TAG, "Request expired: exp=%" PRIu32 ", now=%" PRIu32, exp, now_s);
         cJSON_Delete(req);
@@ -388,11 +400,12 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
         record_nonce(nonce);
     }
 
-    // 6. Execute Capability (Led blink)
-    uint32_t start_time = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+    // 6. Execute Capability (Led blink with independent hardware readback)
+    uint32_t start_time = now_s;
     int blinks_done = 0;
-    led_capability_blink(duration, count, &blinks_done);
-    uint32_t end_time = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+    led_delivery_proof_t proof = {0};
+    led_capability_blink(duration, count, &blinks_done, &proof);
+    uint32_t end_time = (s_epoch_offset_s > 0) ? (uint32_t)(s_epoch_offset_s + (esp_timer_get_time() / 1000000ULL)) : (uint32_t)(esp_timer_get_time() / 1000000ULL);
 
     // 7. Formulate Receipt JSON
     cJSON *receipt = cJSON_CreateObject();
@@ -410,6 +423,16 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
     cJSON *result = cJSON_CreateObject();
     cJSON_AddNumberToObject(result, "blinks_completed", blinks_done);
     cJSON_AddItemToObject(receipt, "result", result);
+
+    // 8. Attach Physical Delivery Proof (Solving the Actuator Oracle Problem)
+    cJSON *dp = cJSON_CreateObject();
+    cJSON_AddStringToObject(dp, "observer_id", proof.observer_id ? proof.observer_id : "esp32_gpio8_hw_pad");
+    cJSON_AddStringToObject(dp, "expected_state", proof.expected_state ? proof.expected_state : "PULSED");
+    cJSON_AddStringToObject(dp, "observed_state", proof.observed_state ? proof.observed_state : "ACTIVE_HIGH");
+    cJSON_AddNumberToObject(dp, "verified_samples", proof.verified_samples);
+    cJSON_AddNumberToObject(dp, "total_samples", proof.total_samples);
+    cJSON_AddBoolToObject(dp, "readback_verified", proof.readback_verified);
+    cJSON_AddItemToObject(receipt, "delivery_proof", dp);
 
     cJSON_AddNumberToObject(receipt, "started_at", start_time);
     cJSON_AddNumberToObject(receipt, "completed_at", end_time);

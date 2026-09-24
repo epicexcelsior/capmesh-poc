@@ -61,10 +61,56 @@ The logical flow does not change when the transport changes:
 
 ```mermaid
 flowchart TD
-    Client[Client / Agent] -->|BLE GATT Characteristic| ESP_BLE[ESP32 BLE Transport]
+    Client[Client / Agent] -->|BLE GATT Characteristic 0xCB02| ESP_BLE[ESP32 BLE Transport]
     Client -->|HTTP POST /invoke| ESP_HTTP[ESP32 HTTP Transport]
     ESP_BLE --> Dispatcher[CapMesh Dispatcher]
     ESP_HTTP --> Dispatcher
-    Dispatcher --> Auth[Auth & Replay Verifier]
+    Dispatcher --> ReplayCheck[Nonce Replay Filter]
+    ReplayCheck --> ExpiryCheck[Monotonic Epoch Expiry Filter]
+    ExpiryCheck --> Auth[HMAC-SHA256 Auth Verifier]
     Auth -->|Authorized| Actuator[LED Actuator GPIO 8]
+    Actuator -->|Pad Sampling| Observer[Hardware Pad Observer]
+    Observer -->|delivery_proof| Dispatcher
+    Dispatcher -->|Signed Receipt| Client
+```
+
+## Physical Delivery Proof Architecture
+
+To solve the physical actuator oracle problem (where a provider merely asserts execution occurred without evidence), CapMesh implements an independent hardware observer:
+
+1. **Actuator Pin Mode**: Configured as `GPIO_MODE_INPUT_OUTPUT`.
+2. **Synchronous Readback**: On every pulse cycle, after driving the pin high or low, the input buffer samples the voltage level directly on the physical pad.
+3. **Receipt Delivery Proof**:
+```json
+{
+  "delivery_proof": {
+    "observer_id": "esp32_gpio8_hw_pad",
+    "expected_state": "PULSED",
+    "observed_state": "ACTIVE_HIGH",
+    "verified_samples": 5,
+    "total_samples": 5,
+    "readback_verified": true
+  }
+}
+```
+
+## Pluggable Settlement & Micropayment Channels
+
+To enable $0.001 capability transactions without per-invocation L1 blockchain gas overhead:
+
+```mermaid
+sequenceDiagram
+    participant Agent as Autonomous Agent
+    participant Escrow as On-Chain Escrow / Payment Channel
+    participant Provider as ESP32 Hardware Provider
+
+    Agent->>Escrow: Open Channel & Escrow Budget Ceiling (€0.10)
+    Note over Agent,Provider: Sub-Cent Micropayments (Off-Chain)
+    Agent->>Provider: Invoke Capability + Signed Channel Voucher #1 (€0.004)
+    Provider->>Provider: Verify Voucher & Actuate Hardware
+    Provider-->>Agent: Verifiable Receipt with Delivery Proof
+    Agent->>Provider: Invoke Capability + Signed Channel Voucher #2 (€0.008)
+    Provider-->>Agent: Verifiable Receipt with Delivery Proof
+    Note over Agent,Escrow: Close Channel & Single L1 Settlement
+    Provider->>Escrow: Settle Final Cumulative Voucher
 ```
