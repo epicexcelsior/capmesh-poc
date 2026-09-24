@@ -60,6 +60,7 @@ Instead:
 | Physical Delivery Proof | Software assertion | Software assertion | Hardware Input Buffer Pad Readback |
 | Payment Settlement | Free / Mock USDC | Free / Mock USDC | Solana Devnet L1 + Micropayment Channels |
 | Provider Trust | Assumed Trust | Assumed Trust | Cryptographic Trust Tiers & Attestations |
+| Hardware Identity | Static Device Name | Shared Secret / Device Key | Public Key Authority |
 
 ## 8. The Physical Actuator Oracle Problem & Hardware Readback
 
@@ -86,4 +87,3 @@ Judges are inundated with happy-path demos. CapMesh stands out by demonstrating 
 3. **Parameter Tampering**: Altering execution parameters without a valid private key fails with `UNAUTHORIZED`.
 4. **Rogue Node**: An untrusted provider offering lower prices is rejected by the agent's trust policy before any money is spent.
 
-| Hardware Identity | Static Device Name | Shared Secret / Device Key | Public Key Authority |

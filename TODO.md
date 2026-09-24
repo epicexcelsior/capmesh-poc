@@ -61,5 +61,26 @@
   - [x] Adversarial Provider: created `UntrustedRogueProvider` under-cutting price (0.002 vs 0.004) with forged attestation.
   - [x] Agent Policy Engine: verified autonomous rejection of untrusted rogue provider and enforcement of €0.1000 spending ceiling.
   - [x] 60-Second Adversarial Demo: implemented `capmesh demo` and `scripts/run_adversarial_demo.sh` testing live replay, expired auth, and tampered signature defenses.
-  - [x] Interactive Overview Dashboard: built standalone `docs/overview.html` with layer diagrams, threat matrix, and delivery proof breakdown.
-  - [x] Test suite expanded to 12 automated integration tests in `tests/test_protocol.py`.
+  - [x] Interactive Overview Dashboard: built standalone `docs/overview.html` with layer diagrams, threat matrix, delivery proof breakdown, beginner primer ("Explain Like I'm 5"), and curated further reading deep dives.
+  - [x] Full multi-transport automated test suite passing (19/19 tests): 12 live hardware BLE integration tests in `tests/test_protocol.py` and 7 live socket HTTP tests in `tests/test_network_http.py`.
+  - [x] Live physical adversarial execution verified: `scripts/run_adversarial_demo.sh` executed on-device with 100% PASS verdict.
+
+---
+
+## What Cannot Be Done Yet (Hardware & External Prerequisites)
+
+The following items are architected and ready, but intentionally deferred because they require external hardware or live event infrastructure:
+
+1. **Secondary Physical Sensors & High-Power Actuators (Servo / Solenoid Lock / Light Sensor)**:
+   - *Current State*: Fully solved on-chip using GPIO 8 electrical pad loopback sampling (`GPIO_MODE_INPUT_OUTPUT`).
+   - *Next Step*: Attach a €5 physical servo or photodiode sensor once external hardware is acquired before Munich.
+2. **Solana Seeker / Android Mobile Wallet Adapter (MWA)**:
+   - *Current State*: Linux laptop acts as the economic buyer and Bluetooth Central (`bleak`).
+   - *Next Step*: Build Android React Native / Kotlin client when physical Seeker hardware is available.
+3. **Arcium Private Policy Circuit Deployment**:
+   - *Current State*: Architectural extension point defined in `docs/FEASIBILITY_AND_HOLES.md`; policy engine runs locally on host.
+   - *Next Step*: Deploy confidential multi-party computation circuit once TUM official sponsor tracks and developer SDKs are published.
+4. **Final Hackathon Track Settlement Selection**:
+   - *Current State*: Pluggable `PaymentVerifier` interface implements Solana Devnet L1, Solana Payment Channels, and Multi-chain routing (Cardano, BSV).
+   - *Next Step*: Bind the winning chain adapter once TUM publishes final prize track details.
+
