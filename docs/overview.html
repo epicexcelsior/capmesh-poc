@@ -304,6 +304,71 @@
     .kv-key { color: var(--text-muted); font-weight: 500; }
     .kv-val { color: var(--text); font-family: var(--font-mono); }
 
+    /* Primer Box & Callouts */
+    .primer-box {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid #3b82f6;
+      border-radius: 14px;
+      padding: 2.25rem;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
+      margin-bottom: 3.5rem;
+    }
+    .primer-badge {
+      background: #2563eb;
+      color: white;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .analogy-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: border-color 0.2s ease;
+    }
+    .analogy-card:hover {
+      border-color: #3b82f6;
+    }
+    .reading-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .reading-card:hover {
+      transform: translateY(-2px);
+      border-color: #3b82f6;
+    }
+    .reading-why {
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 3px solid var(--primary);
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: #93c5fd;
+      margin: 0.75rem 0 1rem 0;
+    }
+    .reading-link {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .reading-link:hover {
+      text-decoration: underline;
+    }
+
     /* Footer */
     footer {
       border-top: 1px solid var(--card-border);
@@ -330,18 +395,111 @@
         <span class="badge badge-warning">● Actuator Oracle Solved (Hardware Pad Readback)</span>
       </div>
       <nav class="nav-bar">
+        <a href="#primer">🟢 Beginner Primer</a>
         <a href="#problem">1. The Problem</a>
         <a href="#layers">2. 6-Layer Architecture</a>
-        <a href="#delivery-proof">3. Physical Delivery Proof</a>
+        <a href="#delivery-proof">3. Delivery Proof</a>
         <a href="#threats">4. Adversarial Threat Matrix</a>
-        <a href="#settlement">5. Settlement Neutrality</a>
-        <a href="#demo-walkthrough">6. 60-Second Demo</a>
-        <a href="#repo-map">7. Repository Map</a>
+        <a href="#settlement">5. Settlement & Bar Tabs</a>
+        <a href="#demo-walkthrough">6. 60s Demo</a>
+        <a href="#further-reading">7. Further Reading</a>
+        <a href="#repo-map">8. Repository Map</a>
+        <a href="#tests">9. Automated Tests</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
+
+    <!-- Section 0: Beginner Primer -->
+    <section id="primer">
+      <div class="primer-box">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <span class="primer-badge">Start Here</span>
+          <h2 style="font-size: 1.6rem; font-weight: 700; color: #ffffff;">The Beginner's Guide: What Is CapMesh in Plain English?</h2>
+        </div>
+        <p style="font-size: 1.05rem; color: #cbd5e1; max-width: 950px; margin-bottom: 1.5rem; line-height: 1.7;">
+          Imagine an autonomous delivery robot or an AI agent on a smartphone enters a strange building. 
+          The robot must open an electronic door lock, turn on an emergency beacon, or charge its battery at a power station.
+          <br><br>
+          Today, that robot is stuck. It cannot download an app, create an account, type in a Wi-Fi password, or swipe a physical credit card. 
+          <strong>CapMesh gives physical machines a universal protocol to meet, negotiate, pay sub-cent fees, and prove physical work was performed — in under 2 seconds with zero prior setup.</strong>
+        </p>
+
+        <!-- 4 Steps of Machine Commerce -->
+        <div style="margin: 1.75rem 0;">
+          <h3 style="font-size: 1.15rem; color: #93c5fd; margin-bottom: 1rem; font-weight: 600;">The 4-Second Handshake Between Two Strangers</h3>
+          <div class="grid-2" style="gap: 1rem;">
+            <div class="analogy-card">
+              <div style="color: #60a5fa; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem;">1. "What can you do?" (Discovery)</div>
+              <p style="color: #94a3b8; font-size: 0.9rem;">The agent scans the air over Bluetooth Low Energy. The ESP32 microchip broadcasts its menu: <em>"I have an LED signal light. It costs €0.004 per blink."</em></p>
+            </div>
+            <div class="analogy-card">
+              <div style="color: #a78bfa; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem;">2. "Can I trust you?" (Policy Check)</div>
+              <p style="color: #94a3b8; font-size: 0.9rem;">The agent checks the device's cryptographic identity. If a shady rogue device offers the same signal for €0.002, the agent rejects it because it is unverified.</p>
+            </div>
+            <div class="analogy-card">
+              <div style="color: #34d399; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem;">3. "Here is the payment." (Authorization)</div>
+              <p style="color: #94a3b8; font-size: 0.9rem;">The agent signs a one-time digital voucher worth €0.004 and beams it to the device. No bank login, no credit card swipe, and no waiting for blockchain block confirmations.</p>
+            </div>
+            <div class="analogy-card">
+              <div style="color: #facc15; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.35rem;">4. "Done, and here is the proof." (Receipt)</div>
+              <p style="color: #94a3b8; font-size: 0.9rem;">The physical light blinks. An electrical sensor on the board measures the real voltage transition and returns a cryptographically signed receipt with the measurement attached.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jargon Buster -->
+        <div style="margin-top: 2rem;">
+          <h3 style="font-size: 1.15rem; color: #93c5fd; margin-bottom: 1rem; font-weight: 600;">Jargon Buster: 4 Technical Terms Explained With Metaphors</h3>
+          <div class="grid-2" style="gap: 1rem;">
+            <div class="analogy-card">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.3rem;">📋</span>
+                <strong style="color: #f3f4f6; font-size: 0.98rem;">BLE GATT = The Drive-Thru Menu</strong>
+              </div>
+              <p style="color: #9ca3af; font-size: 0.88rem; line-height: 1.6;">
+                <strong>Standard Bluetooth:</strong> Requires pairing with a 6-digit PIN code like wireless headphones.<br>
+                <strong>GATT (Generic Attribute Profile):</strong> Works like an outdoor menu board. Any nearby device can read the items (Manifest), submit an order (Invoke), and pick up the receipt immediately without pairing.
+              </p>
+            </div>
+
+            <div class="analogy-card">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.3rem;">🍻</span>
+                <strong style="color: #f3f4f6; font-size: 0.98rem;">Payment Channels = The Bar Tab</strong>
+              </div>
+              <p style="color: #9ca3af; font-size: 0.88rem; line-height: 1.6;">
+                <strong>Standard Blockchain:</strong> Writing to the blockchain for every €0.004 blink takes 2 seconds and costs gas fees.<br>
+                <strong>Payment Channel:</strong> You open a €5 bar tab once on-chain. You buy 50 actions for €0.005 each by exchanging instant signed digital napkins (vouchers). The bar settles on-chain once at closing time.
+              </p>
+            </div>
+
+            <div class="analogy-card">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.3rem;">🎫</span>
+                <strong style="color: #f3f4f6; font-size: 0.98rem;">HMAC & Nonces = One-Time Movie Tickets</strong>
+              </div>
+              <p style="color: #9ca3af; font-size: 0.88rem; line-height: 1.6;">
+                If an eavesdropper records the Bluetooth radio signal of your payment, what stops them from replaying it later to get free services?<br>
+                A <strong>Nonce</strong> is a one-time ticket number, and <strong>HMAC</strong> is the cryptographic stamp. Once used, the ESP32 tears the ticket up. Replaying it is blocked instantly.
+              </p>
+            </div>
+
+            <div class="analogy-card">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.3rem;">👁️</span>
+                <strong style="color: #f3f4f6; font-size: 0.98rem;">The Actuator Oracle = The Independent Witness</strong>
+              </div>
+              <p style="color: #9ca3af; font-size: 0.88rem; line-height: 1.6;">
+                If software says <em>"I unlocked the door"</em>, how do you know the motor did not jam?<br>
+                The <strong>Actuator Oracle Problem</strong> is software lying about reality. CapMesh solves this using a hardware input pin on the chip that independently measures actual voltage flow to certify delivery.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Section 1: The Problem -->
     <section id="problem">
@@ -456,6 +614,9 @@
           <p style="margin: 0.75rem 0; color: var(--text-muted); font-size: 0.95rem;">
             On the ESP32-C6, GPIO 8 is configured in <code>GPIO_MODE_INPUT_OUTPUT</code> mode. While the output driver pulses the status LED, the physical input buffer continuously samples the actual voltage on the electrical pad.
           </p>
+          <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent); padding: 0.65rem 0.85rem; border-radius: 4px; font-size: 0.86rem; color: #a7f3d0; margin-bottom: 1rem;">
+            <strong>In Plain English:</strong> Software can easily lie or misreport if an electrical wire breaks or a motor jams. By enabling input sampling on the output pin, the chip acts as its own physical witness, verifying that electric voltage actually shifted state.
+          </div>
           <div class="kv-grid" style="margin-top: 1.25rem;">
             <div class="kv-key">Observer ID:</div>
             <div class="kv-val">esp32_gpio8_hw_pad</div>
@@ -555,6 +716,10 @@
         To remain completely agile for the TUM Blockchain Hackathon sponsor tracks, CapMesh abstracts payments behind a unified <code>PaymentVerifier</code> interface.
       </div>
 
+      <div style="background: rgba(139, 92, 246, 0.08); border-left: 3px solid var(--purple); padding: 0.85rem 1.15rem; border-radius: 6px; font-size: 0.9rem; color: #ddd6fe; margin-bottom: 1.5rem;">
+        <strong>The Micropayment Rule:</strong> Why not send a standard blockchain transaction for every light blink? Public blockchains take 1–2 seconds and charge transaction fees ($0.005–$0.50). If the machine capability costs only €0.004, blockchain gas fees eat 100% of the value. By using <em>Payment Channels</em> (the "Bar Tab" model), an agent can execute 1,000 actions per second for pennies, settling to the blockchain once at the end.
+      </div>
+
       <div class="grid-3">
         <div class="card">
           <div class="card-title">Solana Payment Channels</div>
@@ -639,10 +804,142 @@
       </div>
     </section>
 
-    <!-- Section 7: Repository Map -->
+    <!-- Section 7: Further Reading & Key Concepts -->
+    <section id="further-reading">
+      <div class="section-title">
+        <span>📚</span> 7. Curated Further Reading & Conceptual Deep Dives
+      </div>
+      <div class="section-desc">
+        Concise, authoritative references explaining the broader industry standards, blockchain mechanics, and academic challenges underpinning CapMesh.
+      </div>
+
+      <div class="grid-2">
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">x402 Protocol & HTTP 402</span>
+              <span class="badge badge-blue">Web Standard</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              The emerging standard (championed by Coinbase and the open web) using the HTTP status code <code>402 Payment Required</code> to let AI agents pay for REST APIs on the fly.
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> x402 proved agent payments for web APIs. CapMesh extends this exact paradigm out of the browser and into physical space over Bluetooth and embedded microcontrollers.
+            </div>
+          </div>
+          <div>
+            <a href="https://github.com/coinbase/x402" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ Read x402 Specification (GitHub)
+            </a>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">Solana State & Payment Channels</span>
+              <span class="badge badge-purple">Layer-2 Scaling</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              Payment channels allow two parties to deposit funds into a smart contract once and exchange thousands of cryptographically signed off-chain balance updates with zero gas fees.
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> You cannot pay a $0.05 blockchain gas fee for a $0.001 sensor reading. Payment channels enable sub-cent machine micro-commerce at 10,000 transactions per second.
+            </div>
+          </div>
+          <div>
+            <a href="https://solana.com/docs" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ Solana Developer Documentation
+            </a>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">W3C Web of Things (WoT) & Matter</span>
+              <span class="badge badge-warning">IoT Architecture</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              The World Wide Web Consortium (W3C) standard for describing IoT devices and their interfaces using standardized "Thing Descriptions" (JSON-LD).
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> Matter and WoT require heavy pre-commissioning ceremonies and central home hubs. CapMesh is designed for the opposite: zero-setup ad-hoc encounters between unknown agents.
+            </div>
+          </div>
+          <div>
+            <a href="https://www.w3.org/WoT/" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ W3C Web of Things Standards
+            </a>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">The Hardware & Actuator Oracle Problem</span>
+              <span class="badge badge-verified">Cryptographic Systems</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              The fundamental computer science problem of how a digital cryptographic system can verify events occurring in the messy, physical analog world without trusting a central entity.
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> Most IoT demos trust whatever the microcontroller claims. CapMesh introduces dual-pad loopback sensing and observer IDs so execution receipts are tied to physical measurements.
+            </div>
+          </div>
+          <div>
+            <a href="https://chain.link/education/blockchain-oracles" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ Chainlink Oracle Education Overview
+            </a>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">Apache NimBLE on ESP32</span>
+              <span class="badge badge-blue">Embedded Firmware</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              An ultra-low memory, open-source Bluetooth 5.0 Low Energy stack developed by the Apache Foundation and adopted natively by Espressif's ESP-IDF framework.
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> Standard Bluetooth stacks consume >100KB of precious microcontroller RAM. NimBLE consumes only ~30KB, leaving plenty of memory for cryptographic dispatchers.
+            </div>
+          </div>
+          <div>
+            <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32c6/api-reference/bluetooth/nimble/index.html" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ ESP-IDF NimBLE User Guide
+            </a>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">RFC 2104: Keyed-Hashing (HMAC)</span>
+              <span class="badge badge-purple">Security Protocol</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.75rem;">
+              The Internet Engineering Task Force (IETF) cryptographic standard for message authentication codes using secure cryptographic hash functions (such as SHA-256).
+            </p>
+            <div class="reading-why">
+              <strong>Why it matters for CapMesh:</strong> Microcontrollers like the ESP32-C6 compute HMAC-SHA256 in microseconds using built-in hardware cryptographic accelerators, enabling sub-millisecond tamper protection.
+            </div>
+          </div>
+          <div>
+            <a href="https://datatracker.ietf.org/doc/html/rfc2104" target="_blank" rel="noopener noreferrer" class="reading-link">
+              ↗ IETF RFC 2104 Specification
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Repository Map -->
     <section id="repo-map">
       <div class="section-title">
-        <span>📂</span> 7. Repository Codebase Map
+        <span>📂</span> 8. Repository Codebase Map
       </div>
       <div class="section-desc">
         All code is clean, modular, and organized into dedicated protocol layers.
@@ -676,10 +973,10 @@
       </div>
     </section>
 
-    <!-- Section 8: Automated Test Results -->
+    <!-- Section 9: Automated Test Results -->
     <section id="tests">
       <div class="section-title">
-        <span>✅</span> 8. Automated Multi-Transport Test Suite (19/19 Passing)
+        <span>✅</span> 9. Automated Multi-Transport Test Suite (19/19 Passing)
       </div>
       <div class="section-desc">
         All physical hardware and network protocols are verified through end-to-end automated pytest suites in a continuous feedback loop.
