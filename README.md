@@ -1,93 +1,114 @@
-# CapMesh
+# FieldProof
 
-CapMesh is a transport-independent capability marketplace protocol for machines.
+**Fresh physical evidence before an autonomous agent acts.**
 
-Machines can discover nearby providers, inspect advertised capabilities, satisfy authorization or payment policies, invoke physical or digital actions, and receive verifiable receipts.
+FieldProof asks whether a demo gate is open, buys a contact observation, checks its challenge and freshness, and returns `DISPATCH` or `WAIT`.
+The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
+The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-## Hardware in This Prototype
+Watch the [69-second simulation](docs/assets/fieldproof-demo.webm). Start with the [overview](docs/OVERVIEW.md), [interactive dispatch desk](docs/overview.html), and [MVP plan](docs/MVP_PLAN.md).
 
-- **Provider**: ESP32-C6FH4 (QFN32, revision v0.2) running native ESP-IDF v6.1 firmware with NimBLE.
-- **Actuator**: Onboard LED on GPIO 8.
-- **Client / Buyer**: Linux laptop (Framework Laptop, Ubuntu) running Python host CLI with BLE central support (`bleak`).
-- **First Transport**: Bluetooth Low Energy (GATT).
-- **Second Transport**: Wi-Fi + HTTP (embedded web server).
+## Run without hardware
 
-## Repository Structure
-
-```text
-capmesh/
-├── docs/
-│   ├── ARCHITECTURE.md   # Architecture layers and sequence diagrams
-│   ├── PROTOCOL.md       # CapMesh protocol specification (capmesh/0.1)
-│   ├── DECISIONS.md      # Architecture decision records and research questions
-│   └── LEARNING.md       # Educational conceptual guide for BLE and payments
-├── firmware/
-│   └── esp32/            # ESP-IDF C firmware for ESP32-C6
-├── host/                 # Python host agent, CLI, and transport adapters
-├── protocol/             # Transport-independent protocol models and validation
-├── scripts/              # Setup, flashing, and testing utility scripts
-├── tests/                # Automated unit and integration tests
-├── TODO.md               # Implementation progress and milestone checklist
-└── README.md
-```
-
-## Quick Start
-
-### 1. Host Setup
+Prerequisites: Python 3.10+, `uv`, and Node.js 22.13+ with `node:sqlite`.
 
 ```bash
-uv venv
-source .venv/bin/activate
-uv pip install -e host/
+uv sync --project host
+uv run --project host capmesh observe-demo --simulated
+uv run --project host capmesh observe-demo --simulated --closed
+cd gateway
+npm ci
+npm run demo
 ```
 
-### 2. Flash ESP32 Firmware
+Open `http://127.0.0.1:4022`. Select **Get payment quote**, then **Run simulation**.
+The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.
+Run `npm run demo -- --closed` to rehearse the closed-contact decision.
+
+The CLI adversarial loop rejects a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request.
+It records served and unmet demand in a local SQLite ledger.
+
+## Run with the ESP32
+
+Build and flash with ESP-IDF 6.1. The current board uses `/dev/ttyACM0`.
+Set `IDF_PATH` to your installed ESP-IDF directory before these commands.
 
 ```bash
-source /home/epic/.espressif/tools/activate_idf_v6.1.sh
+source "$IDF_PATH/export.sh"
 cd firmware/esp32
-idf.py set-target esp32c6
 idf.py build
-idf.py -p /dev/ttyACM0 flash monitor
+idf.py -p /dev/ttyACM0 flash
+cd ../..
+uv run --project host capmesh observe-demo
 ```
 
-### 3. Run the 60-Second Adversarial Judging Demo
+Keep other BLE scans closed. Live mode fails when the board is unavailable. It never substitutes simulated hardware.
+For HTTP, connect to the board's `CAPMESH_96A2` access point and use `capmesh observe-demo --http-url http://192.168.4.1`.
+On Linux with overlapping VPN routes, add `--http-interface wlp2s0` and use your Wi-Fi interface name.
+The new observation path and replay rejection are verified over physical Wi-Fi.
+
+For the browser with real hardware and simulated payment:
 
 ```bash
-# Execute the full autonomous agent decision, settlement, physical actuation, and live attack suite:
-capmesh demo
-
-# Or use the standalone bash runner:
-./scripts/run_adversarial_demo.sh
+cd gateway
+npm run demo -- --physical
 ```
 
-### 4. Interactive Architecture & Technical Brief
+Hold BOOT while the observation runs to represent a closed contact. Release BOOT to represent an open contact.
+Do not hold BOOT during reset or flashing. GPIO9 is a boot strap.
+The press/release demonstration still needs human verification. Automated tests verify live input sampling with the button released.
 
-Open [`docs/overview.html`](file:///home/epic/Documents/Projects/capmesh/docs/overview.html) in any browser for an interactive dashboard visualizing the 6-layer model, threat defense matrix, physical delivery proof, and sequence diagrams:
+## Run the Devnet payment gateway
 
 ```bash
-xdg-open docs/overview.html
+cd gateway
+npm start
 ```
 
-### 5. Manual CLI Operations
+The gateway binds to `127.0.0.1:4021`. It offers x402 V2 `exact` payment for 1,000 base units of Devnet USDC.
+An unpaid request returns `402` and `PAYMENT-REQUIRED`. Verification and successful settlement precede measurement.
+The public facilitator's unpaid challenge is verified. A successful payment through that facilitator is not yet verified.
+
+Create a purchase with `POST /requests` and a positive 32-bit `nonce`.
+Request its `observe_url` with a compatible x402 client.
+The included client requires a disposable Solana CLI keypair with Devnet USDC:
 
 ```bash
-# Scan for nearby providers (BLE + Local)
-capmesh scan
-
-# Retrieve capability manifest
-capmesh manifest esp32-c6-96a2
-
-# Manually invoke with hardware pad readback verification
-capmesh invoke esp32-c6-96a2 led.blink --duration 2 --count 3
-
-# Autonomous agent policy routing with budget limits
-capmesh policy-run visual_signal --max-price 0.01
+node buyer.js /path/to/disposable.keypair.json
 ```
 
-## Key Technical Highlights
+The client rejects other networks, assets, recipients, and amounts above 0.001 USDC.
+It checks the device receipt independently and derives its decision from the contact state.
+It never prints key material. Do not use a funded mainnet keypair.
 
-1. **Transport-Independent Protocol**: Identical JSON requests (`capmesh/0.1`) execute over BLE GATT characteristics and Wi-Fi HTTP endpoints without duplicating capability code.
-2. **Physical Delivery Proof (Actuator Oracle Solved)**: GPIO 8 configured in `GPIO_MODE_INPUT_OUTPUT` continuously samples the electrical pad level to verify voltage changes during physical actuation, returning `delivery_proof` in the signed receipt.
-3. **On-Chip Adversarial Defense**: Firmware actively detects and blocks replay attacks (nonce cache), expired requests (monotonic epoch tracking), and forged tokens (RFC 2104 HMAC-SHA256).
-4. **Settlement Neutrality**: Pluggable `PaymentVerifier` interface supporting Solana Devnet L1 transactions, off-chain micropayment channel vouchers, and extensible multi-chain adapters.
+Retries return the original evidence without a second settlement or measurement.
+The browser stops dispatch after its freshness window. A cached receipt does not become fresh on retry.
+Unknown settlement and paid delivery failure require manual review. See the [demo and recovery runbook](docs/DEMO.md).
+
+## Verify
+
+```bash
+uv run --project host pytest -q
+uv run --project host pytest -q --hardware
+cd gateway
+npm test
+```
+
+The default Python run skips hardware tests explicitly. `--hardware` requires the board and fails if it is unavailable.
+There is no declared Python formatter or type checker in the original repository.
+The [verification record](docs/VERIFICATION.md) lists executed checks and remaining gaps.
+
+## Architecture and limits
+
+- [Protocol](docs/PROTOCOL.md): authenticated requests, observation receipts, freshness, and replay limits.
+- [Architecture](docs/ARCHITECTURE.md): device, buyer, gateway, ledgers, and payment boundaries.
+- [Overview](docs/OVERVIEW.md): pivot, verified results, strategy, and unfinished acceptance gates.
+
+The host and firmware use a public demo HMAC key. It does not establish identity against a hostile operator.
+Discovery cannot certify its own provider. Buyer configuration pins demo identities.
+Five matching samples do not establish calibrated confidence or independent corroboration.
+The board retains up to 64 unexpired request nonces. It refuses new requests when that table is full.
+A reboot clears replay state and the clock anchor. The first authenticated request supplies the prototype time anchor.
+
+No production device provisioning, external gate sensor, peaq transaction, multi-observer aggregation, customer pilot, or public deployment exists yet.
+The local product and reports stay in this repository. No repository rename, publication, or submission occurs automatically.

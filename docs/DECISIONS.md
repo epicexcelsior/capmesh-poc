@@ -1,3 +1,7 @@
+> Historical CapMesh material. It is not the current implementation contract.
+> Read [the current overview](OVERVIEW.md), [architecture](ARCHITECTURE.md), and [verification](VERIFICATION.md).
+> Earlier payment-channel, provider-trust, and physical-truth claims are superseded.
+
 # Architecture Decisions & Research Record
 
 ## Architectural Decisions
