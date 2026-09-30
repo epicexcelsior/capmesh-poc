@@ -104,7 +104,7 @@ static int gatt_svr_access(uint16_t conn_handle, uint16_t attr_handle,
                 return BLE_ATT_ERR_UNLIKELY;
             }
             in_buf[len] = '\0';
-            ESP_LOGI(TAG, "Received BLE invocation (%d bytes): %s", len, in_buf);
+            ESP_LOGI(TAG, "Received BLE invocation (%d bytes)", len);
 
             // Pass completely to protocol layer
             capmesh_dispatcher_handle_request(in_buf, s_receipt_buf, sizeof(s_receipt_buf));

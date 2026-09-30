@@ -38,7 +38,7 @@ class Manifest:
     capabilities: List[Capability] = field(default_factory=list)
     transport: Optional[str] = None
     address: Optional[str] = None
-    trust_tier: str = "verified"  # "verified", "untrusted", "unknown"
+    trust_tier: str = "unknown"  # A manifest cannot certify itself.
     attestation: Optional[str] = None
 
     @classmethod
@@ -50,7 +50,7 @@ class Manifest:
             capabilities=caps,
             transport=transport,
             address=address,
-            trust_tier=data.get("trust_tier", "verified"),
+            trust_tier="unknown",
             attestation=data.get("attestation")
         )
 
@@ -131,6 +131,7 @@ class InvocationReceipt:
     authorization_ref: Optional[str] = None
     receipt_signature: Optional[str] = None
     error: Optional[Dict[str, Any]] = None
+    nonce: Optional[int] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> InvocationReceipt:
@@ -149,5 +150,6 @@ class InvocationReceipt:
             delivery_proof=dp,
             authorization_ref=data.get("authorization_ref"),
             receipt_signature=data.get("receipt_signature"),
+            nonce=data.get("nonce"),
             error=data.get("error")
         )

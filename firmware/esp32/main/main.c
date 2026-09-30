@@ -6,6 +6,7 @@
 #include "nvs_flash.h"
 #include "esp_mac.h"
 #include "capabilities/led_capability.h"
+#include "capabilities/contact_capability.h"
 #include "protocol/capmesh_dispatcher.h"
 #include "transport/ble_transport.h"
 #include "transport/http_transport.h"
@@ -41,6 +42,7 @@ void app_main(void)
 
     // 3. Initialize Capabilities (Actuators)
     ESP_ERROR_CHECK(led_capability_init());
+    ESP_ERROR_CHECK(contact_capability_init());
 
     // 4. Initialize Protocol Dispatcher
     ESP_ERROR_CHECK(capmesh_dispatcher_init(device_id));

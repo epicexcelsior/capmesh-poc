@@ -108,6 +108,9 @@ class AgentPolicyEngine:
         cap: Capability = chosen["capability"]
         transport: TransportAdapter = chosen["transport"]
 
+        if cap.pricing.currency != "mock-usdc":
+            return {"status": "error", "message": "Paid capabilities require the x402 gateway"}
+
         # 3. Agent Spending Ceiling Check
         if (self.total_spent + chosen["price"]) > self.spending_ceiling:
             return {
@@ -116,7 +119,7 @@ class AgentPolicyEngine:
                 "rejected_providers": rejected
             }
 
-        # Payment verification check if Solana devnet signature provided
+        # Legacy transaction references are never sufficient authorization.
         if solana_tx_sig:
             is_paid = self.payment_verifier.verify_payment(solana_tx_sig, chosen["price"], manifest.device_id)
             if not is_paid:
@@ -136,6 +139,9 @@ class AgentPolicyEngine:
             capability=cap.id,
             nonce=req_nonce,
             expiration=expiration,
+            device_id=manifest.device_id,
+            parameters=parameters or {"duration": 2, "count": 3},
+            timestamp=now,
             auth_type=auth_type
         )
 
@@ -162,9 +168,9 @@ class AgentPolicyEngine:
             "capability": cap.id,
             "price": chosen["price"],
             "currency": cap.pricing.currency,
+            "payment_mode": "mock; no funds moved",
             "receipt": receipt,
             "receipt_verified": receipt_verified,
             "delivery_proof": receipt.delivery_proof,
             "rejected_providers": rejected
         }
-

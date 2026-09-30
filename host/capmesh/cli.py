@@ -81,17 +81,20 @@ def invoke(device_id: str, capability: str, duration: int, count: int, data: str
     req_expiration = expiration if expiration is not None else (now_epoch + 300)
     request_id = f"req-{int(time.time() * 1000) % 100000000:08x}"
 
+    params = {"duration": duration, "count": count}
+    if capability in ("compute.sha256", "storage.echo"):
+        params = {"data": data, "payload": data}
+
     auth_payload = create_auth_payload(
         request_id=request_id,
         capability=capability,
         nonce=req_nonce,
         expiration=req_expiration,
+        device_id=manifest.device_id,
+        parameters=params,
+        timestamp=now_epoch,
         auth_type=auth
     )
-
-    params = {"duration": duration, "count": count}
-    if capability in ("compute.sha256", "storage.echo"):
-        params = {"data": data, "payload": data}
 
     req = InvocationRequest(
         request_id=request_id,
@@ -152,7 +155,8 @@ def policy_run(intent: str, max_price: float, solana_tx: str):
         table = Table(show_header=False, box=None)
         table.add_row("Chosen Provider:", f"[bold cyan]{result['chosen_provider']}[/bold cyan] ({result['transport']})")
         table.add_row("Selected Capability:", result["capability"])
-        table.add_row("Agreed Price:", f"{result['price']} {result['currency']}")
+        table.add_row("Advertised Price:", f"{result['price']} {result['currency']}")
+        table.add_row("Payment:", result["payment_mode"])
         receipt = result["receipt"]
         table.add_row("Execution Result:", json.dumps(receipt.result))
         table.add_row("Receipt Signature:", f"[dim]{receipt.receipt_signature}[/dim]")
@@ -170,7 +174,8 @@ def policy_run(intent: str, max_price: float, solana_tx: str):
 def demo(simulated: bool, timeout: float):
     """Run the 60-second adversarial judging demonstration."""
     from .agent.demo import run_adversarial_demo
-    asyncio.run(run_adversarial_demo(simulated=simulated, live_timeout=timeout))
+    if not asyncio.run(run_adversarial_demo(simulated=simulated, live_timeout=timeout)):
+        raise SystemExit(1)
 
 @main.command()
 @click.option("--host", default="0.0.0.0", help="Bind IP address")
@@ -190,7 +195,20 @@ def serve_http(host: str, port: int):
         console.print("\n[yellow]Stopping server...[/yellow]")
         server.stop()
 
+@main.command("observe-demo")
+@click.option("--simulated", is_flag=True, help="Use explicitly simulated contact evidence")
+@click.option("--closed", is_flag=True, help="Simulate a closed gate")
+@click.option("--http-url", default=None, help="Use ESP32 HTTP instead of BLE")
+@click.option("--http-interface", default=None, help="Bind local HTTP to a Linux network interface")
+@click.option("--ledger", default=".local/demand.sqlite", help="Local SQLite demand ledger")
+def observe_demo(simulated, closed, http_url, http_interface, ledger):
+    """Ask whether the demo gate is open and reject stale or replayed evidence."""
+    from .agent.observation_demo import run_observation_demo
+    result = asyncio.run(run_observation_demo(simulated=simulated, closed=closed, http_url=http_url,
+                                            http_interface=http_interface, ledger_path=ledger))
+    click.echo(json.dumps(result, indent=2))
+    if result["status"] != "success" or not result.get("attacks_passed"):
+        raise SystemExit(1)
+
 if __name__ == "__main__":
     main()
-
-

@@ -34,14 +34,18 @@ static esp_err_t invoke_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    int received = httpd_req_recv(req, in_buf, total_len);
-    if (received <= 0) {
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
+    int received = 0;
+    while (received < total_len) {
+        int chunk = httpd_req_recv(req, in_buf + received, total_len - received);
+        if (chunk <= 0) {
+            httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Incomplete request body");
+            return ESP_FAIL;
+        }
+        received += chunk;
     }
     in_buf[received] = '\0';
 
-    ESP_LOGI(TAG, "Received HTTP invocation: %s", in_buf);
+    ESP_LOGI(TAG, "Received HTTP invocation (%d bytes)", received);
 
     int out_len = capmesh_dispatcher_handle_request(in_buf, s_last_receipt, sizeof(s_last_receipt));
     if (out_len < 0) {

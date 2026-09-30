@@ -163,7 +163,8 @@ async def test_07_agent_policy_engine_over_network(http_adapter):
     res = await engine.select_and_invoke(
         capability_or_tag="compute",
         max_price=0.01,
-        parameters={"data": "agent-network-policy-goal"}
+        parameters={"data": "agent-network-policy-goal"},
+        require_verified_trust=False,
     )
 
     assert res["status"] == "success"

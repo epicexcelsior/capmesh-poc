@@ -2,6 +2,7 @@ idf_component_register(
     SRCS
         "main.c"
         "capabilities/led_capability.c"
+        "capabilities/contact_capability.c"
         "protocol/capmesh_dispatcher.c"
         "transport/ble_transport.c"
         "transport/http_transport.c"

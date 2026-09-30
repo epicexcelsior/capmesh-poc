@@ -1,7 +1,8 @@
 import hmac
 import hashlib
-import time
-import random
+import secrets
+import json
+from dataclasses import asdict
 from typing import Dict, Any
 from .models import InvocationReceipt
 
@@ -9,7 +10,7 @@ DEFAULT_SECRET = "capmesh-secret-key-2026"
 
 def generate_nonce() -> int:
     """Generate a random 32-bit positive integer nonce."""
-    return random.randint(1, 0x7FFFFFFF)
+    return secrets.randbelow(0x7FFFFFFF) + 1
 
 def compute_hmac_sha256(key: str, message: str) -> str:
     """Compute HMAC-SHA256 hex digest."""
@@ -20,6 +21,9 @@ def create_auth_payload(
     capability: str,
     nonce: int,
     expiration: int,
+    device_id: str = "",
+    parameters: Dict[str, Any] | None = None,
+    timestamp: int = 0,
     auth_type: str = "hmac-sha256",
     secret: str = DEFAULT_SECRET
 ) -> Dict[str, Any]:
@@ -28,20 +32,75 @@ def create_auth_payload(
         return {"type": "mock", "token": "mock-auth-token"}
     
     if auth_type == "hmac-sha256":
-        msg = f"{request_id}:{capability}:{nonce}:{expiration}"
+        if capability == "state.observe":
+            if not device_id or not parameters or not timestamp:
+                raise ValueError("Observation authorization requires device, location, and timestamp")
+            msg = (
+                f"fieldproof-auth-v1|{request_id}|{device_id}|{capability}|"
+                f"{parameters['location']}|{nonce}|{timestamp}|{expiration}"
+            )
+        elif capability == "led.blink":
+            if not device_id or not parameters or not timestamp:
+                raise ValueError("LED authorization requires device_id, parameters, and timestamp")
+            msg = (
+                f"capmesh-auth-v2|{request_id}|{device_id}|{capability}|"
+                f"{parameters['duration']}|{parameters['count']}|{nonce}|{timestamp}|{expiration}"
+            )
+        else:
+            msg = f"{request_id}:{capability}:{nonce}:{expiration}"
         token = compute_hmac_sha256(secret, msg)
-        return {"type": "hmac-sha256", "token": token}
+        return {"type": "hmac-sha256-v2" if capability in ("led.blink", "state.observe") else "hmac-sha256", "token": token}
     
     raise ValueError(f"Unsupported auth_type: {auth_type}")
 
+def receipt_message(receipt: InvocationReceipt) -> str:
+    """Return the canonical receipt payload for the prototype HMAC."""
+    if receipt.capability == "state.observe":
+        if not receipt.parameters or not receipt.result:
+            raise ValueError("Observation receipt is missing signed fields")
+        result = receipt.result
+        return (
+            f"fieldproof-observation-v1|{receipt.protocol}|{receipt.request_id}|{receipt.provider}|"
+            f"{receipt.capability}|{receipt.parameters['location']}|{receipt.nonce}|"
+            f"{result['metric']}|{result['sensor']}|{int(result['closed'])}|"
+            f"{result['stable_samples']}|{result['total_samples']}|"
+            f"{receipt.started_at}|{receipt.completed_at}"
+        )
+    elif receipt.capability == "led.blink":
+        if not receipt.parameters or not receipt.result or not receipt.delivery_proof:
+            raise ValueError("LED receipt is missing signed fields")
+        proof = receipt.delivery_proof
+        return (
+            f"capmesh-receipt-v2|{receipt.request_id}|{receipt.provider}|{receipt.capability}|"
+            f"{receipt.parameters['duration']}|{receipt.parameters['count']}|"
+            f"{receipt.result['blinks_completed']}|{proof.observer_id}|{proof.expected_state}|"
+            f"{proof.observed_state}|{proof.verified_samples}|{proof.total_samples}|"
+            f"{int(proof.readback_verified)}|{receipt.started_at}|{receipt.completed_at}"
+        )
+    else:
+        return json.dumps({
+            "request_id": receipt.request_id,
+            "provider": receipt.provider,
+            "capability": receipt.capability,
+            "parameters": receipt.parameters,
+            "result": receipt.result,
+            "delivery_proof": asdict(receipt.delivery_proof) if receipt.delivery_proof else None,
+            "started_at": receipt.started_at,
+            "completed_at": receipt.completed_at,
+        }, sort_keys=True, separators=(",", ":"))
+
+
 def verify_receipt(receipt: InvocationReceipt, secret: str = DEFAULT_SECRET, require_delivery_proof: bool = False) -> bool:
-    """Verify provider's cryptographic signature and optional physical delivery proof."""
+    """Verify the signed receipt fields and optional pad readback claim."""
     if receipt.status != "success" or not receipt.receipt_signature:
         return False
-    
-    msg = f"receipt:{receipt.request_id}:{receipt.provider}:{receipt.started_at}:{receipt.completed_at}"
-    expected = compute_hmac_sha256(secret, msg)
-    if not hmac.compare_digest(expected, receipt.receipt_signature):
+    if not receipt.receipt_signature.startswith("v2:"):
+        return False
+    try:
+        expected = compute_hmac_sha256(secret, receipt_message(receipt))
+    except (KeyError, TypeError, ValueError):
+        return False
+    if not hmac.compare_digest(expected, receipt.receipt_signature[3:]):
         return False
         
     if require_delivery_proof:

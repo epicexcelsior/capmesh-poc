@@ -2,7 +2,7 @@ import hashlib
 import time
 from typing import List, Dict, Any
 from ..protocol.models import Manifest, Capability, Pricing, InvocationRequest, InvocationReceipt, DeliveryProof
-from ..protocol.auth import verify_receipt, compute_hmac_sha256, DEFAULT_SECRET
+from ..protocol.auth import compute_hmac_sha256, receipt_message, DEFAULT_SECRET
 from ..transport.base import TransportAdapter
 
 class LaptopProvider(TransportAdapter):
@@ -22,6 +22,7 @@ class LaptopProvider(TransportAdapter):
             device_id=self.device_id,
             transport="local-ipc",
             address="localhost",
+            trust_tier="verified",
             capabilities=[
                 Capability(
                     id="compute.sha256",
@@ -83,9 +84,6 @@ class LaptopProvider(TransportAdapter):
             )
 
         completed_time = int(time.time())
-        receipt_msg = f"receipt:{request.request_id}:{self.device_id}:{start_time}:{completed_time}"
-        signature = compute_hmac_sha256(DEFAULT_SECRET, receipt_msg)
-
         dp = DeliveryProof(
             observer_id="host_cpu_integrity_verifier",
             expected_state="COMPUTED",
@@ -95,7 +93,7 @@ class LaptopProvider(TransportAdapter):
             readback_verified=True
         )
 
-        return InvocationReceipt(
+        receipt = InvocationReceipt(
             protocol=request.protocol,
             request_id=request.request_id,
             status="success",
@@ -107,5 +105,6 @@ class LaptopProvider(TransportAdapter):
             completed_at=completed_time,
             delivery_proof=dp,
             authorization_ref=f"{request.authorization.get('type')}:{request.authorization.get('token')}",
-            receipt_signature=signature
         )
+        receipt.receipt_signature = "v2:" + compute_hmac_sha256(DEFAULT_SECRET, receipt_message(receipt))
+        return receipt

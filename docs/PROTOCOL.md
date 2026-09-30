@@ -1,150 +1,107 @@
-# CapMesh Protocol Specification (Version 0.1)
+# FieldProof observation protocol
 
-CapMesh defines a minimal, human-readable, JSON-based message format for machine capability exchange.
+The MVP uses the existing `capmesh/0.1` JSON envelope. `state.observe` is the new capability.
+The provisioned metric is `gate.closed`, and the provisioned location is `demo-gate`.
+The sensor is GPIO9 in input mode. The onboard BOOT button represents a contact in this demo.
 
-## 1. Protocol Manifest
-
-A provider advertises its identity and capabilities via a manifest.
-
-### Schema
+## Request
 
 ```json
 {
   "protocol": "capmesh/0.1",
+  "request_id": "obs-00000001",
   "device_id": "esp32-c6-96a2",
-  "transport": "ble",
-  "trust_tier": "verified",
-  "attestation": "esp32-puf-attestation-0x96a2",
-  "capabilities": [
-    {
-      "id": "led.blink",
-      "description": "Blink onboard status LED",
-      "parameters": {
-        "duration": {
-          "type": "integer",
-          "default": 3,
-          "min": 1,
-          "max": 10,
-          "unit": "seconds"
-        },
-        "count": {
-          "type": "integer",
-          "default": 5,
-          "min": 1,
-          "max": 50
-        }
-      },
-      "pricing": {
-        "model": "fixed",
-        "amount": "0.001",
-        "currency": "mock-usdc"
-      }
-    }
-  ]
+  "capability": "state.observe",
+  "parameters": {"location": "demo-gate"},
+  "nonce": 1,
+  "timestamp": 1790807040,
+  "expiration": 1790807070,
+  "authorization": {"type": "hmac-sha256-v2", "token": "64-lowercase-hex-characters"}
 }
 ```
 
-## 2. Capability Invocation Request
+Request IDs contain 1–16 ASCII letters, digits, hyphens, or underscores.
+Nonces are integers from 1 to 2,147,483,647. Fractional JSON numbers fail validation.
+The expiration follows the timestamp by at most 300 seconds.
+The timestamp must fit the device's unsigned 32-bit epoch representation, with room for the validity window.
+Only the single provisioned location parameter is accepted.
 
-A client invokes a capability by sending an invocation payload.
+The host and firmware authenticate this exact UTF-8 message with HMAC-SHA256:
 
-### Schema
-
-```json
-{
-  "protocol": "capmesh/0.1",
-  "request_id": "req-98f2b1d0",
-  "device_id": "esp32-c6-96a0",
-  "capability": "led.blink",
-  "parameters": {
-    "duration": 5,
-    "count": 5
-  },
-  "nonce": 104857,
-  "timestamp": 1727185000,
-  "expiration": 1727185300,
-  "authorization": {
-    "type": "hmac-sha256",
-    "token": "4a7f01c8..."
-  }
-}
+```text
+fieldproof-auth-v1|request_id|device_id|state.observe|location|nonce|timestamp|expiration
 ```
 
-### Fields
+Replace each field name with its value. Use decimal integers with no padding.
+The result is a lowercase hex digest. The public demo key is shared through the host and firmware configuration.
+It is disposable demonstration material, not a credential for a deployed service.
 
-- `protocol`: Protocol version string (`"capmesh/0.1"`).
-- `request_id`: Client-generated unique identifier for tracking.
-- `device_id`: Target device identifier.
-- `capability`: Capability identifier matching the manifest.
-- `parameters`: Key-value map of arguments.
-- `nonce`: Monotonically increasing or random integer for replay protection.
-- `timestamp`: Unix epoch seconds at creation.
-- `expiration`: Unix epoch seconds after which the request is invalid.
-- `authorization`: Authorization token or signature.
+## Measurement and receipt
 
-## 3. Invocation Receipt / Response
+After authorization, the device reads five contact samples at approximately 10-millisecond intervals.
+`closed=true` means GPIO9 reads low. `stable_samples` counts samples that match the first sample.
+The buyer requires five matching samples. It returns WAIT for unstable evidence.
 
-When execution finishes (or fails), the provider returns a receipt with physical delivery proof:
+The response includes the challenge nonce, requested location, metric, sensor, state, sample counts, and epoch timestamps.
+The authenticator covers this exact message:
 
-### Schema
-
-```json
-{
-  "protocol": "capmesh/0.1",
-  "request_id": "req-98f2b1d0",
-  "status": "success",
-  "provider": "esp32-c6-96a0",
-  "capability": "led.blink",
-  "parameters": {
-    "duration": 5,
-    "count": 5
-  },
-  "result": {
-    "blinks_completed": 5
-  },
-  "delivery_proof": {
-    "observer_id": "esp32_gpio8_hw_pad",
-    "expected_state": "PULSED",
-    "observed_state": "ACTIVE_HIGH",
-    "verified_samples": 5,
-    "total_samples": 5,
-    "readback_verified": true
-  },
-  "started_at": 1727185002,
-  "completed_at": 1727185007,
-  "authorization_ref": "hmac-sha256:4a7f01c8...",
-  "receipt_signature": "e89b21f..."
-}
+```text
+fieldproof-observation-v1|protocol|request_id|provider|capability|location|nonce|metric|sensor|closed|stable_samples|total_samples|started_at|completed_at
 ```
 
+Encode `closed` as `0` or `1`. Prefix the lowercase digest with `v2:` in `receipt_signature`.
+The receipt fits a 512-byte BLE characteristic. JSON field order does not affect the canonical message.
+Simulated receipts use `simulated-contact` as the sensor. They are visibly labeled by the buyer.
 
-### Error Schema
+## Buyer verification
 
-If authorization fails or parameters are invalid, the provider returns an error receipt:
+The buyer checks these conditions before it dispatches:
 
-```json
-{
-  "protocol": "capmesh/0.1",
-  "request_id": "req-98f2b1d0",
-  "status": "error",
-  "error": {
-    "code": "AUTH_EXPIRED",
-    "message": "Request expiration timestamp 1727185000 is in the past"
-  }
-}
-```
+1. The provider key exists in buyer configuration.
+2. The protocol, request ID, provider, capability, nonce, and location match the challenge.
+3. The receipt authenticator matches the observation fields.
+4. The sensor and metric match the contact contract.
+5. All five samples agree, and the state is a JSON boolean.
+6. The measurement starts after the challenge, with at most two seconds of clock tolerance.
+7. The completion timestamp follows the start and is not more than two seconds in the future.
+8. The evidence age fits the contract and the request has not expired.
+9. The verifier has not consumed this provider/nonce pair already.
 
-## 4. Transport Mappings
+Fresh open evidence produces DISPATCH. Closed, missing, stale, or invalid evidence produces WAIT.
+Confidence stays `null`. Sample agreement does not imply calibrated confidence.
+The in-process buyer replay set lasts for one verifier instance. Gateway purchase state persists in SQLite.
 
-### BLE Transport
+## Device replay and concurrency
 
-- **Service UUID**: `0000cb00-0000-1000-8000-00805f9b34fb` (CapMesh Service)
-- **Manifest Characteristic**: `0000cb01-0000-1000-8000-00805f9b34fb` (Read, Notify)
-- **Invoke Characteristic**: `0000cb02-0000-1000-8000-00805f9b34fb` (Write with Response / Write without Response)
-- **Receipt Characteristic**: `0000cb03-0000-1000-8000-00805f9b34fb` (Read, Notify)
+BLE and HTTP share one dispatcher mutex and one replay table.
+The device keeps 64 nonce/expiration pairs. It never evicts an unexpired authorization to admit another request.
+A full table returns `NONCE_CACHE_FULL`. Concurrent dispatch returns `BUSY`.
+Reboot clears the table and time anchor. The device has no independently trusted clock.
+The first authenticated request anchors epoch time to monotonic uptime.
 
-### HTTP Transport
+## Payment interface
 
-- `GET /manifest`: Returns Manifest JSON.
-- `POST /invoke`: Accepts Invocation Request JSON; returns Receipt JSON.
-- `GET /receipt/:request_id`: Returns Receipt JSON for a previous invocation.
+- `POST /requests`: create an immutable challenge and purchase ID.
+- `GET /observe/:id`: return a 402 quote, or verify and settle a matching x402 V2 payment.
+- `GET /manifest`: describe the single contact observation.
+- `GET /demand`: summarize local purchase states.
+- `GET /health`: identify the configured payment and evidence mode.
+- `POST /simulate/:id`: simulated server only. Exercise the same purchase handler with fake settlement.
+
+The gateway pins Devnet, the USDC mint, merchant, exact scheme, and 1,000 base units.
+It matches the payment resource to the stored purchase and checks the complete advertised requirements.
+It hashes signed transaction bytes for a unique proof reservation before settlement.
+Changing a resource wrapper cannot authorize another purchase with the same transaction.
+Solana transaction signatures do not independently sign HTTP resource metadata. Purchase binding is enforced by this gateway ledger.
+
+SQLite stores the unique purchase nonce, unique proof hash, settlement result, receipt, and review state.
+A retry returns the original receipt. It does not refresh its timestamp.
+States are `quoted`, `settling`, `payment_failed`, `settlement_unknown`, `measuring`, `delivered`, and `delivery_failed`.
+A crash during settlement or measurement leaves a reviewable state. No automatic retry repeats those effects.
+
+## Existing LED compatibility
+
+`led.blink` remains available for regression checks. Its request and receipt use the existing LED-specific v2 canonical messages.
+GPIO8 readback reports the output pad. It does not prove light emission or independent delivery.
+Legacy transaction-reference and unsigned payment-channel adapters reject payment claims.
+They do not participate in the observation payment path.

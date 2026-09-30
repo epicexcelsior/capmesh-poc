@@ -4,11 +4,10 @@ import sys
 from typing import Optional
 from .policy import AgentPolicyEngine
 from ..protocol.models import InvocationRequest, InvocationReceipt, DeliveryProof
-from ..protocol.auth import generate_nonce, create_auth_payload, verify_receipt, DEFAULT_SECRET
+from ..protocol.auth import generate_nonce, create_auth_payload, verify_receipt, receipt_message, compute_hmac_sha256, DEFAULT_SECRET
 from ..transport.ble import BLETransportAdapter
 from ..provider.local_provider import LaptopProvider
 from ..provider.untrusted_provider import UntrustedRogueProvider
-from ..payment.verifier import SolanaPaymentChannelVerifier
 
 # ANSI Colors
 BOLD = "\033[1m"
@@ -65,7 +64,11 @@ class SimulatedBLETransport:
                 error={"code": "AUTH_EXPIRED", "message": "Request expiration timestamp is in the past"}
             )
         auth = request.authorization or {}
-        if auth.get("type") != "hmac-sha256" or auth.get("token") == "tampered-token":
+        expected = create_auth_payload(
+            request.request_id, request.capability, request.nonce, request.expiration,
+            device_id=request.device_id, parameters=request.parameters, timestamp=request.timestamp,
+        )
+        if auth != expected:
             return InvocationReceipt(
                 protocol=request.protocol,
                 request_id=request.request_id,
@@ -78,8 +81,6 @@ class SimulatedBLETransport:
         start_time = now
         await asyncio.sleep(0.5)
         completed_time = int(time.time())
-        from ..protocol.auth import compute_hmac_sha256
-        sig = compute_hmac_sha256(DEFAULT_SECRET, f"receipt:{request.request_id}:{self.device_id}:{start_time}:{completed_time}")
         dp = DeliveryProof(
             observer_id="esp32_gpio8_hw_pad",
             expected_state="PULSED",
@@ -88,7 +89,7 @@ class SimulatedBLETransport:
             total_samples=3,
             readback_verified=True
         )
-        return InvocationReceipt(
+        receipt = InvocationReceipt(
             protocol=request.protocol,
             request_id=request.request_id,
             status="success",
@@ -99,26 +100,26 @@ class SimulatedBLETransport:
             started_at=start_time,
             completed_at=completed_time,
             delivery_proof=dp,
-            receipt_signature=sig
         )
+        receipt.receipt_signature = "v2:" + compute_hmac_sha256(DEFAULT_SECRET, receipt_message(receipt))
+        return receipt
 
 async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.0) -> bool:
     print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
-    print(f"{BOLD}{CYAN}      CAPMESH — ADVERSARIAL AGENT CAPABILITY MARKETPLACE DEMO (TUM 2026)      {RESET}")
+    print(f"{BOLD}{CYAN}      CAPMESH — {'SIMULATED' if simulated else 'LIVE'} HARDWARE AUTHORIZATION DEMO (TUM 2026)      {RESET}")
     print(f"{BOLD}{CYAN}================================================================================{RESET}\n")
 
-    goal_prompt = "Find a nearby verified device that can produce a visible signal for under €0.01."
+    goal_prompt = "Find the ESP32 LED and invoke it within the mock price limit."
     print(f"{BOLD}User Goal Prompt:{RESET} \"{YELLOW}{goal_prompt}{RESET}\"")
     print(f"{BOLD}Agent Policy Constraints:{RESET}")
     print(f"  * Capability requirement: {CYAN}visual_signal{RESET} (or {CYAN}led.blink{RESET})")
     print(f"  * Price Ceiling: {GREEN}€0.0100{RESET}")
-    print(f"  * Trust Requirement: {GREEN}VERIFIED_ONLY{RESET}")
-    print(f"  * Agent Spending Authority Limit: {YELLOW}€0.1000{RESET}")
+    print(f"  * Provider identity: {YELLOW}not authenticated by discovery{RESET}")
+    print(f"  * Payment: {YELLOW}mock only{RESET}")
 
     # Set up transports
     ble_transport = BLETransportAdapter() if not simulated else SimulatedBLETransport()
     rogue_transport = UntrustedRogueProvider()
-    channel_verifier = SolanaPaymentChannelVerifier(escrow_channel_id="tum-chan-2026", max_ceiling=0.10)
 
     # Check if live hardware is available if not explicitly forced simulated
     if not simulated:
@@ -127,17 +128,16 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
             live_devs = await ble_transport.discover(timeout=live_timeout)
             if not live_devs:
                 print(f"{YELLOW}[WARN]{RESET} Live ESP32 BLE peripheral not detected within {live_timeout}s.")
-                print(f"       Switching seamlessly to high-fidelity Simulated Hardware mode.")
-                ble_transport = SimulatedBLETransport()
+                print(f"{RED}[FAIL]{RESET} Live hardware required. Use --simulated for rehearsal.")
+                return False
             else:
                 print(f"{GREEN}[FOUND]{RESET} Live ESP32-C6 detected: {live_devs[0].device_id} ({live_devs[0].address})")
         except Exception as e:
-            print(f"{YELLOW}[WARN]{RESET} BLE scan error ({e}). Using Simulated Hardware mode.")
-            ble_transport = SimulatedBLETransport()
+            print(f"{RED}[FAIL]{RESET} BLE scan failed ({e}). Use --simulated for rehearsal.")
+            return False
 
     engine = AgentPolicyEngine(
         transports=[ble_transport, rogue_transport, LaptopProvider()],
-        payment_verifier=channel_verifier,
         spending_ceiling=0.10
     )
 
@@ -149,7 +149,7 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
 
     print(f"\n  {BOLD}Discovered Providers & Capabilities:{RESET}")
     for manifest, transport in discovered:
-        trust_color = GREEN if manifest.trust_tier == "verified" else RED
+        trust_color = GREEN if manifest.trust_tier == "verified" else YELLOW
         print(f"  * {BOLD}{manifest.device_id}{RESET} [{transport.transport_name}]")
         print(f"    - Trust Tier: {trust_color}{manifest.trust_tier.upper()}{RESET} (attestation: {manifest.attestation or 'none'})")
         for cap in manifest.capabilities:
@@ -157,27 +157,13 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
             print(f"      Pricing: {YELLOW}{cap.pricing.amount} {cap.pricing.currency}{RESET}")
 
     # STEP 2: Policy Evaluation & Rogue Node Rejection
-    print(f"\n{BOLD}{CYAN}[STEP 2] ECONOMIC & SECURITY POLICY EVALUATION{RESET}")
-    print("  -> Evaluating candidates matching 'visual_signal'...")
-    print(f"     1. {RED}rogue-signal-node-99{RESET} offers 0.0020 mock-usdc (UNDER-CUTTING PRICE)")
-    print(f"     2. {GREEN}esp32-c6-96a2{RESET} offers 0.0040 mock-usdc")
-    print("  -> Inspecting cryptographic credentials...")
-    print(f"     {RED}[POLICY REJECTION]{RESET} Provider 'rogue-signal-node-99' rejected: UNTRUSTED_CREDENTIALS")
-    print(f"     {GREEN}[POLICY APPROVED]{RESET} Provider 'esp32-c6-96a2' selected:")
-    print(f"       * Price 0.0040 <= €0.0100 limit")
-    print(f"       * Trust tier: VERIFIED (Hardware identity authenticated)")
-    print(f"       * Agent spending ceiling: 0.0040 + 0.0000 <= 0.1000 [OK]")
+    print(f"\n{BOLD}{CYAN}[STEP 2] DEMO DEVICE SELECTION{RESET}")
+    print("  -> Selecting the known ESP32 ID for this hardware test.")
+    print("  -> The rogue provider is a labeled fixture. No provider identity attestation is implemented.")
 
-    # STEP 3: Settlement & Authorization
-    print(f"\n{BOLD}{CYAN}[STEP 3] PLUGGABLE SETTLEMENT & CAPABILITY AUTHORIZATION{RESET}")
-    channel_voucher = "channel:tum-chan-2026:1:0.0040"
-    print(f"  -> Payment Scheme: Solana Micropayment Channel")
-    print(f"  -> Voucher generated: {CYAN}{channel_voucher}{RESET}")
-    payment_ok = channel_verifier.verify_payment(channel_voucher, 0.0040, "esp32-c6-96a2")
-    if not payment_ok:
-        print(f"{RED}[FAIL]{RESET} Payment voucher verification failed!")
-        return False
-    print(f"  -> {GREEN}[PAID]{RESET} 0.0040 settled against escrow balance (Remaining: €{0.10 - 0.0040:.4f})")
+    # STEP 3: Mock-priced authorization. No funds move in this demo.
+    print(f"\n{BOLD}{CYAN}[STEP 3] DEMO AUTHORIZATION (NO PAYMENT){RESET}")
+    print("  -> The manifest price is mock-usdc. No Solana transaction or channel settlement occurs.")
 
     # STEP 4: Execution
     print(f"\n{BOLD}{CYAN}[STEP 4] CAPABILITY INVOCATION & PHYSICAL ACTUATION{RESET}")
@@ -191,6 +177,9 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
         capability="led.blink",
         nonce=req_nonce,
         expiration=expiration,
+        device_id="esp32-c6-96a2",
+        parameters={"duration": 2, "count": 3},
+        timestamp=now,
         secret=DEFAULT_SECRET
     )
 
@@ -211,22 +200,25 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
     receipt = await ble_transport.invoke("esp32-c6-96a2", req)
 
     # STEP 5: Delivery Proof
-    print(f"\n{BOLD}{CYAN}[STEP 5] PHYSICAL DELIVERY PROOF & INDEPENDENT READBACK{RESET}")
+    print(f"\n{BOLD}{CYAN}[STEP 5] DEVICE-REPORTED GPIO PAD READBACK{RESET}")
     if receipt.status != "success":
         print(f"{RED}[FAIL]{RESET} Invocation failed: {receipt.error}")
         return False
 
     receipt_sig_valid = verify_receipt(receipt, secret=DEFAULT_SECRET)
-    print(f"  -> Provider Receipt Signature: {GREEN}VERIFIED (HMAC-SHA256){RESET}")
+    if not receipt_sig_valid:
+        print(f"{RED}[FAIL]{RESET} Receipt HMAC did not match the result and pad samples.")
+        return False
+    print(f"  -> Provider Receipt HMAC: {GREEN}VERIFIED{RESET}")
 
     dp = receipt.delivery_proof
     if dp and dp.readback_verified:
-        print(f"  -> {GREEN}[DELIVERY VERIFIED]{RESET} Physical state confirmed by hardware observer:")
+        print(f"  -> {GREEN}[PAD SAMPLED]{RESET} The same ESP32 reports its output pin level:")
         print(f"     * Observer ID: {CYAN}{dp.observer_id}{RESET} (GPIO 8 Input Buffer)")
         print(f"     * Expected State: {dp.expected_state}")
         print(f"     * Observed State: {GREEN}{dp.observed_state}{RESET}")
         print(f"     * Electrical Pad Readback: {GREEN}{dp.verified_samples}/{dp.total_samples} cycles verified{RESET}")
-        print(f"     * {BOLD}Hardware pad confirms voltage rise/fall occurred on the circuit.{RESET}")
+        print(f"     * {BOLD}This does not prove that an external good was delivered.{RESET}")
     else:
         print(f"  -> {YELLOW}[WARN]{RESET} Delivery proof missing or degraded.")
 
@@ -259,7 +251,10 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
             request_id=f"atk-{int(time.time()*1000)%10000000:07x}",
             capability="led.blink",
             nonce=exp_nonce,
-            expiration=now - 100
+            expiration=now - 100,
+            device_id="esp32-c6-96a2",
+            parameters={"duration": 1, "count": 1},
+            timestamp=now - 200,
         )
     )
     exp_receipt = await ble_transport.invoke("esp32-c6-96a2", expired_req)
@@ -292,18 +287,18 @@ async def run_adversarial_demo(simulated: bool = False, live_timeout: float = 3.
 
     # Summary
     print(f"\n{BOLD}{GREEN}================================================================================{RESET}")
-    print(f"{BOLD}{GREEN}              DEMO VERDICT: 100% SUCCESS — JUDGING CRITERIA MET                {RESET}")
+    print(f"{BOLD}{GREEN}              {'SIMULATED' if simulated else 'LIVE'} AUTHORIZATION DEMO PASSED                               {RESET}")
     print(f"{BOLD}{GREEN}================================================================================{RESET}")
-    print(f"  1. {GREEN}Autonomous Decision{RESET}: Discovered unknown devices, evaluated budget and trust.")
-    print(f"  2. {GREEN}Security Policy{RESET}: Rejected untrusted rogue node despite lower cost.")
-    print(f"  3. {GREEN}Spending Ceiling{RESET}: Enforced €0.1000 bounded agent expenditure authority.")
-    print(f"  4. {GREEN}Physical Actuation{RESET}: Commanded physical ESP32 actuator over BLE.")
-    print(f"  5. {GREEN}Physical Delivery Proof{RESET}: Hardware pad readback verified electrical state.")
+    print(f"  1. {GREEN}Discovery{RESET}: Read the ESP32 capability manifest over BLE.")
+    print(f"  2. {YELLOW}Trust{RESET}: Device identity remains unverified by discovery.")
+    print(f"  3. {YELLOW}Payment{RESET}: Mock-priced only; no funds moved.")
+    print(f"  4. {GREEN}Physical Actuation{RESET}: Commanded {'simulated' if simulated else 'physical'} ESP32 LED over BLE.")
+    print(f"  5. {YELLOW}Delivery Evidence{RESET}: Device-reported GPIO pad sample only.")
     print(f"  6. {GREEN}Adversarial Defense{RESET}: Blocked Replay, Expiry, and Tampering live on chip.")
-    print(f"  7. {GREEN}Transport & Chain Agnostic{RESET}: Separation of BLE/HTTP and settlement verifiers.")
+    print(f"  7. {YELLOW}x402{RESET}: Exercise the separate gateway to test the payment challenge.")
     print(f"{BOLD}{GREEN}================================================================================{RESET}\n")
     return True
 
 if __name__ == "__main__":
     is_sim = "--simulated" in sys.argv
-    asyncio.run(run_adversarial_demo(simulated=is_sim))
+    raise SystemExit(0 if asyncio.run(run_adversarial_demo(simulated=is_sim)) else 1)

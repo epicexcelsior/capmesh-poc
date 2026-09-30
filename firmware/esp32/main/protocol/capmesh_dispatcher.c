@@ -1,21 +1,26 @@
 #include "protocol/capmesh_dispatcher.h"
 #include "capabilities/led_capability.h"
+#include "capabilities/contact_capability.h"
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 
 static const char *TAG = "DISPATCHER";
 
 static char s_device_id[64] = "esp32-c6-unknown";
 static bool s_auth_required = false;
 static int64_t s_epoch_offset_s = 0;
+static SemaphoreHandle_t s_dispatch_lock;
 
 // Simple replay prevention table
 #define REPLAY_WINDOW_SIZE 64
 static uint32_t s_seen_nonces[REPLAY_WINDOW_SIZE] = {0};
-static size_t s_nonce_idx = 0;
+static uint32_t s_nonce_expirations[REPLAY_WINDOW_SIZE] = {0};
 
 static bool is_nonce_seen(uint32_t nonce)
 {
@@ -30,13 +35,16 @@ static bool is_nonce_seen(uint32_t nonce)
     return false;
 }
 
-static void record_nonce(uint32_t nonce)
+static bool record_nonce(uint32_t nonce, uint32_t expiration, uint32_t now)
 {
-    if (nonce == 0) {
-        return;
+    for (size_t i = 0; i < REPLAY_WINDOW_SIZE; i++) {
+        if (s_seen_nonces[i] == 0 || s_nonce_expirations[i] < now) {
+            s_seen_nonces[i] = nonce;
+            s_nonce_expirations[i] = expiration;
+            return true;
+        }
     }
-    s_seen_nonces[s_nonce_idx] = nonce;
-    s_nonce_idx = (s_nonce_idx + 1) % REPLAY_WINDOW_SIZE;
+    return false;
 }
 
 esp_err_t capmesh_dispatcher_init(const char *device_id)
@@ -46,7 +54,10 @@ esp_err_t capmesh_dispatcher_init(const char *device_id)
         s_device_id[sizeof(s_device_id) - 1] = '\0';
     }
     memset(s_seen_nonces, 0, sizeof(s_seen_nonces));
-    s_nonce_idx = 0;
+    memset(s_nonce_expirations, 0, sizeof(s_nonce_expirations));
+    s_epoch_offset_s = 0;
+    s_dispatch_lock = xSemaphoreCreateMutex();
+    if (!s_dispatch_lock) return ESP_ERR_NO_MEM;
     ESP_LOGI(TAG, "Dispatcher initialized for device: %s (auth_required=%d)", s_device_id, s_auth_required);
     return ESP_OK;
 }
@@ -79,6 +90,15 @@ int capmesh_dispatcher_get_manifest(char *buf, size_t max_len)
     cJSON_AddItemToObject(cap, "pricing", pricing);
 
     cJSON_AddItemToArray(caps, cap);
+    cJSON *observe = cJSON_CreateObject();
+    cJSON_AddStringToObject(observe, "id", "state.observe");
+    cJSON_AddStringToObject(observe, "description", "Fresh GPIO9 contact at demo-gate (BOOT button stand-in)");
+    cJSON *observe_price = cJSON_CreateObject();
+    cJSON_AddStringToObject(observe_price, "model", "fixed");
+    cJSON_AddStringToObject(observe_price, "amount", "0.001");
+    cJSON_AddStringToObject(observe_price, "currency", "mock-usdc");
+    cJSON_AddItemToObject(observe, "pricing", observe_price);
+    cJSON_AddItemToArray(caps, observe);
     cJSON_AddItemToObject(root, "capabilities", caps);
 
     char *json_str = cJSON_PrintUnformatted(root);
@@ -132,7 +152,7 @@ static void sha256_transform(sha256_ctx_t *ctx, const uint8_t data[])
 {
     uint32_t a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
     for (i = 0, j = 0; i < 16; ++i, j += 4)
-        m[i] = (data[j] << 24) | (data[j + 1] << 16) | (data[j + 2] << 8) | (data[j + 3]);
+        m[i] = ((uint32_t)data[j] << 24) | ((uint32_t)data[j + 1] << 16) | ((uint32_t)data[j + 2] << 8) | data[j + 3];
     for (; i < 64; ++i)
         m[i] = SHA256_SIG1(m[i - 2]) + m[i - 7] + SHA256_SIG0(m[i - 15]) + m[i - 16];
 
@@ -266,7 +286,10 @@ static bool verify_hmac(const char *message, const char *hex_digest)
     }
     expected_hex[64] = '\0';
 
-    return (strcasecmp(expected_hex, hex_digest) == 0);
+    if (strlen(hex_digest) != 64) return false;
+    unsigned char difference = 0;
+    for (int i = 0; i < 64; i++) difference |= expected_hex[i] ^ hex_digest[i];
+    return difference == 0;
 }
 
 static int format_error_response(const char *req_id, const char *code, const char *message, char *response_buf, size_t max_len)
@@ -287,13 +310,63 @@ static int format_error_response(const char *req_id, const char *code, const cha
     return len;
 }
 
-int capmesh_dispatcher_handle_request(const char *request_json, char *response_buf, size_t max_len)
+static bool is_uint(cJSON *item, uint32_t maximum)
+{
+    return cJSON_IsNumber(item) && item->valuedouble >= 0 &&
+           item->valuedouble <= maximum && floor(item->valuedouble) == item->valuedouble;
+}
+
+static int observation_receipt(const char *req_id, uint32_t nonce, uint32_t start,
+                               char *buf, size_t max_len)
+{
+    bool closed;
+    int stable;
+    contact_capability_sample(&closed, &stable);
+    uint32_t end = (uint32_t)(s_epoch_offset_s + esp_timer_get_time() / 1000000ULL);
+    cJSON *receipt = cJSON_CreateObject();
+    cJSON_AddStringToObject(receipt, "protocol", CAPMESH_PROTOCOL_VERSION);
+    cJSON_AddStringToObject(receipt, "request_id", req_id);
+    cJSON_AddStringToObject(receipt, "status", "success");
+    cJSON_AddStringToObject(receipt, "provider", s_device_id);
+    cJSON_AddStringToObject(receipt, "capability", "state.observe");
+    cJSON_AddNumberToObject(receipt, "nonce", nonce);
+    cJSON *params = cJSON_CreateObject();
+    cJSON_AddStringToObject(params, "location", "demo-gate");
+    cJSON_AddItemToObject(receipt, "parameters", params);
+    cJSON *result = cJSON_CreateObject();
+    cJSON_AddStringToObject(result, "metric", "gate.closed");
+    cJSON_AddStringToObject(result, "sensor", "gpio9-contact");
+    cJSON_AddBoolToObject(result, "closed", closed);
+    cJSON_AddNumberToObject(result, "stable_samples", stable);
+    cJSON_AddNumberToObject(result, "total_samples", FIELDPROOF_CONTACT_SAMPLES);
+    cJSON_AddItemToObject(receipt, "result", result);
+    cJSON_AddNumberToObject(receipt, "started_at", start);
+    cJSON_AddNumberToObject(receipt, "completed_at", end);
+    char message[384];
+    snprintf(message, sizeof(message),
+             "fieldproof-observation-v1|%s|%s|%s|state.observe|demo-gate|%" PRIu32 "|gate.closed|gpio9-contact|%d|%d|%d|%" PRIu32 "|%" PRIu32,
+             CAPMESH_PROTOCOL_VERSION, req_id, s_device_id, nonce, closed ? 1 : 0,
+             stable, FIELDPROOF_CONTACT_SAMPLES, start, end);
+    uint8_t digest[32];
+    compute_hmac_sha256(CAPMESH_DEFAULT_SECRET, message, digest);
+    char signature[69] = "v2:";
+    for (int i = 0; i < 32; i++) sprintf(signature + 3 + i * 2, "%02x", digest[i]);
+    cJSON_AddStringToObject(receipt, "receipt_signature", signature);
+    char *json = cJSON_PrintUnformatted(receipt);
+    cJSON_Delete(receipt);
+    if (!json) return -1;
+    int len = snprintf(buf, max_len, "%s", json);
+    free(json);
+    if (len < 0 || (size_t)len >= max_len || len > 512)
+        return format_error_response(req_id, "RECEIPT_TOO_LARGE", "Receipt exceeds BLE size", buf, max_len);
+    return len;
+}
+
+static int handle_request_locked(const char *request_json, char *response_buf, size_t max_len)
 {
     if (!request_json || !response_buf || max_len == 0) {
         return -1;
     }
-
-    ESP_LOGI(TAG, "Incoming invocation request: %s", request_json);
 
     cJSON *req = cJSON_Parse(request_json);
     if (!req) {
@@ -319,8 +392,12 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
         cap_id[sizeof(cap_id) - 1] = '\0';
     }
 
-    uint32_t nonce = (nonce_item && cJSON_IsNumber(nonce_item)) ? (uint32_t)nonce_item->valuedouble : 0;
-    uint32_t exp = (exp_item && cJSON_IsNumber(exp_item)) ? (uint32_t)exp_item->valuedouble : 0;
+    uint32_t nonce = is_uint(nonce_item, 0x7fffffff) ? (uint32_t)nonce_item->valuedouble : 0;
+    uint32_t exp = is_uint(exp_item, UINT32_MAX) ? (uint32_t)exp_item->valuedouble : 0;
+    cJSON *device_item = cJSON_GetObjectItem(req, "device_id");
+    cJSON *ts_item = cJSON_GetObjectItem(req, "timestamp");
+    uint32_t req_ts = is_uint(ts_item, UINT32_MAX - 300) ? (uint32_t)ts_item->valuedouble : 0;
+    bool observing = strcmp(cap_id, "state.observe") == 0;
 
     int duration = 3;
     int count = 5;
@@ -342,9 +419,34 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
     }
 
     // 2. Validate Capability
-    if (strcmp(cap_id, "led.blink") != 0) {
+    if (strcmp(cap_id, "led.blink") != 0 && !observing) {
         cJSON_Delete(req);
         return format_error_response(req_id, "UNKNOWN_CAPABILITY", "Requested capability is not offered by provider", response_buf, max_len);
+    }
+
+    if (exp > 0 && exp <= req_ts) {
+        cJSON_Delete(req);
+        return format_error_response(req_id, "AUTH_EXPIRED", "Request expiration is not after its timestamp", response_buf, max_len);
+    }
+
+    if (!req_id_item || !cJSON_IsString(req_id_item) || !strlen(req_id) || strlen(req_id_item->valuestring) > 16 ||
+        strspn(req_id, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_") != strlen(req_id) ||
+        !device_item || !cJSON_IsString(device_item) || strcmp(device_item->valuestring, s_device_id) != 0 ||
+        nonce == 0 || req_ts < 1700000000U || exp <= req_ts || exp - req_ts > 300U ||
+        !params_item || !cJSON_IsObject(params_item) ||
+        (!observing && (!is_uint(cJSON_GetObjectItem(params_item, "duration"), 10) ||
+                        !is_uint(cJSON_GetObjectItem(params_item, "count"), 100)))) {
+        cJSON_Delete(req);
+        return format_error_response(req_id, "INVALID_REQUEST", "Missing or invalid signed request fields", response_buf, max_len);
+    }
+
+    if (observing) {
+        cJSON *location = cJSON_GetObjectItem(params_item, "location");
+        if (!cJSON_IsString(location) || strcmp(location->valuestring, "demo-gate") != 0 ||
+            cJSON_GetArraySize(params_item) != 1) {
+            cJSON_Delete(req);
+            return format_error_response(req_id, "INVALID_PARAMETERS", "Only demo-gate is provisioned", response_buf, max_len);
+        }
     }
 
     // 3. Replay Protection (Nonce check)
@@ -355,19 +457,9 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
     }
 
     // 4. Expiration check (if expiration is specified)
-    cJSON *ts_item = cJSON_GetObjectItem(req, "timestamp");
-    uint32_t req_ts = (ts_item && cJSON_IsNumber(ts_item)) ? (uint32_t)ts_item->valuedouble : 0;
     uint32_t uptime_s = (uint32_t)(esp_timer_get_time() / 1000000ULL);
-
-    if (req_ts > 1700000000ULL) {
-        if (s_epoch_offset_s == 0 || (int64_t)req_ts > (s_epoch_offset_s + uptime_s)) {
-            s_epoch_offset_s = (int64_t)req_ts - (int64_t)uptime_s;
-            ESP_LOGI(TAG, "Epoch offset synchronized: current_unix=%" PRIu32, req_ts);
-        }
-    }
-    uint32_t now_s = (s_epoch_offset_s > 0) ? (uint32_t)(s_epoch_offset_s + uptime_s) : uptime_s;
-
-    if (exp > 0 && exp < now_s) {
+    uint32_t now_s = (s_epoch_offset_s > 0) ? (uint32_t)(s_epoch_offset_s + uptime_s) : req_ts;
+    if (exp < now_s || (s_epoch_offset_s > 0 && (req_ts + 30U < now_s || req_ts > now_s + 30U))) {
         ESP_LOGW(TAG, "Request expired: exp=%" PRIu32 ", now=%" PRIu32, exp, now_s);
         cJSON_Delete(req);
         return format_error_response(req_id, "AUTH_EXPIRED", "Request expiration timestamp is in the past", response_buf, max_len);
@@ -380,9 +472,15 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
             cJSON *type_item = cJSON_GetObjectItem(auth_item, "type");
             cJSON *token_item = cJSON_GetObjectItem(auth_item, "token");
             if (type_item && token_item && cJSON_IsString(type_item) && cJSON_IsString(token_item)) {
-                if (strcmp(type_item->valuestring, "hmac-sha256") == 0) {
+                if (strcmp(type_item->valuestring, "hmac-sha256-v2") == 0) {
                     char msg[256];
-                    snprintf(msg, sizeof(msg), "%s:%s:%" PRIu32 ":%" PRIu32, req_id, cap_id, nonce, exp);
+                    if (observing) {
+                        snprintf(msg, sizeof(msg), "fieldproof-auth-v1|%s|%s|state.observe|demo-gate|%" PRIu32 "|%" PRIu32 "|%" PRIu32,
+                                 req_id, s_device_id, nonce, req_ts, exp);
+                    } else {
+                        snprintf(msg, sizeof(msg), "capmesh-auth-v2|%s|%s|%s|%d|%d|%" PRIu32 "|%" PRIu32 "|%" PRIu32,
+                             req_id, s_device_id, cap_id, duration, count, nonce, req_ts, exp);
+                    }
                     auth_valid = verify_hmac(msg, token_item->valuestring);
                 }
             }
@@ -395,9 +493,25 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
         }
     }
 
+    if (!observing && (duration < 1 || duration > 10 || count < 1 || count > 10 || count > duration * 10)) {
+        cJSON_Delete(req);
+        return format_error_response(req_id, "INVALID_PARAMETERS", "Blink duration or count is outside demo limits", response_buf, max_len);
+    }
+
+    if (s_epoch_offset_s == 0) {
+        s_epoch_offset_s = (int64_t)req_ts - (int64_t)uptime_s;
+        ESP_LOGI(TAG, "Epoch set from authenticated request: %" PRIu32, req_ts);
+    }
+
     // Record valid nonce
-    if (nonce > 0) {
-        record_nonce(nonce);
+    if (!record_nonce(nonce, exp, now_s)) {
+        cJSON_Delete(req);
+        return format_error_response(req_id, "NONCE_CACHE_FULL", "Retry after existing authorizations expire", response_buf, max_len);
+    }
+
+    if (observing) {
+        cJSON_Delete(req);
+        return observation_receipt(req_id, nonce, now_s, response_buf, max_len);
     }
 
     // 6. Execute Capability (Led blink with independent hardware readback)
@@ -439,7 +553,12 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
 
     // Generate receipt signature / authenticator
     char receipt_msg[256];
-    snprintf(receipt_msg, sizeof(receipt_msg), "receipt:%s:%s:%" PRIu32 ":%" PRIu32, req_id, s_device_id, start_time, end_time);
+    snprintf(receipt_msg, sizeof(receipt_msg),
+             "capmesh-receipt-v2|%s|%s|%s|%d|%d|%d|%s|%s|%s|%d|%d|%d|%" PRIu32 "|%" PRIu32,
+             req_id, s_device_id, cap_id, duration, count, blinks_done,
+             proof.observer_id, proof.expected_state, proof.observed_state,
+             proof.verified_samples, proof.total_samples, proof.readback_verified ? 1 : 0,
+             start_time, end_time);
     uint8_t hmac_out[32];
     char sig_hex[65] = "mock-sig";
     if (compute_hmac_sha256(CAPMESH_DEFAULT_SECRET, receipt_msg, hmac_out)) {
@@ -448,7 +567,9 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
         }
         sig_hex[64] = '\0';
     }
-    cJSON_AddStringToObject(receipt, "receipt_signature", sig_hex);
+    char versioned_sig[69];
+    snprintf(versioned_sig, sizeof(versioned_sig), "v2:%s", sig_hex);
+    cJSON_AddStringToObject(receipt, "receipt_signature", versioned_sig);
 
     char *out_str = cJSON_PrintUnformatted(receipt);
     cJSON_Delete(receipt);
@@ -460,6 +581,18 @@ int capmesh_dispatcher_handle_request(const char *request_json, char *response_b
 
     int len = snprintf(response_buf, max_len, "%s", out_str);
     free(out_str);
+    if (len < 0 || len >= max_len || len > 512) {
+        return format_error_response(req_id, "RECEIPT_TOO_LARGE", "Receipt exceeds BLE characteristic size", response_buf, max_len);
+    }
     ESP_LOGI(TAG, "Generated receipt: %s", response_buf);
     return len;
+}
+
+int capmesh_dispatcher_handle_request(const char *request_json, char *response_buf, size_t max_len)
+{
+    if (!s_dispatch_lock || xSemaphoreTake(s_dispatch_lock, pdMS_TO_TICKS(100)) != pdTRUE)
+        return format_error_response("req-unknown", "BUSY", "Another request is in progress", response_buf, max_len);
+    int result = handle_request_locked(request_json, response_buf, max_len);
+    xSemaphoreGive(s_dispatch_lock);
+    return result;
 }
