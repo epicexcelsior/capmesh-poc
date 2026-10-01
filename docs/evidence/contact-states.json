@@ -1,0 +1,88 @@
+{
+  "method": "User held and released BOOT. Separate BLE observations authenticated each state. No reset or output drive occurred.",
+  "payment_mode": "No payment in these two direct sensor checks.",
+  "held": {
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "human-held-boot",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": true,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790863096,
+      "completed_at": 1790863096,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v2:cff25f8c829d18a29b7d945319b207d927c4344c277795e0f6a815e5b6a9e88d",
+      "error": null,
+      "nonce": 1864738123
+    },
+    "decision": {
+      "decision": "WAIT",
+      "reason": "Gate contact is closed",
+      "closed": true,
+      "age_seconds": 5,
+      "sample_agreement": "5/5",
+      "confidence": null,
+      "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+      "evidence_mode": "physical-contact-demo"
+    },
+    "challenge": {
+      "request_id": "human-held-boot",
+      "nonce": 1864738123,
+      "timestamp": 1790863097,
+      "expiration": 1790863127
+    }
+  },
+  "released": {
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "human-released",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": false,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790863160,
+      "completed_at": 1790863160,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v2:6f8a64f9bb403189b23daa13fb203a07d6624dbfa72c86744ce672d8c54add64",
+      "error": null,
+      "nonce": 1864738124
+    },
+    "decision": {
+      "decision": "DISPATCH",
+      "reason": "Gate contact is open",
+      "closed": false,
+      "age_seconds": 5,
+      "sample_agreement": "5/5",
+      "confidence": null,
+      "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+      "evidence_mode": "physical-contact-demo"
+    },
+    "challenge": {
+      "request_id": "human-released",
+      "nonce": 1864738124,
+      "timestamp": 1790863159,
+      "expiration": 1790863189
+    }
+  }
+}

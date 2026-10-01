@@ -13,6 +13,7 @@ const facilitator = {
 const paymentServer = await createPaymentServer(facilitator);
 const store = new PurchaseStore(physical ? '.local/sim-payment-physical.sqlite' : '.local/sim-purchases.sqlite');
 const app = await createGateway({ paymentServer, store, simulated: true, origin: `http://127.0.0.1:${port}`,
+  sensor: physical ? 'gpio9-contact' : 'simulated-contact',
   observe: purchase => observeHardware({ ...purchase, simulated: !physical, closed: process.argv.includes('--closed') }),
 });
 app.listen(port, '127.0.0.1', () => {

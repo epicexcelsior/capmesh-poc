@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
-import { allowedOffers, checkEvidence } from '../buyer.js';
+import { allowedOffers, buyObservation, checkEvidence } from '../buyer.js';
 import { NETWORK, USDC, PAY_TO } from '../server.js';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { generateKeyPairSigner, getTransactionDecoder, getBase64Encoder, getAddressEncoder } from '@solana/kit';
 import { ExactSvmScheme } from '@x402/svm/exact/client';
+import { encodePaymentResponseHeader } from '@x402/core/http';
 
 test('buyer rejects wrong chain, asset, recipient, amount, and payment scheme', () => {
   const offer = { scheme: 'exact', network: NETWORK, asset: USDC, payTo: PAY_TO, amount: '1000' };
@@ -28,6 +29,51 @@ test('buyer derives the decision from authenticated fresh contact evidence', () 
   assert.throws(() => checkEvidence({ receipt: r }, purchase, 111), /freshness/);
   assert.throws(() => checkEvidence({ receipt: r }, { ...purchase, nonce: 124 }, 100), /challenge/);
   assert.throws(() => checkEvidence({ receipt: { ...r, result: { ...r.result, closed: true } } }, purchase, 100), /authentication/);
+});
+
+test('buyer retains the purchase ID when the connection fails during payment', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  globalThis.fetch = async (url, options) => {
+    if (String(url).endsWith('/requests')) {
+      const { nonce } = JSON.parse(options.body);
+      return Response.json({ id: '0123456789abcdef', nonce, location: 'demo-gate', max_age_seconds: 10,
+        observe_url: 'http://127.0.0.1:4021/observe/0123456789abcdef' }, { status: 201 });
+    }
+    throw new TypeError('Connection lost');
+  };
+  await assert.rejects(buyObservation(await generateKeyPairSigner()), /purchase ID 0123456789abcdef/);
+});
+
+test('buyer retains the purchase ID when settled evidence delivery is truncated', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  globalThis.fetch = async (url, options) => {
+    if (String(url).endsWith('/requests')) {
+      const { nonce } = JSON.parse(options.body);
+      return Response.json({ id: '0123456789abcdef', nonce, location: 'demo-gate', max_age_seconds: 10,
+        observe_url: 'http://127.0.0.1:4021/observe/0123456789abcdef' }, { status: 201 });
+    }
+    const body = new ReadableStream({ start(controller) { controller.error(new TypeError('Delivery truncated')); } });
+    return new Response(body, { headers: { 'PAYMENT-RESPONSE': encodePaymentResponseHeader({
+      success: true, network: NETWORK, transaction: 'TEST-SETTLEMENT', payer: PAY_TO,
+    }) } });
+  };
+  await assert.rejects(buyObservation(await generateKeyPairSigner()), /purchase ID 0123456789abcdef/);
+});
+
+test('buyer refuses a gateway that extends its freshness limit before payment', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  let calls = 0;
+  globalThis.fetch = async (_url, options) => {
+    calls += 1;
+    const { nonce } = JSON.parse(options.body);
+    return Response.json({ id: '0123456789abcdef', nonce, location: 'demo-gate', max_age_seconds: 3600,
+      observe_url: 'http://127.0.0.1:4021/observe/0123456789abcdef' }, { status: 201 });
+  };
+  await assert.rejects(buyObservation(await generateKeyPairSigner()), /freshness/);
+  assert.equal(calls, 1);
 });
 
 test('the pinned SDK stack builds a verifiable buyer signature without a live chain', async t => {

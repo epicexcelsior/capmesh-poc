@@ -43,7 +43,9 @@ The five samples come from one observer. Independent sensing and calibrated conf
 ## Durable state and recovery
 
 SQLite is the source of truth for each local ledger. WAL mode and a busy timeout support concurrent readers and writers.
-The purchase ID, challenge nonce, and transaction proof have database uniqueness constraints.
+The purchase ID, challenge nonce, and transaction message hash have database uniqueness constraints.
+The hash excludes signature bytes because facilitator signing changes those bytes without creating another payment.
+The busy timeout runs before WAL initialization, so concurrent startup can wait for a database lock.
 An atomic reservation changes `quoted` to `settling` before the external settlement call.
 Only the writer that obtains this reservation can settle and measure.
 
@@ -65,7 +67,8 @@ The current gateway does not issue refunds.
 | `npm run demo -- --physical` | Simulated facilitator through x402 SDK | Real ESP32 contact |
 | `npm start` | Public Solana Devnet facilitator | Real ESP32 contact after settlement |
 
-The last mode's quote is verified. Its paid request still needs verification with a disposable funded Devnet USDC buyer.
+The last mode completed a public-facilitator Devnet purchase and a real GPIO9 observation.
+The [payment evidence](evidence/devnet-purchase.json) records the successful transaction and independently checked token balance changes.
 The simulator cannot settle funds and exists only in a separate startup command.
 Node's built-in SQLite avoids another production database dependency. It requires Node.js 22.13+ and currently emits an experimental-feature warning.
 The x402 client and Solana Kit provide conforming transaction signing without a custom partial payment verifier.

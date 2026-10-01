@@ -38,21 +38,28 @@ export async function buyObservation(signer, origin = 'http://127.0.0.1:4021') {
   const nonce = randomInt(1, 0x7fffffff);
   const createdAt = Math.floor(Date.now() / 1000);
   const created = await fetch(new URL('/requests', url), { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nonce }), signal: AbortSignal.timeout(10000) });
+    body: JSON.stringify({ nonce, location: 'demo-gate', max_age_seconds: 10 }), signal: AbortSignal.timeout(10000) });
   if (created.status !== 201) throw new Error(`Request creation failed: HTTP ${created.status}`);
   const purchase = { ...await created.json(), created_at: createdAt };
   const expectedUrl = new URL(`/observe/${purchase.id}`, url).href;
-  if (purchase.nonce !== nonce || purchase.observe_url !== expectedUrl) throw new Error('Gateway changed the buyer challenge or endpoint');
+  if (purchase.nonce !== nonce || purchase.observe_url !== expectedUrl ||
+      purchase.location !== 'demo-gate' || purchase.max_age_seconds !== 10) {
+    throw new Error('Gateway changed the buyer challenge, location, freshness limit, or endpoint');
+  }
   const client = new x402Client();
   client.registerPolicy((_version, offers) => allowedOffers(offers));
   client.register(NETWORK, new ExactSvmScheme(signer));
   const paidFetch = wrapFetchWithPayment(fetch, client);
-  const response = await paidFetch(expectedUrl, { signal: AbortSignal.timeout(45000) });
+  let response;
+  try { response = await paidFetch(expectedUrl, { signal: AbortSignal.timeout(45000) }); }
+  catch { throw new Error(`Payment outcome is unknown. Keep purchase ID ${purchase.id} for review before another payment.`); }
   if (!response.ok) throw new Error(`Purchase failed: HTTP ${response.status}. Keep purchase ID ${purchase.id} for review.`);
-  const settlement = decodePaymentResponseHeader(response.headers.get('PAYMENT-RESPONSE') || '');
-  if (settlement.success !== true || settlement.network !== NETWORK || !settlement.transaction) throw new Error('No successful Devnet settlement response');
-  const body = await response.json();
-  return { purchase_id: purchase.id, settlement, ...checkEvidence(body, purchase), receipt: body.receipt };
+  try {
+    const settlement = decodePaymentResponseHeader(response.headers.get('PAYMENT-RESPONSE') || '');
+    if (settlement.success !== true || settlement.network !== NETWORK || !settlement.transaction) throw new Error('No successful Devnet settlement response');
+    const body = await response.json();
+    return { purchase_id: purchase.id, settlement, ...checkEvidence(body, purchase), receipt: body.receipt };
+  } catch { throw new Error(`Payment response or evidence failed verification. Keep purchase ID ${purchase.id} for review before another payment.`); }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -90,14 +90,17 @@ The first authenticated request anchors epoch time to monotonic uptime.
 
 The gateway pins Devnet, the USDC mint, merchant, exact scheme, and 1,000 base units.
 It matches the payment resource to the stored purchase and checks the complete advertised requirements.
-It hashes signed transaction bytes for a unique proof reservation before settlement.
-Changing a resource wrapper cannot authorize another purchase with the same transaction.
+It hashes the decoded signed transaction message for a unique proof reservation before settlement.
+The facilitator can replace its signature without changing that message. Signature variants cannot authorize another purchase.
+Changing a resource wrapper cannot authorize another purchase with the same transaction message.
 Solana transaction signatures do not independently sign HTTP resource metadata. Purchase binding is enforced by this gateway ledger.
 
 SQLite stores the unique purchase nonce, unique proof hash, settlement result, receipt, and review state.
 A retry returns the original receipt. It does not refresh its timestamp.
 States are `quoted`, `settling`, `payment_failed`, `settlement_unknown`, `measuring`, `delivered`, and `delivery_failed`.
 A crash during settlement or measurement leaves a reviewable state. No automatic retry repeats those effects.
+The paid buyer requests `demo-gate` with a ten-second freshness limit. It rejects a changed contract before payment.
+Connection and delivery failures retain the purchase ID in the buyer error for review.
 
 ## Existing LED compatibility
 

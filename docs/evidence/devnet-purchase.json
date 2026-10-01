@@ -1,0 +1,58 @@
+{
+  "verification": {
+    "observed_at": "2026-10-01T13:57:46.528Z",
+    "rpc": "https://api.devnet.solana.com",
+    "commitment": "confirmed",
+    "slot": 506294679,
+    "block_time": 1790862927,
+    "transaction_error": null,
+    "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "merchant": "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA",
+    "amount_base_units": "1000",
+    "amount_usdc": "0.001",
+    "token_balance_deltas": [
+      {
+        "owner": "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA",
+        "delta": "1000"
+      },
+      {
+        "owner": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+        "delta": "-1000"
+      }
+    ],
+    "measurement_after_chain_block": true
+  },
+  "purchase_id": "5776367cd42b408e",
+  "settlement": {
+    "success": true,
+    "payer": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+    "transaction": "5T9cAims9tmCcgYV6KkuTedn9DhPjKmAVwENqoLjyA4GfboLfcwtTAu93Vk7kCNDyfR6QUVEpFq3XpdY7bDHoe8A",
+    "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
+  },
+  "decision": "DISPATCH",
+  "evidence_age_seconds": 6,
+  "receipt": {
+    "protocol": "capmesh/0.1",
+    "request_id": "5776367cd42b408e",
+    "status": "success",
+    "provider": "esp32-c6-96a2",
+    "capability": "state.observe",
+    "parameters": {
+      "location": "demo-gate"
+    },
+    "result": {
+      "metric": "gate.closed",
+      "sensor": "gpio9-contact",
+      "closed": false,
+      "stable_samples": 5,
+      "total_samples": 5
+    },
+    "started_at": 1790862937,
+    "completed_at": 1790862937,
+    "delivery_proof": null,
+    "authorization_ref": null,
+    "receipt_signature": "v2:404a4205ee7840b19cc2a0bd1e8516ce828cfb1228ebc790d6c375505c5046b3",
+    "error": null,
+    "nonce": 487430602
+  }
+}

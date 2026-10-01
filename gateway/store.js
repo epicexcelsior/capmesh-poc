@@ -6,7 +6,7 @@ export class PurchaseStore {
   constructor(path = '.local/purchases.sqlite') {
     if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
     this.db = new DatabaseSync(path);
-    this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;
+    this.db.exec(`PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL;
       CREATE TABLE IF NOT EXISTS purchases (
         id TEXT PRIMARY KEY, nonce INTEGER NOT NULL UNIQUE, location TEXT NOT NULL,
         max_age_seconds INTEGER NOT NULL, expires_at INTEGER NOT NULL, state TEXT NOT NULL,

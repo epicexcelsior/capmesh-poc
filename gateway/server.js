@@ -7,6 +7,7 @@ import { dirname, resolve } from 'node:path';
 import { HTTPFacilitatorClient, x402ResourceServer } from '@x402/core/server';
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader, encodePaymentResponseHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
+import { getTransactionDecoder } from '@solana/kit';
 import { PurchaseStore } from './store.js';
 
 export const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
@@ -41,7 +42,8 @@ export function observeHardware(purchase) {
   });
 }
 export async function createGateway({ paymentServer, store, observe = observeHardware,
-    origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false } = {}) {
+    origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false,
+    sensor = simulated ? 'simulated-contact' : 'gpio9-contact' } = {}) {
   const requirements = await paymentServer.buildPaymentRequirements({
     scheme: 'exact', price: { asset: USDC, amount: '1000' }, network: NETWORK, payTo,
   });
@@ -51,12 +53,16 @@ export async function createGateway({ paymentServer, store, observe = observeHar
   app.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
   app.get('/', (_req, res) => res.sendFile(resolve(root, 'docs/overview.html')));
   app.get('/assets/fieldproof-demo.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-demo.webm')));
+  app.get('/assets/fieldproof-walkthrough.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-walkthrough.webm')));
+  app.get('/assets/fieldproof-submission.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-submission.webm')));
+  app.get('/evidence/devnet-purchase.json', (_req, res) => res.sendFile(resolve(root, 'docs/evidence/devnet-purchase.json')));
+  app.get('/evidence/contact-states.json', (_req, res) => res.sendFile(resolve(root, 'docs/evidence/contact-states.json')));
   app.get('/health', (_req, res) => res.json({ ready: true, network: NETWORK, payTo,
     capability: 'state.observe', location: 'demo-gate', price_base_units: '1000',
-    mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
+    sensor, mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
   app.get('/demand', (_req, res) => res.json(store.demand()));
   app.get('/manifest', (_req, res) => res.json({ product: 'FieldProof', metric: 'gate.closed',
-    location: 'demo-gate', sensor: simulated ? 'simulated-contact' : 'gpio9-contact',
+    location: 'demo-gate', sensor,
     price: '0.001 USDC', confidence: null, create_request: '/requests' }));
   app.post('/requests', (req, res) => {
     const { nonce, location = 'demo-gate', max_age_seconds = 10 } = req.body || {};
@@ -91,7 +97,14 @@ export async function createGateway({ paymentServer, store, observe = observeHar
         typeof payload.payload?.transaction !== 'string' || payload.payload.transaction.length > 12000) {
       return challenge('Payment does not match this resource and its requirements');
     }
-    const proofHash = createHash('sha256').update(Buffer.from(payload.payload.transaction, 'base64')).digest('hex');
+    let proofHash;
+    try {
+      const bytes = Buffer.from(payload.payload.transaction, 'base64');
+      // The facilitator replaces its signature. Deduplicate the signed message, which defines the payment.
+      const message = simulated && bytes.toString('utf8').startsWith('FIELDPROOF-SIM:')
+        ? bytes : getTransactionDecoder().decode(bytes).messageBytes;
+      proofHash = createHash('sha256').update(message).digest('hex');
+    } catch { return challenge('Malformed Solana transaction'); }
     if (purchase.state !== 'quoted') {
       if (purchase.proof_hash !== proofHash) return res.status(409).json({ error: 'Purchase already uses another payment' });
       if (purchase.settlement) res.set('PAYMENT-RESPONSE', encodePaymentResponseHeader(JSON.parse(purchase.settlement)));

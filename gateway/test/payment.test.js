@@ -4,11 +4,16 @@ import { once } from 'node:events';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { spawn } from 'node:child_process';
+import { DatabaseSync } from 'node:sqlite';
+import { address, appendTransactionMessageInstruction, compileTransaction, createTransactionMessage,
+  generateKeyPairSigner, getAddressEncoder, getTransactionDecoder, getTransactionEncoder,
+  setTransactionMessageFeePayer, setTransactionMessageLifetimeUsingBlockhash } from '@solana/kit';
 import { createGateway, createPaymentServer, NETWORK, PAY_TO, USDC } from '../server.js';
 import { PurchaseStore } from '../store.js';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 
-async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:' } = {}) {
+async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact' } = {}) {
   const events = [];
   const facilitator = {
     getSupported: async () => ({ kinds: [{ x402Version: 2, scheme: 'exact', network: NETWORK, extra: { feePayer: PAY_TO } }], extensions: [], signers: {} }),
@@ -18,7 +23,7 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   };
   const paymentServer = await createPaymentServer(facilitator);
   const store = new PurchaseStore(path);
-  const app = await createGateway({ paymentServer, store, simulated: true, observe: async () => {
+  const app = await createGateway({ paymentServer, store, simulated: true, sensor, observe: async () => {
     events.push('measure');
     if (deliveryFails) throw new Error('device unavailable');
     return { decision: { decision: 'DISPATCH', evidence_mode: 'simulated' }, receipt: { simulated: true, completed_at: Math.floor(Date.now() / 1000) } };
@@ -36,11 +41,21 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
     assert.equal(response.status, 402);
     const challenge = decodePaymentRequiredHeader(response.headers.get('PAYMENT-REQUIRED'));
     return { route, request, payload: { x402Version: 2, accepted: challenge.accepts[0], resource: challenge.resource,
-      payload: { transaction: Buffer.from('simulated-signed-transaction').toString('base64') } }, challenge };
+      payload: { transaction: Buffer.from('FIELDPROOF-SIM:fixture-proof').toString('base64') } }, challenge };
   }
   const pay = (route, payload) => fetch(route, { headers: { 'PAYMENT-SIGNATURE': encodePaymentSignatureHeader(payload) } });
   return { url, events, store, purchase, pay };
 }
+
+test('physical contact metadata stays separate from simulated settlement', async t => {
+  const f = await fixture(t, { sensor: 'gpio9-contact' });
+  const health = await (await fetch(`${f.url}/health`)).json();
+  const manifest = await (await fetch(`${f.url}/manifest`)).json();
+  assert.equal(health.sensor, 'gpio9-contact');
+  assert.equal(manifest.sensor, 'gpio9-contact');
+  assert.equal(health.mode, 'simulated settlement; no funds moved');
+  assert.deepEqual(f.events, []);
+});
 
 test('unpaid and malformed payments never measure', async t => {
   const f = await fixture(t);
@@ -51,6 +66,8 @@ test('unpaid and malformed payments never measure', async t => {
   assert.deepEqual(f.events, []);
   const bad = await fetch(p.route, { headers: { 'PAYMENT-SIGNATURE': 'garbage' } });
   assert.equal(bad.status, 402);
+  p.payload.payload.transaction = Buffer.from('not-a-solana-transaction').toString('base64');
+  assert.equal((await f.pay(p.route, p.payload)).status, 402);
   assert.deepEqual(f.events, []);
 });
 test('wrong amount and resource fail before verification', async t => {
@@ -87,6 +104,37 @@ test('a second purchase cannot reuse the transaction by rewriting resource JSON'
   assert.equal((await f.pay(first.route, first.payload)).status, 200);
   const second = await f.purchase(456);
   assert.equal((await f.pay(second.route, second.payload)).status, 409);
+  assert.equal(f.events.filter(e => e === 'settle').length, 1);
+  assert.equal(f.events.filter(e => e === 'measure').length, 1);
+});
+test('changing the facilitator signature cannot purchase a second observation with the same signed message', async t => {
+  const buyer = await generateKeyPairSigner();
+  let message = setTransactionMessageFeePayer(address(PAY_TO), createTransactionMessage({ version: 0 }));
+  message = setTransactionMessageLifetimeUsingBlockhash({
+    blockhash: '11111111111111111111111111111111', lastValidBlockHeight: 100n,
+  }, message);
+  message = appendTransactionMessageInstruction({ programAddress: address('11111111111111111111111111111111'),
+    accounts: [{ address: buyer.address, role: 2 }], data: new Uint8Array() }, message);
+  const tx = compileTransaction(message);
+  const [signatures] = await buyer.signTransactions([tx]);
+  const original = Uint8Array.from(getTransactionEncoder().encode({ ...tx, signatures: { ...tx.signatures, ...signatures } }));
+  const altered = Uint8Array.from(original);
+  altered[1] ^= 1; // The facilitator replaces its own signature before broadcasting.
+  const decoded = getTransactionDecoder().decode(altered);
+  assert.deepEqual(decoded.messageBytes, tx.messageBytes);
+  const key = await crypto.subtle.importKey('raw', getAddressEncoder().encode(buyer.address), 'Ed25519', false, ['verify']);
+  assert.equal(await crypto.subtle.verify('Ed25519', key, decoded.signatures[buyer.address], decoded.messageBytes), true);
+  const f = await fixture(t);
+  const first = await f.purchase();
+  first.payload.payload.transaction = Buffer.from(original).toString('base64');
+  assert.equal((await f.pay(first.route, first.payload)).status, 200);
+  const second = await f.purchase(456);
+  second.payload.payload.transaction = Buffer.from(altered).toString('base64');
+  assert.equal((await f.pay(second.route, second.payload)).status, 409);
+  first.payload.payload.transaction = Buffer.from(altered).toString('base64');
+  const retry = await f.pay(first.route, first.payload);
+  assert.equal(retry.status, 200);
+  assert.equal((await retry.json()).evidence_cached, true);
   assert.equal(f.events.filter(e => e === 'settle').length, 1);
   assert.equal(f.events.filter(e => e === 'measure').length, 1);
 });
@@ -142,4 +190,29 @@ test('purchase ledger survives restart and enforces unique proof across writers'
     assert.equal(reopened.get('p1').state, 'settling');
     reopened.close(); concurrent.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('purchase ledger waits for a concurrent startup lock before enabling WAL', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-startup-'));
+  const path = join(dir, 'purchases.sqlite');
+  const writer = new DatabaseSync(path);
+  writer.exec('CREATE TABLE probe(id INTEGER); BEGIN EXCLUSIVE;');
+  const child = spawn(process.execPath, ['--input-type=module', '-e',
+    `import { PurchaseStore } from ${JSON.stringify(new URL('../store.js', import.meta.url).href)};
+     console.log('opening'); new PurchaseStore(process.argv[1]).close();`, path],
+    { stdio: ['ignore', 'pipe', 'pipe'] });
+  let stderr = '', release;
+  child.stderr.on('data', chunk => { stderr += chunk; });
+  const closed = once(child, 'close');
+  try {
+    await once(child.stdout, 'data');
+    release = setTimeout(() => writer.exec('COMMIT'), 200);
+    const [code] = await closed;
+    assert.equal(code, 0, stderr);
+  } finally {
+    clearTimeout(release);
+    if (writer.isTransaction) writer.exec('ROLLBACK');
+    writer.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
