@@ -45,11 +45,9 @@ The implementation stays in this Git repository. The existing `capmesh` Python p
 ## Track strategy
 
 Carlo's direction prioritizes Superteam Germany's Colosseum and peaq machine-economy tracks.
-The current listings identify Germany as the region. They list winner announcements on October 12 and October 27, 2026.
-These are announcement dates, not verified submission deadlines.
-Check the [MVP listing](https://superteam.fun/earn/listing/road-to-colosseum-hackathon-build-your-mvp)
-and [peaq listing](https://superteam.fun/earn/listing/build-solutions-advancing-the-machine-economy-with-peaq) before submission.
-The retrieved pages do not expose complete technical requirements. peaq integration and eligibility remain separate verification items.
+The [submission draft](SUBMISSION.md) records verified requirements and deadlines from both complete rendered listings.
+The real Devnet purchase and human contact-state checks now pass. Public links and submission account details remain owner tasks.
+Native peaq activation is not an explicit mandatory requirement. Current official Solana onboarding remains paused.
 
 ## Scope after the overnight MVP
 

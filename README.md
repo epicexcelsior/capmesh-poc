@@ -6,7 +6,8 @@ FieldProof asks whether a demo gate is open, buys a contact observation, checks 
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Watch the [69-second simulation](docs/assets/fieldproof-demo.webm). Start with the [overview](docs/OVERVIEW.md), [interactive dispatch desk](docs/overview.html), and [MVP plan](docs/MVP_PLAN.md).
+Watch the [2:30 live walkthrough](docs/assets/fieldproof-submission.webm). It includes a real BLE observation with simulated payment. Start with the [overview](docs/OVERVIEW.md), [interactive dispatch desk](docs/overview.html), and [MVP plan](docs/MVP_PLAN.md).
+The [submission draft](docs/SUBMISSION.md) records actual track deadlines and remaining required fields.
 
 ## Run without hardware
 
@@ -56,7 +57,7 @@ npm run demo -- --physical
 
 Hold BOOT while the observation runs to represent a closed contact. Release BOOT to represent an open contact.
 Do not hold BOOT during reset or flashing. GPIO9 is a boot strap.
-The press/release demonstration still needs human verification. Automated tests verify live input sampling with the button released.
+Human press/release verification passed: held BOOT produced CLOSED/WAIT, and released BOOT produced OPEN/DISPATCH. Both states returned five matching samples.
 
 ## Run the Devnet payment gateway
 
@@ -67,7 +68,8 @@ npm start
 
 The gateway binds to `127.0.0.1:4021`. It offers x402 V2 `exact` payment for 1,000 base units of Devnet USDC.
 An unpaid request returns `402` and `PAYMENT-REQUIRED`. Verification and successful settlement precede measurement.
-The public facilitator's unpaid challenge is verified. A successful payment through that facilitator is not yet verified.
+A public-facilitator purchase completed on October 1, 2026. Independent Devnet RPC checks confirmed the exact USDC transfer before the physical measurement.
+See the [transaction and receipt](docs/evidence/devnet-purchase.json) and [physical state checks](docs/evidence/contact-states.json).
 
 Create a purchase with `POST /requests` and a positive 32-bit `nonce`.
 Request its `observe_url` with a compatible x402 client.

@@ -12,7 +12,20 @@ To reproduce it, start open and closed simulators on ports 4022 and 4024.
 Run `node scripts/record_demo.cjs /path/to/installed/playwright` from the repository root.
 Playwright requires its installed Chromium browser.
 
-## 90-second judging script
+The MVP track requires a 2–3 minute video. The [2:30 presentation](assets/fieldproof-walkthrough.webm) meets that length.
+It combines unchanged simulator footage with explanatory title cards. It has no audio.
+Run `python3 scripts/build_walkthrough.py` to reproduce it with ffmpeg, ffprobe, and the system Lato fonts.
+The build checks the source hash and duration. It replaces the local artifact only after those checks pass.
+The [submission draft](SUBMISSION.md) contains its scene sequence and the unresolved submission fields.
+
+The extended recorder expects gateways on ports 4021, 4022, 4023, and 4024.
+Port 4023 uses real BLE contact with simulated settlement. Port 4024 simulates a closed contact.
+Run `node scripts/record_demo.cjs /path/to/installed/playwright docs/assets --submission`.
+The recorder preserves the final artifact only after every scene passes. The [2:30 live walkthrough](assets/fieldproof-submission.webm) passed all scenes.
+It includes a real BLE observation with simulated payment. It predates the verified public payment and human state-change checks.
+The current script uses an updated quote caption. Add the newer evidence before uploading a final submission video.
+
+## Short rehearsal script
 
 1. Open the dispatch desk at `http://127.0.0.1:4022` after `npm run demo` in `gateway`.
 2. Explain the question: an autonomous vehicle needs fresh gate state before it moves.
@@ -39,7 +52,7 @@ For closed-contact rehearsal, restart the simulator with `npm run demo -- --clos
 8. Check OPEN and DISPATCH.
 
 Do not press Reset while you hold BOOT. This combination can enter the ROM download mode.
-This human press/release sequence remains unverified until someone physically performs it.
+This human press/release sequence passed on October 1, 2026. [Both authenticated receipts](evidence/contact-states.json) record the results.
 
 ## Public-facilitator payment
 
@@ -49,8 +62,10 @@ This human press/release sequence remains unverified until someone physically pe
 4. Preserve the purchase ID, settlement transaction, authenticated receipt, and buyer decision.
 5. Check the transaction on Devnet before you claim an on-chain integration result.
 
+If the connection or evidence delivery fails, keep the purchase ID from the buyer error. Review it before another payment.
 The keypair stays outside the repository. The client accepts only loopback endpoints and 0.001 USDC on the configured Devnet mint.
-This successful payment gate remains unfinished. No funded buyer key is configured for this run.
+This successful payment gate passed on October 1, 2026. The user funded the disposable buyer through the supported faucet interface.
+Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer. [Payment evidence](evidence/devnet-purchase.json) records the result.
 
 ## Failure review
 
