@@ -46,7 +46,7 @@ The implementation stays in this Git repository. The existing `capmesh` Python p
 
 Carlo's direction prioritizes Superteam Germany's Colosseum and peaq machine-economy tracks.
 The [submission draft](SUBMISSION.md) records verified requirements and deadlines from both complete rendered listings.
-The real Devnet purchase and human contact-state checks now pass. Public links and submission account details remain owner tasks.
+The real Devnet purchase and human contact-state checks now pass. The repository is public. Presentation, Colosseum, and contact details remain owner tasks.
 Native peaq activation is not an explicit mandatory requirement. Current official Solana onboarding remains paused.
 
 ## Scope after the overnight MVP

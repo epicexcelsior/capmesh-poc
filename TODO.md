@@ -25,7 +25,8 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Produce and inspect a 2:30 presentation from the verified simulator recording and explanatory title cards.
 - [ ] Smaller follow-up: add verified paid-chain and human input-change evidence to the video. Refresh its earlier pending-payment captions.
 - [x] Prepare local submission text against verified track requirements.
-- [ ] Provide authorized public review links, Colosseum project details, and submission contact.
+- [x] Push the repository and make it public: https://github.com/epicexcelsior/capmesh-poc
+- [ ] Provide test access, presentation link, Colosseum project details, and submission contact.
 - [x] Preserve the buyer purchase ID after a lost payment connection or truncated delivery.
 - [x] Run the full current gateway suite: 20 tests pass with local sockets available.
 - [x] Preserve purchase identity, buyer policy, metadata, recovery, recordings, evidence, and current documentation in local commits.

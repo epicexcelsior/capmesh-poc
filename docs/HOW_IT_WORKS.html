@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FieldProof — How it works and how to run it</title>
+<style>
+:root{--fog:#eef4f8;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9;--dim:#39576b}
+*{box-sizing:border-box}body{margin:0;background:var(--fog);color:var(--ink);font:17px/1.55 system-ui,sans-serif}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
+.brand{font-weight:800;letter-spacing:-.03em;font-size:24px}.utility,code,pre,.label,.tag,th{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}.label{text-transform:uppercase;letter-spacing:.07em;color:var(--sea)}
+h1{font:clamp(40px,6vw,66px)/1.02 Impact,'Arial Narrow',sans-serif;letter-spacing:.01em;margin:14px 0 20px;max-width:900px}
+h2{font-size:27px;line-height:1.18;margin:0 0 10px}h3{font-size:18px;margin:22px 0 6px}
+p{max-width:78ch}a{color:var(--sea)}.lead{font-size:21px;max-width:800px}
+.tag{font-size:12px;background:#d4e5ed;padding:7px 10px;display:inline-block}
+.section{border-top:1px solid var(--line);margin-top:40px;padding-top:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.note{font-size:14px;color:var(--dim);max-width:80ch}.notice{border-left:4px solid var(--amber);padding:10px 18px;background:#fff8e9;max-width:86ch}
+.ok{border-left:4px solid var(--teal);padding:10px 18px;background:#eaf6f2;max-width:86ch}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}td,th{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--sea)}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12.5px;background:#183146;color:#eef4f8;padding:16px;overflow:auto;margin:10px 0}
+code{background:#dfebf1;padding:1px 5px;font-size:13.5px}
+ol.flow,ul.plain{max-width:82ch;padding-left:22px}ol.flow li,ul.plain li{margin:7px 0}
+.steps{counter-reset:s;list-style:none;padding:0;max-width:88ch}
+.steps>li{counter-increment:s;position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--line)}
+.steps>li:before{content:counter(s);position:absolute;left:0;top:14px;width:34px;height:34px;background:var(--sea);color:#fff;font:700 15px/34px ui-monospace,monospace;text-align:center}
+.steps>li b{display:block;font-size:17px;margin-bottom:2px}
+.branch{font-size:14px;color:var(--dim);border-left:3px solid var(--line);padding-left:12px;margin-top:6px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
+.card{background:#fff;border:1px solid var(--line);padding:16px}.card strong{display:block;font-size:24px;font-family:ui-monospace,monospace}.card span{font-size:13px;color:var(--dim)}
+.dl{display:grid;grid-template-columns:200px 1fr;gap:6px 18px;font-size:15px;max-width:900px}.dl dt{font-family:ui-monospace,monospace;font-size:13px;color:var(--sea)}.dl dd{margin:0}
+.pill{display:inline-block;font:600 12px ui-monospace,monospace;padding:3px 8px;border:1px solid var(--line);background:#fff;margin:2px 4px 2px 0}
+.pill.real{border-color:var(--teal);color:var(--teal)}.pill.sim{border-color:var(--amber);color:var(--amber)}
+ul.toc{list-style:none;padding:0;columns:2;font-size:15px;max-width:820px}ul.toc li{margin:5px 0;break-inside:avoid}
+footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-top:44px}
+@media(max-width:860px){.grid,.grid3,.cards{grid-template-columns:1fr}.dl{grid-template-columns:1fr}ul.toc{columns:1}header,main,footer{padding:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">FieldProof<span class="utility"> / how it works</span></div>
+<span class="tag">SELF-CONTAINED REFERENCE · OFFLINE OK</span>
+</header>
+<main>
+
+<section>
+<div class="label">Physical evidence before an autonomous agent acts</div>
+<h1>Ask the gate.<br>Pay for the answer.<br>Check it before you move.</h1>
+<p class="lead">FieldProof buys a fresh reading of one physical contact, proves the reading answers the exact question that was paid for, proves it is not old, and returns <code>DISPATCH</code> or <code>WAIT</code>.</p>
+<p>This page is the complete reference. It covers the parts the 2:30 video does not reach: the wire protocol, the payment state machine, the failure and recovery paths, the test suites, the threat model, and the exact commands to run every mode yourself.</p>
+<ul class="toc">
+<li><a href="#special">What makes it special</a></li>
+<li><a href="#run">Run it yourself</a></li>
+<li><a href="#purchase">Anatomy of one purchase</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#protocol">The wire protocol</a></li>
+<li><a href="#payment">Payment and recovery</a></li>
+<li><a href="#device">What the device does</a></li>
+<li><a href="#verified">Verified results</a></li>
+<li><a href="#suite">Test suites</a></li>
+<li><a href="#build">What the last six commits built</a></li>
+<li><a href="#limits">Threat model and limits</a></li>
+<li><a href="#judge">Five-minute demo script</a></li>
+<li><a href="#map">Repository map</a></li>
+<li><a href="#gaps">Deadlines and open items</a></li>
+</ul>
+</section>
+
+<section class="section" id="special">
+<div class="label">01 · Position</div>
+<h2>What makes it special</h2>
+<div class="grid">
+<div>
+<h3>It buys a physical fact, not a data stream</h3>
+<p>The market is one observation of one contact at one location, priced at 0.001 Devnet USDC. The buyer pays before the sensor is read. The sensor is read only after the payment succeeds.</p>
+<h3>The evidence carries its own question</h3>
+<p>Every receipt is bound to the challenge nonce, device, location, metric, and time that produced it. An old answer cannot satisfy a new challenge. A changed answer fails its signature.</p>
+<h3>Failure is a state, not an exception</h3>
+<p>The gateway persists seven purchase states in SQLite. A crash during settlement or measurement leaves a reviewable state. Nothing retries an external side effect automatically.</p>
+</div>
+<div>
+<h3>Three independent implementations must agree</h3>
+<p>Firmware C, host Python, and buyer JavaScript each build the same canonical authentication string. A change in one breaks the tests in the others.</p>
+<h3>The honest claims are written down</h3>
+<p>The product does not claim occupancy sensing, location attestation, calibrated confidence, or independent corroboration. The limits are in the docs, not hidden.</p>
+<h3>It runs with no hardware at all</h3>
+<p>A reviewer with only Python and Node can execute the full adversarial loop and the payment gate in under two minutes.</p>
+</div>
+</div>
+<div class="notice"><b>Scope of the stand-in.</b> The ESP32-C6 BOOT button on GPIO9 represents a gate contact. FieldProof does not control a vehicle. <code>DISPATCH</code> is a demo recommendation over one contact.</div>
+</section>
+
+<section class="section" id="run">
+<div class="label">02 · Setup</div>
+<h2>Run it yourself</h2>
+<p>Prerequisites for every mode: <b>Python 3.10+</b>, <b>uv</b>, and <b>Node.js 22.13+</b> with built-in <code>node:sqlite</code>. Firmware work additionally needs <b>ESP-IDF 6.1</b> and <b>esptool 5.4</b>.</p>
+<table>
+<tr><th>Mode</th><th>Command</th><th>Port</th><th>Payment</th><th>Contact</th></tr>
+<tr><td>CLI adversarial loop</td><td><code>uv run --project host capmesh observe-demo --simulated</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>CLI closed contact</td><td><code>uv run --project host capmesh observe-demo --simulated --closed</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>CLI real hardware</td><td><code>uv run --project host capmesh observe-demo</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
+<tr><td>Browser simulator</td><td><code>cd gateway &amp;&amp; npm run demo</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>Browser + real contact</td><td><code>cd gateway &amp;&amp; npm run demo -- --physical</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
+<tr><td>Real payment gateway</td><td><code>cd gateway &amp;&amp; npm start</code></td><td>4021</td><td><span class="pill real">Solana Devnet USDC</span></td><td><span class="pill real">ESP32 after settlement</span></td></tr>
+</table>
+<p class="note">The recorder expects four gateways at once: 4021 real payment, 4022 open simulator, 4023 real contact with simulated settlement, and 4024 closed simulator.</p>
+
+<h3>Step by step — no hardware</h3>
+<ol class="steps">
+<li><b>Install the Python environment</b><code>uv sync --project host</code></li>
+<li><b>Run the adversarial CLI loop</b><code>uv run --project host capmesh observe-demo --simulated</code>
+<div class="branch">Watch it reject a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request. It also records served and unmet demand.</div></li>
+<li><b>Install the gateway</b><code>cd gateway &amp;&amp; npm ci</code></li>
+<li><b>Start the browser simulator</b><code>npm run demo</code></li>
+<li><b>Open the dispatch desk</b><code>http://127.0.0.1:4022</code>
+<div class="branch">Select <b>Get payment quote</b> to see the 402 response. Then select <b>Run simulation</b>. Wait eleven seconds to watch <code>WAIT</code> appear when evidence expires.</div></li>
+<li><b>Rehearse the closed state</b><code>npm run demo -- --closed</code></li>
+<li><b>Run every test</b><code>uv run --project host pytest -q</code> then <code>cd gateway &amp;&amp; npm test</code></li>
+</ol>
+
+<h3>Step by step — with the ESP32</h3>
+<ol class="steps">
+<li><b>Close other BLE scans</b>Live mode fails when the board is busy. It never substitutes simulated hardware.</li>
+<li><b>Build and flash</b><code>source "$IDF_PATH/export.sh"</code><code>cd firmware/esp32 &amp;&amp; idf.py build &amp;&amp; idf.py -p /dev/ttyACM0 flash</code>
+<div class="branch">Do not hold BOOT during reset or flashing. GPIO9 is a boot strap pin.</div></li>
+<li><b>Confirm the observation path</b><code>uv run --project host capmesh observe-demo</code>
+<div class="branch">Check <code>evidence_mode: physical-contact-demo</code> and <code>sample_agreement: 5/5</code>.</div></li>
+<li><b>Browser with real contact</b><code>cd gateway &amp;&amp; npm run demo -- --physical</code></li>
+<li><b>Prove both states</b>Hold BOOT while you run the observation. Check <code>CLOSED</code> and <code>WAIT</code>. Release BOOT, create a new quote, run another observation, and check <code>OPEN</code> and <code>DISPATCH</code>.</li>
+<li><b>Run the hardware suite</b><code>uv run --project host pytest -q --hardware</code></li>
+</ol>
+<p class="note">Alternative transport: connect to the board's <code>CAPMESH_96A2</code> access point and pass <code>--http-url http://192.168.4.1</code>. On Linux with overlapping VPN routes, add <code>--http-interface</code> with your Wi-Fi interface name.</p>
+
+<h3>Step by step — real Devnet payment</h3>
+<ol class="steps">
+<li><b>Start the public gateway</b><code>cd gateway &amp;&amp; npm start</code><div class="branch">Binds to <code>127.0.0.1:4021</code>. Offers x402 V2 <code>exact</code> payment for 1,000 base units of Devnet USDC.</div></li>
+<li><b>Fund a disposable buyer</b>Use a throwaway Solana CLI keypair and the Devnet faucet. Never use a funded mainnet keypair.</li>
+<li><b>Create a purchase</b><code>curl -X POST http://127.0.0.1:4021/requests -H 'Content-Type: application/json' -d '{"nonce":123456}'</code></li>
+<li><b>Pay and verify</b><code>node buyer.js /path/to/disposable.keypair.json</code>
+<div class="branch">The client rejects other networks, other assets, other recipients, and any amount above 0.001 USDC. It prints no key material.</div></li>
+<li><b>Check the chain yourself</b>Search the printed transaction signature on Devnet before you claim an on-chain result.</li>
+</ol>
+<div class="ok"><b>What already passed.</b> A public-facilitator purchase completed on October 1, 2026. Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer before the physical measurement. See <a href="evidence/devnet-purchase.json">the recorded transaction</a>.</div>
+</section>
+
+<section class="section" id="purchase">
+<div class="label">03 · Flow</div>
+<h2>Anatomy of one purchase</h2>
+<p>This is the whole product in ten steps. Each step names the file that owns it.</p>
+<ol class="steps">
+<li><b>The buyer creates an immutable challenge</b><code>gateway/server.js · POST /requests</code>
+<div class="branch">A positive 32-bit nonce becomes part of a stored purchase ID. The challenge cannot be edited after creation.</div></li>
+<li><b>The buyer asks for the observation URL</b><code>GET /observe/:id</code> returns <code>402 Payment Required</code> with the exact amount, network, asset, and recipient.</li>
+<li><b>The buyer refuses a changed contract</b><code>gateway/buyer.js</code>
+<div class="branch">Before any money moves, the client re-reads the quote. If the gateway widened the freshness limit, moved the location, changed the endpoint, or raised the price, the purchase stops here.</div></li>
+<li><b>The buyer signs and settles</b>The x402 V2 SDK and Solana Kit build the transaction. The gateway verifies, reserves a unique proof, and settles on Devnet.</li>
+<li><b>The gateway marks the purchase as measuring</b><code>gateway/store.js</code>
+<div class="branch">An atomic reservation moves <code>quoted</code> to <code>settling</code> before the external call. Only the writer holding the reservation may settle and measure.</div></li>
+<li><b>The device authenticates the request</b><code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code>
+<div class="branch">It rebuilds the canonical request string, checks the HMAC, checks the expiration, and checks the replay table. Rejection returns <code>AUTH_INVALID</code>, <code>AUTH_EXPIRED</code>, <code>NONCE_CACHE_FULL</code>, or <code>BUSY</code>.</div></li>
+<li><b>The device samples GPIO9 five times</b><code>firmware/esp32/main/capabilities/contact_capability.c</code>
+<div class="branch">Roughly 10 milliseconds apart. <code>closed=true</code> means GPIO9 reads low. <code>stable_samples</code> counts samples that match the first sample.</div></li>
+<li><b>The receipt is signed and returned</b>The device builds the canonical observation string over every result field and prefixes the digest with <code>v2:</code>. The receipt fits a 512-byte BLE characteristic.</li>
+<li><b>The buyer runs nine checks</b><code>gateway/buyer.js</code> — see the protocol section below. Any failure produces <code>WAIT</code>.</li>
+<li><b>The buyer derives the decision</b>Open plus fresh plus authenticated produces <code>DISPATCH</code>. Closed, missing, stale, replayed, or invalid produces <code>WAIT</code>. Confidence stays <code>null</code>.</li>
+</ol>
+<h3>Where the flow deliberately breaks</h3>
+<table>
+<tr><th>Failure</th><th>Stored state</th><th>What the system does</th></tr>
+<tr><td>Settlement throws or times out</td><td><code>settlement_unknown</code></td><td>Preserved for review. No automatic repetition of the payment.</td></tr>
+<tr><td>Facilitator returns an error</td><td><code>payment_failed</code></td><td>No measurement happens. The buyer keeps the purchase ID in its error.</td></tr>
+<tr><td>Payment succeeded, device unreachable</td><td><code>delivery_failed</code></td><td>The settled transaction is preserved for refund review. Automatic refunds do not exist.</td></tr>
+<tr><td>Crash during measurement</td><td><code>measuring</code></td><td>Preserved. Inspect device logs. Never settle again for this purchase.</td></tr>
+<tr><td>Client loses the connection</td><td>unchanged</td><td>The next call to the same purchase returns the original receipt without a second settlement.</td></tr>
+</table>
+</section>
+
+<section class="section" id="architecture">
+<div class="label">04 · Structure</div>
+<h2>Architecture</h2>
+<svg viewBox="0 0 1000 400" width="100%" role="img" aria-label="Flow from buyer challenge through the x402 gateway to Solana Devnet and the Python bridge to the ESP32, returning a signed receipt to the buyer verifier" style="max-width:100%;height:auto;background:#fff;border:1px solid #becfd9">
+<g font-family="ui-monospace,monospace" font-size="13">
+<rect x="20" y="30" width="190" height="70" fill="#dfebf1" stroke="#183146" stroke-width="2"/>
+<text x="115" y="58" text-anchor="middle" font-weight="700">Buyer</text>
+<text x="115" y="80" text-anchor="middle" font-size="11">gateway/buyer.js</text>
+
+<rect x="300" y="30" width="200" height="70" fill="#fff" stroke="#183146" stroke-width="2"/>
+<text x="400" y="58" text-anchor="middle" font-weight="700">x402 gateway</text>
+<text x="400" y="80" text-anchor="middle" font-size="11">gateway/server.js</text>
+
+<rect x="620" y="30" width="200" height="70" fill="#fff" stroke="#146b8d" stroke-width="2"/>
+<text x="720" y="58" text-anchor="middle" font-weight="700">Solana Devnet</text>
+<text x="720" y="80" text-anchor="middle" font-size="11">public facilitator</text>
+
+<rect x="300" y="150" width="200" height="70" fill="#fff" stroke="#183146" stroke-width="2"/>
+<text x="400" y="178" text-anchor="middle" font-weight="700">Python bridge</text>
+<text x="400" y="200" text-anchor="middle" font-size="11">host/capmesh</text>
+
+<rect x="620" y="150" width="200" height="70" fill="#dfebf1" stroke="#183146" stroke-width="2"/>
+<text x="720" y="178" text-anchor="middle" font-weight="700">ESP32-C6</text>
+<text x="720" y="200" text-anchor="middle" font-size="11">GPIO9 contact · 5 samples</text>
+
+<rect x="300" y="270" width="200" height="70" fill="#fff" stroke="#067b65" stroke-width="2"/>
+<text x="400" y="298" text-anchor="middle" font-weight="700">SQLite ledger</text>
+<text x="400" y="320" text-anchor="middle" font-size="11">gateway/store.js · WAL</text>
+
+<rect x="620" y="270" width="200" height="70" fill="#fff" stroke="#183146" stroke-width="2"/>
+<text x="720" y="298" text-anchor="middle" font-weight="700">Buyer verifier</text>
+<text x="720" y="320" text-anchor="middle" font-size="11">9 checks → DISPATCH / WAIT</text>
+
+<g stroke="#183146" stroke-width="1.6" fill="none" marker-end="url(#a)">
+<line x1="210" y1="65" x2="294" y2="65"/>
+<line x1="500" y1="65" x2="614" y2="65"/>
+<line x1="400" y1="100" x2="400" y2="144"/>
+<line x1="500" y1="185" x2="614" y2="185"/>
+<line x1="400" y1="220" x2="400" y2="264"/>
+</g>
+<g stroke="#146b8d" stroke-width="1.6" fill="none" marker-end="url(#b)">
+<line x1="720" y1="220" x2="720" y2="264"/>
+<path d="M620 305 L540 305 L540 65 L500 65" fill="none"/>
+</g>
+<defs>
+<marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#183146"/></marker>
+<marker id="b" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#146b8d"/></marker>
+</defs>
+<text x="240" y="55" font-size="10" fill="#39576b">402 quote</text>
+<text x="520" y="55" font-size="10" fill="#39576b">verify + settle</text>
+<text x="415" y="130" font-size="10" fill="#39576b">auth request</text>
+<text x="520" y="175" font-size="10" fill="#39576b">BLE / HTTP</text>
+<text x="415" y="250" font-size="10" fill="#39576b">persist</text>
+<text x="735" y="250" font-size="10" fill="#39576b">signed receipt</text>
+<text x="300" y="298" font-size="10" fill="#39576b">decision</text>
+</g>
+</svg>
+
+<h3>Components</h3>
+<table>
+<tr><th>Component</th><th>Responsibility</th><th>Source</th></tr>
+<tr><td>Contact capability</td><td>Sample GPIO9 without driving the boot strap</td><td><code>firmware/esp32/main/capabilities/contact_capability.c</code></td></tr>
+<tr><td>Dispatcher</td><td>Authorize, serialize transport access, protect replay state, sign receipts</td><td><code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code></td></tr>
+<tr><td>Transport</td><td>Carry the same request and receipt over BLE or HTTP</td><td><code>host/capmesh/transport/</code>, <code>firmware/esp32/main/transport/</code></td></tr>
+<tr><td>Observation contract</td><td>Pin metric, location, budget, and freshness</td><td><code>host/capmesh/observations.py</code></td></tr>
+<tr><td>Rehearsal market</td><td>Try candidates by price, reject stale evidence, record demand</td><td><code>host/capmesh/market.py</code></td></tr>
+<tr><td>Gateway</td><td>Enforce x402 verification and settlement before measurement</td><td><code>gateway/server.js</code></td></tr>
+<tr><td>Purchase ledger</td><td>Prevent duplicate settlement and preserve failure states</td><td><code>gateway/store.js</code></td></tr>
+<tr><td>Paid buyer</td><td>Limit Devnet spending and check the receipt independently</td><td><code>gateway/buyer.js</code></td></tr>
+<tr><td>Dispatch desk</td><td>Show quote, evidence, decision, age, limits, and demand</td><td><code>docs/overview.html</code></td></tr>
+</table>
+<h3>Trust boundaries</h3>
+<ul class="plain">
+<li>A manifest cannot establish its own provider identity. The buyer pins a known device ID and demo key.</li>
+<li>The shared public HMAC key authenticates the wire fields of this demonstration. It cannot resist a hostile reader of this repository.</li>
+<li>Production needs per-device provisioning or asymmetric identity with a protected private key.</li>
+<li>The device timestamp derives from an authenticated host request and uptime. It is not independent time attestation.</li>
+<li>The receipt establishes what this firmware reports about its GPIO samples. It does not establish external physical truth.</li>
+</ul>
+</section>
+
+<section class="section" id="protocol">
+<div class="label">05 · Wire format</div>
+<h2>The wire protocol</h2>
+<p>Envelope <code>capmesh/0.1</code>. Capability <code>state.observe</code>. Provisioned metric <code>gate.closed</code>. Provisioned location <code>demo-gate</code>. Sensor <code>gpio9-contact</code>.</p>
+
+<h3>Request</h3>
+<pre>{
+  "protocol": "capmesh/0.1",
+  "request_id": "obs-00000001",
+  "device_id": "esp32-c6-96a2",
+  "capability": "state.observe",
+  "parameters": {"location": "demo-gate"},
+  "nonce": 1,
+  "timestamp": 1790807040,
+  "expiration": 1790807070,
+  "authorization": {"type": "hmac-sha256-v2", "token": "64-lowercase-hex-characters"}
+}</pre>
+<table>
+<tr><th>Field</th><th>Rule</th></tr>
+<tr><td><code>request_id</code></td><td>1–16 ASCII letters, digits, hyphens, or underscores.</td></tr>
+<tr><td><code>nonce</code></td><td>Integer from 1 to 2,147,483,647. Fractional JSON numbers fail validation.</td></tr>
+<tr><td><code>expiration</code></td><td>Follows <code>timestamp</code> by at most 300 seconds.</td></tr>
+<tr><td>Location</td><td>Only the single provisioned location is accepted.</td></tr>
+</table>
+
+<h3>The two canonical strings</h3>
+<p>Both sides must produce byte-identical UTF-8 messages. Field names are replaced by values. Integers are decimal with no padding. JSON field order does not matter.</p>
+<pre>fieldproof-auth-v1|request_id|device_id|state.observe|location|nonce|timestamp|expiration</pre>
+<pre>fieldproof-observation-v1|protocol|request_id|provider|capability|location|nonce|
+metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
+<p class="note"><code>closed</code> is encoded as <code>0</code> or <code>1</code>. The receipt digest is lowercase hex prefixed with <code>v2:</code> in <code>receipt_signature</code>. Simulated receipts use <code>simulated-contact</code> as the sensor, so the buyer labels them visibly.</p>
+<div class="notice"><b>Three implementations must agree.</b> The canonical strings are built independently in <code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code>, <code>host/capmesh/protocol/auth.py</code>, and <code>gateway/buyer.js</code>. A change in any one of them fails the suites in the others.</div>
+
+<h3>The nine buyer checks</h3>
+<table>
+<tr><th>#</th><th>Check</th><th>Rejects</th></tr>
+<tr><td>1</td><td>The provider key exists in buyer configuration</td><td>An unknown or rogue provider</td></tr>
+<tr><td>2</td><td>Protocol, request ID, provider, capability, nonce, and location match the challenge</td><td>A receipt that answers a different question</td></tr>
+<tr><td>3</td><td>The receipt authenticator matches the observation fields</td><td>Any changed result or forged proof</td></tr>
+<tr><td>4</td><td>Sensor and metric match the contact contract</td><td>A substituted sensor or metric</td></tr>
+<tr><td>5</td><td>All five samples agree and the state is a JSON boolean</td><td>Unstable evidence</td></tr>
+<tr><td>6</td><td>Measurement starts after the challenge, with at most two seconds of clock tolerance</td><td>Evidence from before the question</td></tr>
+<tr><td>7</td><td>Completion follows start and is not more than two seconds in the future</td><td>Impossible timestamps</td></tr>
+<tr><td>8</td><td>Evidence age fits the contract and the request has not expired</td><td>Stale or expired evidence</td></tr>
+<tr><td>9</td><td>This provider and nonce pair has not been consumed</td><td>A replayed response</td></tr>
+</table>
+<p>Fresh open evidence produces <code>DISPATCH</code>. Closed, missing, stale, or invalid evidence produces <code>WAIT</code>. Confidence stays <code>null</code>.</p>
+
+<h3>Device replay and concurrency</h3>
+<ul class="plain">
+<li>BLE and HTTP share one dispatcher mutex and one replay table.</li>
+<li>The device keeps 64 nonce and expiration pairs. It never evicts an unexpired authorization to admit another request.</li>
+<li>A full table returns <code>NONCE_CACHE_FULL</code>. Concurrent dispatch returns <code>BUSY</code>.</li>
+<li>Reboot clears the table and the time anchor. The first authenticated request anchors epoch time to monotonic uptime.</li>
+</ul>
+<h3>Gateway endpoints</h3>
+<dl class="dl">
+<dt>POST /requests</dt><dd>Create an immutable challenge and purchase ID.</dd>
+<dt>GET /observe/:id</dt><dd>Return a 402 quote, or verify and settle a matching x402 V2 payment.</dd>
+<dt>GET /manifest</dt><dd>Describe the single contact observation.</dd>
+<dt>GET /demand</dt><dd>Summarize local purchase states.</dd>
+<dt>GET /health</dt><dd>Identify the configured payment and evidence mode.</dd>
+<dt>POST /simulate/:id</dt><dd>Simulated server only. Exercise the same purchase handler with fake settlement.</dd>
+</dl>
+</section>
+
+<section class="section" id="payment">
+<div class="label">06 · Money</div>
+<h2>Payment and recovery</h2>
+<p>The gateway pins the network, the USDC mint, the merchant, the exact scheme, and 1,000 base units. It matches the payment resource to the stored purchase and checks every advertised requirement.</p>
+
+<h3>What is real and what is simulated</h3>
+<table>
+<tr><th>Path</th><th>Settlement</th><th>Moves funds</th><th>Trust it as</th></tr>
+<tr><td><code>npm start</code></td><td>Public x402 facilitator on Solana Devnet</td><td>Yes — real Devnet USDC</td><td>On-chain integration result</td></tr>
+<tr><td><code>npm run demo</code></td><td>Fake facilitator through the real x402 SDK</td><td>No</td><td>Protocol rehearsal only</td></tr>
+<tr><td><code>capmesh observe-demo</code></td><td>Mock budget in process</td><td>No</td><td>Adversarial loop rehearsal only</td></tr>
+</table>
+<div class="notice"><b>Never describe a simulated payment as an on-chain result.</b> The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.</div>
+
+<h3>Proof uniqueness</h3>
+<ul class="plain">
+<li>The gateway hashes the decoded signed transaction message and reserves it before settlement.</li>
+<li>The hash excludes signature bytes, because the facilitator can replace its signature without creating another payment.</li>
+<li>Signature variants cannot authorize a second purchase with the same signed message.</li>
+<li>Rewriting the resource JSON cannot authorize a second purchase with the same transaction message.</li>
+<li>Solana transaction signatures do not sign HTTP resource metadata. This gateway ledger enforces the purchase binding.</li>
+</ul>
+
+<h3>The seven purchase states</h3>
+<table>
+<tr><th>State</th><th>Meaning</th><th>Next action</th></tr>
+<tr><td><code>quoted</code></td><td>Challenge created, nothing paid</td><td>Pay or abandon</td></tr>
+<tr><td><code>settling</code></td><td>Atomic reservation held, external call in flight</td><td>Wait. Do not start a second settlement</td></tr>
+<tr><td><code>payment_failed</code></td><td>Facilitator rejected the payment</td><td>No measurement happened. Review before retry</td></tr>
+<tr><td><code>settlement_unknown</code></td><td>Outcome unknown after timeout or crash</td><td>Preserve the purchase ID. Check the chain</td></tr>
+<tr><td><code>measuring</code></td><td>Settled, device measurement in flight</td><td>Inspect device logs. Never settle again</td></tr>
+<tr><td><code>delivered</code></td><td>Receipt persisted</td><td>Retry returns the original receipt</td></tr>
+<tr><td><code>delivery_failed</code></td><td>Settled but evidence unavailable</td><td>Refund review. Automatic refunds do not exist</td></tr>
+</table>
+<p class="note">A retry returns the original receipt and marks it cached. It does not refresh the timestamp. The browser re-checks age and sets <code>WAIT</code> when the freshness window closes.</p>
+
+<h3>Buyer safety rails</h3>
+<ul class="plain">
+<li>The client accepts only loopback endpoints.</li><li>It rejects other networks, assets, recipients, and amounts above 0.001 USDC.</li><li>It never prints key material.</li>
+<li>It re-reads the quote after payment and fails if the gateway changed the challenge, location, freshness limit, or endpoint.</li>
+<li>On any failure it preserves and prints the purchase ID for review.</li>
+</ul>
+</section>
+
+<section class="section" id="device">
+<div class="label">07 · Firmware</div>
+<h2>What the device does</h2>
+<div class="grid">
+<div>
+<h3>Board</h3>
+<dl class="dl">
+<dt>Chip</dt><dd>ESP32-C6FH4 revision v0.2, 4 MB embedded flash</dd>
+<dt>Device ID</dt><dd><code>esp32-c6-96a2</code> · MAC <code>10:BD:A3:AC:96:A2</code></dd>
+<dt>Access point</dt><dd><code>CAPMESH_96A2</code> for HTTP transport</dd>
+<dt>Sensor</dt><dd>GPIO9 input, the onboard BOOT button</dd>
+<dt>Toolchain</dt><dd>ESP-IDF 6.1.0, esptool 5.4.0</dd>
+<dt>Flashed SHA256</dt><dd><code>c56ca246115d4cab742916bfff09aa90afa0bfbbcebe7570fe7359ff06e4211a</code></dd>
+</dl>
+</div>
+<div>
+<h3>Behaviour</h3>
+<ul class="plain">
+<li>GPIO9 stays in input mode. The firmware never drives the boot strap.</li>
+<li>Five samples are taken about 10 milliseconds apart.</li>
+<li>Only after authorization succeeds does the device measure.</li>
+<li>BLE and HTTP share one mutex and one replay table.</li>
+<li>The receipt fits the 512-byte BLE characteristic.</li>
+<li>The LED path (<code>led.blink</code>, GPIO8) remains only for regression checks.</li>
+</ul>
+<h3>Rejected before measurement</h3>
+<p><code>AUTH_INVALID</code> · <code>AUTH_EXPIRED</code> · <code>NONCE_CACHE_FULL</code> · <code>BUSY</code> · unknown capability · changed location</p>
+</div>
+</div>
+</section>
+
+<section class="section" id="verified">
+<div class="label">08 · Evidence</div>
+<h2>Verified results — October 1, 2026</h2>
+<div class="cards">
+<div class="card"><strong>40 / 40</strong><span>Hardware-enabled Python tests passed in 135.23 s</span></div>
+<div class="card"><strong>20 / 20</strong><span>Gateway Node tests passed in 0.60 s</span></div>
+<div class="card"><strong>0.001</strong><span>Devnet USDC settled before measurement</span></div>
+<div class="card"><strong>6 s</strong><span>Evidence age at the DISPATCH decision</span></div>
+</div>
+
+<h3>Payment evidence</h3>
+<dl class="dl">
+<dt>Transaction</dt><dd><code>5T9cAims9tmCcgYV6KkuTedn9DhPjKmAVwENqoLjyA4GfboLfcwtTAu93Vk7kCNDyfR6QUVEpFq3XpdY7bDHoe8A</code></dd>
+<dt>Slot</dt><dd>506294679 · commitment <code>confirmed</code> · <code>transaction_error: null</code></dd>
+<dt>Mint</dt><dd><code>4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU</code> (USDC)</dd>
+<dt>Merchant</dt><dd><code>CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA</code> · delta <code>+1000</code></dd>
+<dt>Payer</dt><dd><code>2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf</code> · delta <code>-1000</code></dd>
+<dt>RPC check</dt><dd><code>https://api.devnet.solana.com</code>, measured after the chain block</dd>
+<dt>Purchase ID</dt><dd><code>5776367cd42b408e</code> · decision <code>DISPATCH</code></dd>
+<dt>Receipt</dt><dd><code>gate.closed=false</code>, <code>5/5</code> stable samples, signature <code>v2:404a4205…46b3</code></dd>
+</dl>
+<p><a href="evidence/devnet-purchase.json">Inspect the recorded transaction and receipt</a>.</p>
+
+<h3>Human contact-state evidence</h3>
+<table>
+<tr><th>Human action</th><th>Contact</th><th>Agreement</th><th>Age</th><th>Decision</th></tr>
+<tr><td>Held BOOT</td><td><code>closed: true</code></td><td>5/5</td><td>5 s</td><td><code>WAIT</code> — gate contact is closed</td></tr>
+<tr><td>Released BOOT</td><td><code>closed: false</code></td><td>5/5</td><td>5 s</td><td><code>DISPATCH</code> — gate contact is open</td></tr>
+</table>
+<p class="note">The method: the user held and released BOOT. Separate BLE observations authenticated each state. No reset or output drive occurred. No payment happened in these two direct sensor checks.</p>
+<p><a href="evidence/contact-states.json">Inspect both authenticated receipts</a>.</p>
+
+<h3>Video artifacts</h3>
+<table>
+<tr><th>File</th><th>Length</th><th>Contents</th></tr>
+<tr><td><code>assets/fieldproof-submission.webm</code></td><td>2:30</td><td>Live walkthrough. Real BLE evidence, simulated payment. Passes every recorder scene.</td></tr>
+<tr><td><code>assets/fieldproof-walkthrough.webm</code></td><td>2:30</td><td>Simulator footage with explanatory title cards.</td></tr>
+<tr><td><code>assets/fieldproof-demo.webm</code></td><td>69 s</td><td>Short rehearsal including the CLI adversarial loop results.</td></tr>
+</table>
+<div class="notice"><b>Known gap.</b> The 2:30 artifacts predate the verified paid purchase and the human state-change checks. Their earlier captions still describe a pending payment. Refresh them or add the newer evidence before the final upload.</div>
+</section>
+
+<section class="section" id="suite">
+<div class="label">09 · Tests</div>
+<h2>Test suites</h2>
+<h3>Python — <code>uv run --project host pytest -q</code></h3>
+<p class="note">Default run: 30 passed, 10 hardware tests skipped. With <code>--hardware</code> and the board attached: 40 passed.</p>
+<table>
+<tr><th>File</th><th>Proves</th></tr>
+<tr><td><code>test_protocol.py</code></td><td>Discovery and manifest, valid invocation, replay rejected, expired request rejected, invalid signature rejected, unknown capability rejected. Mirrored over HTTP.</td></tr>
+<tr><td><code>test_observations.py</code></td><td>Receipt fields bind to the challenge. Tampered results and proofs fail. Unstable or future evidence is rejected. A cheaper stale provider loses. A contact change flips the decision. Unmet demand stops dispatch.</td></tr>
+<tr><td><code>test_security_contract.py</code></td><td>The provider cannot add its own trust. The replay cache never evicts an unexpired authorization. Authorized LED parameters cannot be changed.</td></tr>
+<tr><td><code>test_http_interface.py</code></td><td>The explicit interface carries manifest, invocation, and receipt polling.</td></tr>
+<tr><td><code>test_network_http.py</code></td><td>The live HTTP transport. Requires a listening device.</td></tr>
+<tr><td><code>hardware_replay_capacity.py</code></td><td>The 64-entry nonce table under real BLE.</td></tr>
+</table>
+<h3>Node — <code>cd gateway &amp;&amp; npm test</code></h3>
+<p class="note">20 tests, 0 failures.</p>
+<table>
+<tr><th>Group</th><th>Proves</th></tr>
+<tr><td>Buyer policy</td><td>Rejects the wrong chain. Derives the decision from authenticated fresh contact evidence. Refuses a gateway that widens the freshness limit before payment. Refuses a non-loopback gateway.</td></tr>
+<tr><td>Failure retention</td><td>Keeps the purchase ID when the connection fails during payment. Keeps it when settled evidence delivery is truncated.</td></tr>
+<tr><td>Payment gating</td><td>Unpaid and malformed payments never measure. Wrong amount and resource fail before verification. Invalid facilitator verification never settles or measures.</td></tr>
+<tr><td>Proof uniqueness</td><td>A second purchase cannot reuse the transaction by rewriting resource JSON. Changing the facilitator signature cannot buy a second observation with the same signed message.</td></tr>
+<tr><td>Recovery</td><td>Settlement precedes measurement. Retry returns the original evidence. An expired cached receipt returns <code>WAIT</code> without repeating payment or measurement.</td></tr>
+<tr><td>Concurrency</td><td>Concurrent requests settle and measure once. The ledger survives restart and enforces unique proof across writers. Startup waits for a concurrent lock before enabling WAL.</td></tr>
+<tr><td>Separation</td><td>Physical contact metadata stays separate from simulated settlement. A pinned SDK stack builds a verifiable buyer signature without a live chain.</td></tr>
+</table>
+</section>
+
+<section class="section" id="build">
+<div class="label">10 · History</div>
+<h2>What the last six commits built</h2>
+<p class="note">Range <code>d873a81..ed8d539</code> — 63 files, +6,260 / −1,637. The repository holds 13 commits and 81 tracked files.</p>
+<table>
+<tr><th>Commit</th><th>What landed</th></tr>
+<tr><td><code>278ea34</code></td><td>Defines the FieldProof MVP plan, acceptance gates, and pivot from the LED marketplace.</td></tr>
+<tr><td><code>63300ea</code></td><td>The challenge-bound ESP32 pivot. 33 files, +2,250 / −459. New contact capability, dispatcher, canonical authentication, replay table, and host-side observation contract.</td></tr>
+<tr><td><code>7aae5ae</code></td><td>Durable x402 purchases and the physical dispatch demo. 14 files, +2,792. SQLite purchase ledger, buyer policy, and the browser dispatch desk.</td></tr>
+<tr><td><code>d4e13a4</code></td><td>Evidence and submission documentation.</td></tr>
+<tr><td><code>dd1ebdc</code></td><td>Hardening plus live integration evidence. Touches <code>buyer.js</code>, <code>server.js</code>, <code>simulate.js</code>, <code>store.js</code> and adds 127 lines of gateway tests. Commits both evidence JSON files and the three video artifacts.</td></tr>
+<tr><td><code>ed8d539</code></td><td>Records the verified MVP results and prioritizes buyer validation over marketplace breadth.</td></tr>
+</table>
+</section>
+
+<section class="section" id="limits">
+<div class="label">11 · Honesty</div>
+<h2>Threat model and limits</h2>
+<div class="grid">
+<div>
+<h3>What the evidence does establish</h3>
+<ul class="plain">
+<li>That the device read GPIO9 at the stated time and reports it consistently.</li>
+<li>That the reading answers the exact nonce, location, and metric that were paid for.</li>
+<li>That the reading is inside the ten-second freshness window.</li>
+<li>That the payment settled on Devnet before the reading was taken.</li>
+</ul>
+<h3>What it does not establish</h3>
+<ul class="plain">
+<li>Any claim about occupancy, location attestation, or independent corroboration.</li>
+<li>Calibrated confidence. Five matching samples from one observer are sample agreement.</li>
+<li>Physical truth. The receipt is what the firmware reports.</li>
+<li>Clearance, permission, or safe vehicle motion.</li>
+</ul>
+</div>
+<div>
+<h3>Known structural limits</h3>
+<ul class="plain">
+<li>A repository reader can forge the shared demo HMAC key.</li>
+<li>The location is a provisioned label with no attestation.</li>
+<li>Time derives from an authenticated host request. Reboot clears the anchor and the replay table.</li>
+<li>Cached evidence keeps its original time and becomes <code>WAIT</code> after expiry.</li>
+<li>No external installation, protected device key, vehicle integration, or customer pilot exists.</li>
+<li>A successful payment followed by delivery failure needs refund review. No automatic refunds exist.</li>
+<li>No peaq transaction exists. No public gateway deployment exists.</li>
+</ul>
+</div>
+</div>
+<p class="note">The product review in <a href="STRATEGY.md">STRATEGY.md</a> examines access rights, truth, remote delivery, economics, and demand quality. It concludes that one recurring buyer-provider workflow must be earned before an open sensor marketplace is worth building.</p>
+</section>
+
+<section class="section" id="judge">
+<div class="label">12 · Demonstration</div>
+<h2>Five-minute demo script</h2>
+<ol class="steps">
+<li><b>Open the dispatch desk</b>Run <code>cd gateway &amp;&amp; npm run demo</code>, then open <code>http://127.0.0.1:4022</code>. The header shows <code>SIMULATED PAYMENT · NO FUNDS MOVED</code>.</li>
+<li><b>State the question</b>An autonomous vehicle needs fresh gate state before it moves. Budget 0.001 USDC. Freshness 10 seconds. One provisioned contact observer.</li>
+<li><b>Request the quote</b>Select <b>Get payment quote</b>. Show the 402 response with the exact amount, network, asset, and recipient. No evidence yet.</li>
+<li><b>Complete the purchase</b>Select <b>Run simulation</b>. Show the payment mode label, the receipt, and the <code>DISPATCH</code> decision with <code>5/5</code> agreement.</li>
+<li><b>Show expiry</b>Wait eleven seconds. The desk flips to <code>WAIT</code> with <code>Evidence expired</code>. Explain that a cached receipt never becomes fresh on retry.</li>
+<li><b>Run the adversarial loop</b>In another terminal run <code>uv run --project host capmesh observe-demo --simulated</code>. Show the cheaper stale provider rejected, the replayed answer rejected, the changed answer rejected, and the replayed device request rejected.</li>
+<li><b>Show demand</b>Point at the served and unmet counts. Explain that a future operator could use repeated demand to choose an installation site.</li>
+<li><b>Close on the limits</b>One contact. One location. A public demo key. No independent observer, no production identity, no calibrated confidence, no peaq transaction, no customer pilot.</li>
+</ol>
+<div class="notice"><b>Do not say</b> that simulated settlement is an on-chain payment. Switch to <code>npm start</code> plus <code>node buyer.js</code> when you need a real Devnet result.</div>
+<h3>With real hardware in the demo</h3>
+<p>Restart with <code>npm run demo -- --physical</code>. Hold BOOT during the observation and show <code>CLOSED</code> and <code>WAIT</code>. Release BOOT, create a fresh quote, run again, and show <code>OPEN</code> and <code>DISPATCH</code>. Do not press Reset while you hold BOOT.</p>
+</section>
+
+<section class="section" id="map">
+<div class="label">13 · Navigation</div>
+<h2>Repository map</h2>
+<table>
+<tr><th>Path</th><th>Contents</th></tr>
+<tr><td><code>firmware/esp32/</code></td><td>ESP-IDF application: contact capability, dispatcher, BLE and HTTP transports.</td></tr>
+<tr><td><code>host/</code></td><td>The <code>capmesh</code> Python package: protocol auth, observation contract, market rehearsal, transports, CLI.</td></tr>
+<tr><td><code>gateway/</code></td><td>x402 gateway, purchase store, paid buyer, simulator, and the Node test suite.</td></tr>
+<tr><td><code>tests/</code></td><td>Python suites and the hardware replay capacity script.</td></tr>
+<tr><td><code>scripts/</code></td><td><code>build_walkthrough.py</code> and <code>record_demo.cjs</code> for the video artifacts.</td></tr>
+<tr><td><code>docs/</code></td><td>This page, the interactive dispatch desk, diagnostics, the eleven Markdown documents, the evidence JSON, and the three videos.</td></tr>
+<tr><td><code>.local/</code>, <code>*.keypair.json</code>, <code>.env</code>, <code>*.sqlite</code>, <code>build/</code>, <code>node_modules/</code></td><td>Ignored. Never committed.</td></tr>
+</table>
+<h3>Which document answers which question</h3>
+<table>
+<tr><th>Document</th><th>Question it answers</th></tr>
+<tr><td><code>README.md</code></td><td>How do I run it?</td></tr>
+<tr><td><code>OVERVIEW.md</code></td><td>What changed, and what is verified now?</td></tr>
+<tr><td><code>PROTOCOL.md</code></td><td>What is on the wire?</td></tr>
+<tr><td><code>ARCHITECTURE.md</code></td><td>Which component owns what?</td></tr>
+<tr><td><code>VERIFICATION.md</code></td><td>Which checks actually ran, and what are the remaining gaps?</td></tr>
+<tr><td><code>DEMO.md</code></td><td>How do I demonstrate and recover from failure?</td></tr>
+<tr><td><code>STRATEGY.md</code></td><td>What product risks and decisions remain?</td></tr>
+<tr><td><code>MVP_PLAN.md</code></td><td>What does the MVP have to prove?</td></tr>
+<tr><td><code>SUBMISSION.md</code></td><td>What do the hackathon listings require, and which fields are still open?</td></tr>
+<tr><td><code>DECISIONS.md</code></td><td>Why was each direction chosen?</td></tr>
+<tr><td><code>FEASIBILITY_AND_HOLES.md</code></td><td>What is not yet proven?</td></tr>
+<tr><td><code>LEARNING.md</code></td><td>What was learned during the build?</td></tr>
+<tr><td><code>TODO.md</code></td><td>What is done and what is left?</td></tr>
+</table>
+<p>Companion pages: <a href="overview.html">interactive dispatch desk</a> · <a href="diagnostics.html">diagnostics</a> · <a href="OVERVIEW.md">MVP overview</a> · <a href="DEMO.md">demo runbook</a> · <a href="VERIFICATION.md">verification record</a>.</p>
+</section>
+
+<section class="section" id="gaps">
+<div class="label">14 · Submission</div>
+<h2>Deadlines and open items</h2>
+<table>
+<tr><th>Track</th><th>Deadline in UTC</th><th>Local</th></tr>
+<tr><td>Germany MVP</td><td>October 5, 2026 · 21:59:59 UTC</td><td>23:59:59 CEST</td></tr>
+<tr><td>peaq machine economy</td><td>October 13, 2026 · 06:59:00 UTC</td><td>08:59 CEST</td></tr>
+</table>
+<h3>Required fields</h3>
+<table>
+<tr><th>Field</th><th>State</th></tr>
+<tr><td>Public repository</td><td>Public at <code>https://github.com/epicexcelsior/capmesh-poc</code></td></tr>
+<tr><td>Test access</td><td>Open — every mode runs from the README with no credentials</td></tr>
+<tr><td>Payment evidence</td><td>Committed at <code>docs/evidence/devnet-purchase.json</code></td></tr>
+<tr><td>Contact-state evidence</td><td>Committed at <code>docs/evidence/contact-states.json</code></td></tr>
+<tr><td>Presentation link</td><td>Missing — upload the refreshed 2:30 walkthrough</td></tr>
+<tr><td>Colosseum project</td><td>Missing — register under Germany and provide the link</td></tr>
+<tr><td>Team contact</td><td>Missing — supply it in the submission form</td></tr>
+<tr><td>peaq submission answer</td><td>Missing — answer truthfully at submission time</td></tr>
+</table>
+<div class="notice"><b>Open work.</b> Refresh the video captions so they show the verified paid result and both human contact states. Then upload the video and paste the presentation, Colosseum, and contact values into the form. Exact steps are in <a href="SUBMISSION.md">SUBMISSION.md</a>.</div>
+</section>
+
+</main>
+<footer>
+FieldProof · local prototype · evidence supports a decision, and a device authenticator does not prove physical truth.
+Run <code>uv run --project host pytest -q --hardware</code>, <code>cd gateway &amp;&amp; npm test</code>, and <code>npm run demo</code> to reproduce every claim on this page.
+</footer>
+</body>
+</html>

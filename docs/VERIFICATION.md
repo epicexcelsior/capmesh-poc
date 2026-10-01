@@ -140,5 +140,5 @@ No external gate sensor, protected identity, calibrated confidence, vehicle cont
 The [product review](STRATEGY.md#product-risks-and-decisions) identifies the decisions that require further evidence.
 
 Git, sockets, USB, and BLE access are restored. No current access restriction blocks the completed local integration.
-Local source and evidence checkpoint: `dd1ebdc`. Current status and publication steps belong to the accompanying documentation commit.
-Publication, upload, account registration, contact selection, and submission remain owner tasks.
+Local source and evidence checkpoint: `dd1ebdc`. Source and evidence were pushed and made public in `ed8d539`.
+Video upload, account registration, contact selection, and submission remain owner tasks.

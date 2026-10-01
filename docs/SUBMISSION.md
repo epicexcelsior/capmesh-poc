@@ -1,7 +1,7 @@
 # FieldProof submission draft
 
-Status: local draft. The project is not ready to submit.
-Public paid settlement and both human-controlled contact states pass. Public review links and account details remain incomplete.
+Status: public repository, draft submission. The project is not ready to submit.
+Public paid settlement and both human-controlled contact states pass. The repository is public. Presentation, Colosseum, and contact details remain incomplete.
 A local 2:30 walkthrough includes real BLE evidence with simulated payment. Refresh its earlier pending-payment captions before submission.
 
 ## Verified requirements and deadlines
@@ -118,8 +118,8 @@ Do not describe a simulated payment as an on-chain result.
 
 | Field | Current state | Required next action |
 |---|---|---|
-| Public repository | Local commits only | Authorize publication and provide a public GitHub link |
-| Test access | Local simulator with setup instructions | Provide an authorized public repository/download or a reachable demo |
+| Public repository | Public at `https://github.com/epicexcelsior/capmesh-poc` | Paste the link into the submission form |
+| Test access | Public repository with full setup instructions in `README.md` | Confirm the judge can follow the no-hardware path, or provide a reachable demo |
 | Presentation link | Reviewed local 2:30 walkthrough, with earlier pending-payment captions | Refresh captions, add verified results, upload, and provide its public link |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |
@@ -127,23 +127,23 @@ Do not describe a simulated payment as an on-chain result.
 | peaq submission answer | No submission occurred | Answer accurately at submission time |
 
 These links and details are intentionally absent. No placeholder is a valid submission value.
-Publication, upload, account registration, and submission require explicit authorization.
+Video upload, account registration, and submission require explicit authorization.
 
 ## Owner publication steps
 
-The configured origin is `https://github.com/epicexcelsior/capmesh-poc.git`. All changes stay in local commits until you push.
+The origin is `https://github.com/epicexcelsior/capmesh-poc.git`. `main` is pushed and the repository visibility is Public. Keep every later change pushed before submission.
 
-1. Check that `origin` points to the repository you want judges to review.
-2. Run `git push -u origin main` from this repository.
-3. Set the GitHub repository visibility to Public when you are ready.
+1. Check that `origin` still points to the repository judges will review.
+2. Run `git push -u origin main` after every accepted change.
+3. Confirm the repository visibility stays Public.
 4. Check the public README, simulator setup, verification record, and `docs/evidence/` files.
 5. Refresh the video captions and add the verified paid purchase and human input checks.
 6. Upload the final 2–3 minute video and copy its public viewing link.
-7. Paste the repository, presentation, test-access, Colosseum project, and contact values into the submission form.
+7. Paste the presentation, test-access, Colosseum project, and contact values into the submission form.
 
 Keep `.local/`, keypair files, databases, environment files, and build outputs excluded.
 The existing recording script requires an installed Playwright package and Chromium. See the [demo runbook](DEMO.md).
-GitHub publication, upload, registration, and submission remain owner tasks. A hosted public gateway requires separate access controls and deployment work.
+Video upload, registration, and submission remain owner tasks. A hosted public gateway requires separate access controls and deployment work.
 
 ## Source reproduction
 

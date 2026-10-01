@@ -6,7 +6,7 @@ FieldProof asks whether a demo gate is open, buys a contact observation, checks 
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Watch the [2:30 live walkthrough](docs/assets/fieldproof-submission.webm). It includes a real BLE observation with simulated payment. Start with the [overview](docs/OVERVIEW.md), [interactive dispatch desk](docs/overview.html), and [MVP plan](docs/MVP_PLAN.md).
+Watch the [2:30 live walkthrough](docs/assets/fieldproof-submission.webm). It includes a real BLE observation with simulated payment. Start with the [overview](docs/OVERVIEW.md), the [complete how-it-works and setup guide](docs/HOW_IT_WORKS.html), the [interactive dispatch desk](docs/overview.html), and the [MVP plan](docs/MVP_PLAN.md).
 The [submission draft](docs/SUBMISSION.md) records actual track deadlines and remaining required fields.
 
 ## Run without hardware

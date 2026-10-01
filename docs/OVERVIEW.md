@@ -12,11 +12,12 @@ Verified on October 1, 2026:
 - All 40 hardware-enabled Python tests and all 20 gateway tests passed.
 - A 2:30 browser walkthrough includes a public quote, real BLE evidence, expiry, and executed attack checks.
 
-Publication and submission remain owner tasks. Video caption updates and evidence inserts remain a smaller follow-up task.
+The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Submission, video upload, and caption updates remain owner tasks.
 
 ## Open the result
 
 - [Interactive dispatch desk](overview.html).
+- [Complete how-it-works and setup guide](HOW_IT_WORKS.html). Protocol, payment states, failure paths, test suites, and every run command.
 - [2:30 live walkthrough](assets/fieldproof-submission.webm). Payment is simulated in its hardware scene. It predates the successful paid purchase.
 - [Verified Devnet purchase](evidence/devnet-purchase.json).
 - [Verified physical contact states](evidence/contact-states.json).
@@ -74,12 +75,11 @@ Official documentation reports paused Solana onboarding and a mainnet-only activ
 
 ## Owner and later tasks
 
-1. Push the local commits to the intended GitHub repository and make review access public.
-2. Upload a refreshed 2–3 minute walkthrough with the verified paid result and physical state checks.
-3. Provide the public repository, presentation, test access, Colosseum project, and contact in the submission form.
-4. Validate one recurring buyer decision and the site's permission to sell its operational state.
+1. Refresh the walkthrough with the verified paid result and physical state checks, then upload it.
+2. Provide the presentation, test access, Colosseum project, and contact in the submission form.
+3. Validate one recurring buyer decision and the site's permission to sell its operational state.
 
-The existing origin is `https://github.com/epicexcelsior/capmesh-poc.git`.
-Exact publication steps appear in the submission draft. No push, deployment, upload, registration, or submission occurred here.
+The repository is public at `https://github.com/epicexcelsior/capmesh-poc`.
+Upload, registration, and submission did not occur here.
 Build outputs, local databases, private keys, node modules, and environment files remain excluded from Git.
 Git, networking, USB, and BLE access are restored. No further access is needed for the completed local checks.
