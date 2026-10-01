@@ -117,5 +117,7 @@ Validate renewal and the full cost of service before funding new installations f
 ## Deferred execution tasks
 
 The owner handles GitHub visibility, pushing, video upload, Colosseum registration, and submission contact.
-A later smaller task can refresh the video's pre-payment captions and add the verified payment and human state-change evidence.
+The [signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) contains the verified payment and browser attack checks.
+A smaller documentation task can link it from the submission draft, README, and project guide.
+The human contact-state evidence remains historical, with its original HMAC signatures.
 The [submission draft](SUBMISSION.md) contains publication steps. The [acceptance tracker](../TODO.md) separates these tasks from completed integration.

@@ -128,3 +128,29 @@ node scripts/check_receipt_ui.cjs /path/to/playwright http://127.0.0.1:4022
 
 Static assets use exact relative paths under the configured repository root.
 The hidden-checkout regression verifies public receipt access and rejects private file paths.
+
+## Watch or reproduce the recording
+
+The [signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) is the current 2:30 demonstration.
+It shows an unpaid x402 quote, the recorded paid purchase, and real browser verification of that recorded receipt.
+It shows altered state, another challenge, another key, reset persistence, and the executed public-HMAC forgery rejection.
+The capture never pays or invokes hardware. Captions identify recorded evidence and current prototype limits.
+It has no audio. Older recordings remain historical artifacts.
+
+Start the local gateway, then run this command from the repository root:
+
+```sh
+node scripts/record_identity_demo.cjs /path/to/playwright .local/identity-recording http://127.0.0.1:4022
+```
+
+The script creates one unpaid request. It writes the video under the ignored `.local` directory.
+Inspect the video before replacing the committed asset.
+On October 1, 2026, the reviewed video had these properties:
+
+- Duration: 149.760 seconds.
+- Resolution: 1280 × 900 pixels.
+- File size: 10,294,274 bytes.
+- SHA-256: `616055dba5d09aac805bd114f79d5808918975f9031a8ad990b0b31ec85da6e3`.
+- A full FFmpeg decode passed. Paid-result, attack, and conclusion frames passed visual inspection.
+
+The gateway serves only the exact `/assets/fieldproof-signed-receipt.webm` route for this asset.
