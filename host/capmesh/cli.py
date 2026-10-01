@@ -11,6 +11,7 @@ from .transport.http import HTTPTransportAdapter
 from .provider.local_provider import LaptopProvider
 from .protocol.models import InvocationRequest
 from .protocol.auth import generate_nonce, create_auth_payload, verify_receipt
+from .protocol.identity import provisioned_observation_keys
 from .agent.policy import AgentPolicyEngine
 from .payment.verifier import SolanaDevnetVerifier, MockPaymentVerifier
 
@@ -121,8 +122,14 @@ def invoke(device_id: str, capability: str, duration: int, count: int, data: str
         table.add_row("Result:", json.dumps(receipt.result))
         table.add_row("Signature:", f"[dim]{receipt.receipt_signature}[/dim]")
 
-        sig_valid = verify_receipt(receipt)
-        table.add_row("Receipt Verified:", "[green]VALID (HMAC-SHA256)[/green]" if sig_valid else "[yellow]UNVERIFIED[/yellow]")
+        if receipt.capability == "state.observe":
+            pin = provisioned_observation_keys().get(receipt.provider)
+            sig_valid = pin is not None and verify_receipt(receipt, public_key=pin)
+            algorithm = "pinned P-256"
+        else:
+            sig_valid = verify_receipt(receipt)
+            algorithm = "demo HMAC-SHA256"
+        table.add_row("Receipt Verified:", f"[green]VALID ({algorithm})[/green]" if sig_valid else "[yellow]UNVERIFIED[/yellow]")
         if receipt.delivery_proof:
             dp = receipt.delivery_proof
             table.add_row("Delivery Proof:", f"Observer: {dp.observer_id} | {dp.verified_samples}/{dp.total_samples} cycles readback [green]{dp.observed_state}[/green]")

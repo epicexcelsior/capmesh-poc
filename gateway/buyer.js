@@ -1,19 +1,31 @@
 import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHmac, randomInt, timingSafeEqual } from 'node:crypto';
+import { createPublicKey, randomInt, verify } from 'node:crypto';
 import { createKeyPairSignerFromBytes } from '@solana/kit';
 import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { decodePaymentResponseHeader } from '@x402/core/http';
 import { NETWORK, USDC, PAY_TO } from './server.js';
 
+const receiptPins = JSON.parse(readFileSync(new URL('../host/capmesh/protocol/receipt_keys.json', import.meta.url), 'utf8'));
+if (receiptPins.algorithm !== 'ecdsa-p256-sha256') throw new Error('Unsupported provisioned receipt algorithm');
+const provisionedKey = receiptPins.providers['esp32-c6-96a2'];
+
+function receiptKey(sec1Hex) {
+  if (!/^04[0-9a-f]{128}$/.test(sec1Hex || '')) throw new Error('Buyer has no provisioned P-256 receipt key');
+  // SPKI: id-ecPublicKey, prime256v1, uncompressed SEC1 point.
+  return createPublicKey({ key: Buffer.from('3059301306072a8648ce3d020106082a8648ce3d030107034200' + sec1Hex, 'hex'),
+    format: 'der', type: 'spki' });
+}
+
 export function allowedOffers(offers, payTo = PAY_TO) {
   return offers.filter(offer => offer.scheme === 'exact' && offer.network === NETWORK && offer.asset === USDC &&
     offer.payTo === payTo && /^\d+$/.test(offer.amount) && BigInt(offer.amount) > 0n && BigInt(offer.amount) <= 1000n);
 }
 
-export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000)) {
+export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000), publicKey = provisionedKey) {
   const r = body.receipt, s = r?.result;
   if (!r || r.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.provider !== 'esp32-c6-96a2' ||
       r.capability !== 'state.observe' || r.request_id !== purchase.id || r.nonce !== purchase.nonce ||
@@ -26,13 +38,19 @@ export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000
   const message = ['fieldproof-observation-v1', r.protocol, r.request_id, r.provider, r.capability,
     r.parameters.location, r.nonce, s.metric, s.sensor, Number(s.closed), s.stable_samples, s.total_samples,
     r.started_at, r.completed_at].join('|');
-  const expected = createHmac('sha256', 'capmesh-secret-key-2026').update(message).digest();
-  if (!/^v2:[0-9a-f]{64}$/.test(r.receipt_signature || '') ||
-      !timingSafeEqual(expected, Buffer.from(r.receipt_signature.slice(3), 'hex'))) throw new Error('Receipt authentication failed');
-  return { decision: s.closed ? 'WAIT' : 'DISPATCH', evidence_age_seconds: Math.max(0, now - r.completed_at) };
+  const key = receiptKey(publicKey);
+  const encoded = r.receipt_signature?.startsWith('v3:') ? r.receipt_signature.slice(3) : '';
+  const signature = Buffer.from(encoded, 'base64');
+  if (signature.length !== 64 || signature.toString('base64') !== encoded ||
+      !verify('sha256', Buffer.from(message), { key, dsaEncoding: 'ieee-p1363' }, signature)) {
+    throw new Error('Receipt authentication failed');
+  }
+  return { decision: s.closed ? 'WAIT' : 'DISPATCH', evidence_age_seconds: Math.max(0, now - r.completed_at),
+    receipt_identity: 'pinned-device-p256' };
 }
 
-export async function buyObservation(signer, origin = 'http://127.0.0.1:4021') {
+export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', { receiptPublicKey = provisionedKey } = {}) {
+  receiptKey(receiptPublicKey); // Buyer configuration, never a key from the gateway response.
   const url = new URL(origin);
   if (url.protocol !== 'http:' || url.hostname !== '127.0.0.1') throw new Error('The prototype buyer accepts only a loopback gateway');
   const nonce = randomInt(1, 0x7fffffff);
@@ -58,7 +76,9 @@ export async function buyObservation(signer, origin = 'http://127.0.0.1:4021') {
     const settlement = decodePaymentResponseHeader(response.headers.get('PAYMENT-RESPONSE') || '');
     if (settlement.success !== true || settlement.network !== NETWORK || !settlement.transaction) throw new Error('No successful Devnet settlement response');
     const body = await response.json();
-    return { purchase_id: purchase.id, settlement, ...checkEvidence(body, purchase), receipt: body.receipt };
+    return { purchase_id: purchase.id, challenge: { id: purchase.id, nonce, created_at: createdAt,
+      location: purchase.location, max_age_seconds: purchase.max_age_seconds }, settlement,
+      ...checkEvidence(body, purchase, Math.floor(Date.now() / 1000), receiptPublicKey), receipt: body.receipt };
   } catch { throw new Error(`Payment response or evidence failed verification. Keep purchase ID ${purchase.id} for review before another payment.`); }
 }
 

@@ -4,10 +4,12 @@ idf_component_register(
         "capabilities/led_capability.c"
         "capabilities/contact_capability.c"
         "protocol/capmesh_dispatcher.c"
+        "protocol/receipt_identity.c"
         "transport/ble_transport.c"
         "transport/http_transport.c"
     PRIV_REQUIRES
         nvs_flash
+        bootloader_support
         esp_driver_gpio
         bt
         cjson

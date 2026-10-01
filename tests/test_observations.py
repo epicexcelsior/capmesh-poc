@@ -6,6 +6,7 @@ import pytest
 from capmesh.market import DemandLedger, ObservationMarket
 from capmesh.observations import EvidenceError, ObservationContract, ObservationVerifier, observation_request
 from capmesh.protocol.auth import DEFAULT_SECRET, compute_hmac_sha256, receipt_message
+from capmesh.protocol.identity import provisioned_observation_keys
 from capmesh.provider.observation_provider import SimulatedContactProvider
 from capmesh.transport.ble import BLETransportAdapter
 
@@ -134,7 +135,7 @@ async def test_live_contact_observation_and_replay():
     contract = ObservationContract()
     request = observation_request("esp32-c6-96a2", contract)
     receipt = await ble.invoke(request.device_id, request)
-    decision = verifier(request.device_id).verify(receipt, request, contract)
+    decision = ObservationVerifier(provisioned_observation_keys()).verify(receipt, request, contract)
     assert decision["evidence_mode"] == "physical-contact-demo"
     assert decision["sample_agreement"] == "5/5"
     replay = await ble.invoke(request.device_id, request)

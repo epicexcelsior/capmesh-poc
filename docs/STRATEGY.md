@@ -31,7 +31,8 @@ No peaq transaction exists. No prize, eligibility outcome, or acceptance is guar
 
 After a supported onboarding path exists, a useful integration gives the observer an identity and reports honest observation activity.
 The current [event guide](https://docs.peaq.xyz/peaqos/guides/submit-events) distinguishes self-reported activity from protected hardware signatures and verifiable revenue.
-A public HMAC demo key does not qualify as protected hardware. Simulated payments and Devnet tokens do not establish real revenue.
+The current P-256 key resides in unencrypted NVS. It does not qualify as protected hardware.
+Simulated payments and Devnet tokens do not establish real revenue.
 
 ## Roadmap after the MVP
 
@@ -67,9 +68,9 @@ These conclusions follow from the current implementation. They are hypotheses fo
 | Risk | Current evidence | Decision or validation |
 |---|---|---|
 | Open contact does not establish safe passage | The device samples one GPIO. It checks no clearance, permission, vehicle condition, or later gate movement. | Keep DISPATCH as a demo recommendation. A vehicle controller retains its own motion checks. |
-| The buyer and seller remain unproven | No customer pilot, recurring paid demand, or avoided-cost measurement exists. | Test a fleet dispatcher that needs advance loading-dock availability and a site operator that can supply it. |
+| The buyer and seller remain unproven | No customer pilot, recurring paid demand, or avoided-cost measurement exists. | Test one immediate logistics or robotics decision with a buyer and an authorized site operator. |
 | Local sensing does not establish a remote marketplace | The gateway binds to loopback and reaches one nearby BLE device. No remote provider registry or buyer integration exists. | Earn one cross-site buyer workflow before building open provider discovery. |
-| Provenance does not establish truth or location | The public demo key is forgeable. The location is a provisioned label. One observer supplies all five samples. | Use protected asymmetric receipt signing with public verification keys. Keep command authorization separate. Begin with a known site operator and checked installation. |
+| Provenance does not establish truth or location | Device receipts now use a USB-provisioned P-256 identity. Physical flash access can extract the key. The location remains a provisioned label. | Protect storage and firmware integrity before production. Begin with a known site operator and checked installation. |
 | Payment does not authorize access to operational data | The gateway sells the same observation to any compatible payer. It has no site-specific buyer permissions. | Establish site-owner consent and buyer access rules before exposing real facility state. |
 | Delivery can fail after payment | The Bluetooth-off rehearsal retained a delivery failure. The successful paid receipt was six seconds old within a ten-second contract. | Measure payment, measurement, and transport latency. Define credits or refund review before promising a commercial service. |
 | Per-query payment does not establish sustainable economics | The 0.001 USDC price is a demonstration value. Hardware, installation, support, failure, and refund costs remain unmeasured. | Compare repeated-query purchases with a subscription or prepaid budget in one pilot. Record total service costs. |
@@ -79,6 +80,39 @@ The strongest next validation is one recurring decision outside the buyer's own 
 Measure the cost of missing that fact, the required freshness, and the operator's permission to sell it.
 Use existing operational data when it answers the question. Add a sensor when it supplies otherwise unavailable evidence.
 Keep Solana as the demonstrated payment rail. Add peaq when identity or activity history serves that buyer-provider relationship.
+
+## Match the evidence window to the decision
+
+The ten-second contact contract cannot justify a long vehicle trip or predict dock availability at arrival.
+A normally closed gate can open on request. Its contact state alone does not mean that a facility accepts arrivals.
+These are product constraints, not signature defects.
+
+The first pilot requires an action whose useful time window matches the observation window.
+A robot already at an access point is a stronger starting hypothesis than a dispatcher planning a distant arrival.
+Its own controller still checks passage, permission, and motion safety.
+For advance dispatch, define an operator-backed availability commitment with a stated future interval.
+Do not relabel the current contact measurement as that commitment.
+
+Ask a design partner for one decision, its current information source, its cost of delay, and the site's data rights.
+Measure the complete purchase-to-decision latency against that partner's useful window.
+The latest paid receipt reached the buyer at seven seconds of age within a ten-second contract.
+That result gives a narrow latency margin. It does not establish a production service level.
+
+## Build a durable buyer workflow
+
+Primary-source review on October 1, 2026:
+
+- [DIMO Connect](https://dimo.org/docs/build/building-with-tools/client-sdk-dimo-connect) requests scoped vehicle-data permissions and supports expiration configuration.
+- [WeatherXM Pro](https://docs.weatherxm.com/weatherxm-pro) provides real-time and historical station data through an API.
+
+Inference: access to machine data and an API are established product categories. A general sensor marketplace alone is a weak differentiation claim.
+The useful FieldProof hypothesis is a decision contract across organizations: permitted access, a known observer, bounded freshness, and reviewable delivery.
+Signatures and x402 support that workflow. They do not establish demand or a durable advantage.
+
+Earn the first integration with an existing operator's data source when it answers the buyer's question.
+Add hardware only when the operator lacks the required observation.
+The compounding assets then become installed buyer workflows, permissioned supplier relationships, and measured delivery quality.
+Validate renewal and the full cost of service before funding new installations from query counts.
 
 ## Deferred execution tasks
 

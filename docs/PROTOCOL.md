@@ -49,9 +49,13 @@ The authenticator covers this exact message:
 fieldproof-observation-v1|protocol|request_id|provider|capability|location|nonce|metric|sensor|closed|stable_samples|total_samples|started_at|completed_at
 ```
 
-Encode `closed` as `0` or `1`. Prefix the lowercase digest with `v2:` in `receipt_signature`.
+Encode `closed` as `0` or `1`.
+Physical observation receipts use ECDSA P-256 with SHA-256 over this message.
+`receipt_signature` contains `v3:` followed by standard padded base64 of the 64-byte, big-endian `r || s` signature.
+The buyer pins the public key through trusted USB provisioning. It rejects legacy HMAC substitution for that provider.
+See the [identity runbook](RECEIPT_IDENTITY.md) for pin format, storage limits, and recovery.
 The receipt fits a 512-byte BLE characteristic. JSON field order does not affect the canonical message.
-Simulated receipts use `simulated-contact` as the sensor. They are visibly labeled by the buyer.
+Simulated receipts use `simulated-contact` and retain `v2:` plus the lowercase HMAC digest. The buyer labels their identity separately.
 
 ## Buyer verification
 
@@ -76,7 +80,8 @@ The in-process buyer replay set lasts for one verifier instance. Gateway purchas
 BLE and HTTP share one dispatcher mutex and one replay table.
 The device keeps 64 nonce/expiration pairs. It never evicts an unexpired authorization to admit another request.
 A full table returns `NONCE_CACHE_FULL`. Concurrent dispatch returns `BUSY`.
-Reboot clears the table and time anchor. The device has no independently trusted clock.
+Reboot clears the table and time anchor. The persistent receipt key survives reboot.
+The device has no independently trusted clock.
 The first authenticated request anchors epoch time to monotonic uptime.
 
 ## Payment interface

@@ -4,7 +4,7 @@ import argparse
 import json
 
 from capmesh.observations import ObservationContract, ObservationVerifier, observation_request
-from capmesh.protocol.auth import DEFAULT_SECRET
+from capmesh.protocol.identity import provisioned_observation_keys
 from capmesh.transport.http import HTTPTransportAdapter
 
 
@@ -15,7 +15,7 @@ async def run(interface=None):
     contract = ObservationContract()
     request = observation_request("esp32-c6-96a2", contract)
     receipt = await http.invoke(request.device_id, request)
-    decision = ObservationVerifier({request.device_id: DEFAULT_SECRET}).verify(receipt, request, contract)
+    decision = ObservationVerifier(provisioned_observation_keys()).verify(receipt, request, contract)
     replay = await http.invoke(request.device_id, request)
     assert replay.error["code"] == "REPLAY_DETECTED"
     print(json.dumps({"transport": "physical-wifi-http", "decision": decision, "replay": replay.error["code"]}, indent=2))

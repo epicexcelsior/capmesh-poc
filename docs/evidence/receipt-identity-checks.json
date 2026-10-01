@@ -1,0 +1,56 @@
+{
+  "method": "The public key was read over USB. A later reset returned the same key. A fresh real BLE observation then passed verification and rejected a receipt forged with the public command HMAC.",
+  "payment_mode": "No payment in these persistence and attack checks.",
+  "persistence": {
+    "provider": "esp32-c6-96a2",
+    "public_key_sec1_hex": "046218c52391433f9a687743192c5558a121320b8fa664931e5aaa1b6e5fbf342f9411913c8b72c91a3e7b9762e34e77955ed6035b81fa27ab7770dd8d4922ed63",
+    "key_after_reset_matches_pin": true,
+    "transport_online_after_reset": true,
+    "firmware_sha256": "8012b267e1c10878a46700989bf9a49a1a1c988bcc4ce1b7ec2808f1491423fb"
+  },
+  "after_reset": {
+    "decision": {
+      "decision": "DISPATCH",
+      "reason": "Gate contact is open",
+      "closed": false,
+      "age_seconds": 5,
+      "sample_agreement": "5/5",
+      "confidence": null,
+      "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+      "receipt_identity": "pinned-device-p256",
+      "evidence_mode": "physical-contact-demo"
+    },
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "obs-76e80783",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": false,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790882070,
+      "completed_at": 1790882070,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v3:hoIKJIeR/OGHR4wn0spyYqXqZtFMqaKFHC1LBeNIlQr6B7qkolT9lXBbNzTzf5qnPzwkPZRSCNEN3mWWyMRn5Q==",
+      "error": null,
+      "nonce": 1994917763
+    },
+    "attacks": {
+      "replayed_response": "REPLAY_DETECTED: evidence was already consumed",
+      "different_challenge": "CHALLENGE_MISMATCH: evidence does not match this request",
+      "tampered_state": "INVALID_SIGNATURE: observation fields failed authentication",
+      "forged_public_hmac": "INVALID_SIGNATURE: observation fields failed authentication",
+      "replayed_request": "REPLAY_DETECTED"
+    },
+    "attacks_passed": true
+  }
+}

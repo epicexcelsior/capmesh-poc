@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawn } from 'node:child_process';
@@ -13,7 +13,7 @@ import { createGateway, createPaymentServer, NETWORK, PAY_TO, USDC } from '../se
 import { PurchaseStore } from '../store.js';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 
-async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact' } = {}) {
+async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', assetsRoot } = {}) {
   const events = [];
   const facilitator = {
     getSupported: async () => ({ kinds: [{ x402Version: 2, scheme: 'exact', network: NETWORK, extra: { feePayer: PAY_TO } }], extensions: [], signers: {} }),
@@ -23,7 +23,7 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   };
   const paymentServer = await createPaymentServer(facilitator);
   const store = new PurchaseStore(path);
-  const app = await createGateway({ paymentServer, store, simulated: true, sensor, observe: async () => {
+  const app = await createGateway({ paymentServer, store, simulated: true, sensor, assetsRoot, observe: async () => {
     events.push('measure');
     if (deliveryFails) throw new Error('device unavailable');
     return { decision: { decision: 'DISPATCH', evidence_mode: 'simulated' }, receipt: { simulated: true, completed_at: Math.floor(Date.now() / 1000) } };
@@ -54,6 +54,24 @@ test('physical contact metadata stays separate from simulated settlement', async
   assert.equal(health.sensor, 'gpio9-contact');
   assert.equal(manifest.sensor, 'gpio9-contact');
   assert.equal(health.mode, 'simulated settlement; no funds moved');
+  assert.equal(health.receipt_identity, 'pinned-device-p256');
+  assert.deepEqual(f.events, []);
+});
+
+test('known assets serve inside a hidden checkout without exposing private paths', async t => {
+  const dir = mkdtempSync(join(tmpdir(), '.fieldproof-assets-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  mkdirSync(join(dir, 'docs'));
+  mkdirSync(join(dir, '.local'));
+  writeFileSync(join(dir, 'docs/proof.html'), '<h1>Receipt inspection</h1>');
+  writeFileSync(join(dir, '.local/private.json'), '{"private":"fixture only"}');
+  const f = await fixture(t, { assetsRoot: dir });
+  const page = await fetch(`${f.url}/proof`);
+  assert.equal(page.status, 200);
+  assert.equal(await page.text(), '<h1>Receipt inspection</h1>');
+  for (const path of ['/.local/private.json', '/gateway/buyer.js', '/.git/config', '/receipt-keys.json/../.local/private.json']) {
+    assert.equal((await fetch(f.url + path)).status, 404);
+  }
   assert.deepEqual(f.events, []);
 });
 

@@ -8,6 +8,7 @@ from bleak import BleakClient
 
 from capmesh.observations import ObservationContract, observation_request
 from capmesh.protocol.auth import create_auth_payload, verify_receipt
+from capmesh.protocol.identity import provisioned_observation_keys
 from capmesh.protocol.models import InvocationReceipt
 from capmesh.transport.ble import BLETransportAdapter, INVOKE_UUID, RECEIPT_UUID
 
@@ -37,7 +38,7 @@ async def test_replay_cache_never_evicts_unexpired_authorization():
                 assert receipt.error["code"] == "NONCE_CACHE_FULL"
                 full = True
                 break
-            assert verify_receipt(receipt)
+            assert verify_receipt(receipt, public_key=provisioned_observation_keys()[device.device_id])
             first_request = first_request or request
         assert full, "The replay table evicted unexpired entries instead of refusing new requests"
         assert first_request is not None, "Reset the board before this capacity check"

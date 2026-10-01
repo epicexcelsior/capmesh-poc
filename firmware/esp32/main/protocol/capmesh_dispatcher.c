@@ -1,4 +1,5 @@
 #include "protocol/capmesh_dispatcher.h"
+#include "protocol/receipt_identity.h"
 #include "capabilities/led_capability.h"
 #include "capabilities/contact_capability.h"
 #include "cJSON.h"
@@ -347,10 +348,11 @@ static int observation_receipt(const char *req_id, uint32_t nonce, uint32_t star
              "fieldproof-observation-v1|%s|%s|%s|state.observe|demo-gate|%" PRIu32 "|gate.closed|gpio9-contact|%d|%d|%d|%" PRIu32 "|%" PRIu32,
              CAPMESH_PROTOCOL_VERSION, req_id, s_device_id, nonce, closed ? 1 : 0,
              stable, FIELDPROOF_CONTACT_SAMPLES, start, end);
-    uint8_t digest[32];
-    compute_hmac_sha256(CAPMESH_DEFAULT_SECRET, message, digest);
-    char signature[69] = "v2:";
-    for (int i = 0; i < 32; i++) sprintf(signature + 3 + i * 2, "%02x", digest[i]);
+    char signature[92];
+    if (receipt_identity_sign(message, signature, sizeof(signature)) != ESP_OK) {
+        cJSON_Delete(receipt);
+        return format_error_response(req_id, "SIGNING_FAILED", "Device identity cannot sign this observation", buf, max_len);
+    }
     cJSON_AddStringToObject(receipt, "receipt_signature", signature);
     char *json = cJSON_PrintUnformatted(receipt);
     cJSON_Delete(receipt);

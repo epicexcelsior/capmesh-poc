@@ -1,0 +1,83 @@
+const el = id => document.getElementById(id);
+const controls = ['original', 'tamper', 'challenge', 'identity'];
+let recorded, pin, differentKey;
+let running = false;
+
+function status(id, text, kind) {
+  el(id).textContent = text;
+  el(id).className = kind;
+}
+
+function message(r) {
+  const s = r.result;
+  return ['fieldproof-observation-v1', r.protocol, r.request_id, r.provider, r.capability,
+    r.parameters.location, r.nonce, s.metric, s.sensor, Number(s.closed), s.stable_samples,
+    s.total_samples, r.started_at, r.completed_at].join('|');
+}
+
+async function experiment(mode = 'original') {
+  if (running || !recorded) return;
+  running = true;
+  controls.forEach(id => { el(id).disabled = true; });
+  try {
+    const r = structuredClone(recorded.receipt);
+    const challenge = structuredClone(recorded.challenge);
+    if (mode === 'tamper') r.result.closed = !r.result.closed;
+    if (mode === 'challenge') challenge.nonce = challenge.nonce === 0x7fffffff ? 1 : challenge.nonce + 1;
+    const key = mode === 'identity' ? differentKey : pin;
+    const encoded = r.receipt_signature.startsWith('v3:') ? r.receipt_signature.slice(3) : '';
+    const signature = Uint8Array.from(atob(encoded), char => char.charCodeAt(0));
+    const authentic = signature.length === 64 && btoa(String.fromCharCode(...signature)) === encoded &&
+      await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, signature, new TextEncoder().encode(message(r)));
+    const bound = r.protocol === 'capmesh/0.1' && r.status === 'success' && r.provider === 'esp32-c6-96a2' &&
+      r.capability === 'state.observe' && r.request_id === challenge.id && r.nonce === challenge.nonce &&
+      r.parameters.location === challenge.location && Object.keys(r.parameters).length === 1;
+    const s = r.result;
+    const contract = s.metric === 'gate.closed' && s.sensor === 'gpio9-contact' && typeof s.closed === 'boolean' &&
+      s.total_samples === 5 && s.stable_samples === 5;
+    const now = Math.floor(Date.now() / 1000);
+    const fresh = Number.isInteger(r.started_at) && Number.isInteger(r.completed_at) &&
+      r.started_at >= challenge.created_at - 2 && r.started_at <= r.completed_at && r.completed_at <= now + 2 &&
+      now - r.completed_at <= challenge.max_age_seconds;
+    status('signature', authentic ? 'VALID' : 'REJECTED', authentic ? 'pass' : 'fail');
+    status('binding', bound ? 'MATCHES' : 'REJECTED', bound ? 'pass' : 'fail');
+    status('contract', contract ? '5/5 AGREE' : 'REJECTED', contract ? 'pass' : 'fail');
+    status('freshness', fresh ? 'FRESH' : 'EXPIRED', fresh ? 'pass' : 'expired');
+    const accepted = authentic && bound && contract && fresh;
+    el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
+    el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
+      : !bound ? 'This receipt cannot answer a different buyer challenge.'
+        : !contract ? 'The contact does not satisfy the buyer contract.'
+          : !fresh ? 'The original signature is valid. The recorded evidence is too old for dispatch.'
+            : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
+    el('state').textContent = s.closed ? 'CLOSED' : 'OPEN';
+    el('payload').textContent = JSON.stringify({ experiment: mode, challenge, receipt: r }, null, 2);
+  } catch {
+    status('signature', 'REJECTED', 'fail');
+    el('decision').textContent = 'WAIT';
+    el('reason').textContent = 'Receipt verification failed. Check the evidence and public pin.';
+  } finally {
+    running = false;
+    controls.forEach(id => { el(id).disabled = false; });
+  }
+}
+
+async function init() {
+  const [evidenceResponse, pinsResponse] = await Promise.all([fetch('/evidence/device-signed-purchase.json'), fetch('/receipt-keys.json')]);
+  if (!evidenceResponse.ok || !pinsResponse.ok) throw new Error('Committed evidence or buyer configuration is unavailable.');
+  recorded = (await evidenceResponse.json()).purchase;
+  const pins = await pinsResponse.json();
+  if (pins.algorithm !== 'ecdsa-p256-sha256') throw new Error('Unsupported buyer identity algorithm.');
+  const sec1 = pins.providers['esp32-c6-96a2'];
+  if (!/^04[0-9a-f]{128}$/.test(sec1 || '')) throw new Error('The buyer configuration has no valid device pin.');
+  const bytes = Uint8Array.from(sec1.match(/../g), pair => parseInt(pair, 16));
+  pin = await crypto.subtle.importKey('raw', bytes, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  differentKey = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify'])).publicKey;
+  el('pin').textContent = JSON.stringify({ algorithm: pins.algorithm, provider: 'esp32-c6-96a2', sec1_hex: sec1 }, null, 2);
+  el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().slice(11, 19) + ' UTC';
+  el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(recorded.settlement.transaction) + '?cluster=devnet';
+  controls.forEach(id => { el(id).onclick = () => experiment(id); });
+  await experiment();
+}
+
+init().catch(error => { el('reason').textContent = error.message; });

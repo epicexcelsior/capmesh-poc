@@ -8,6 +8,7 @@
 #include "capabilities/led_capability.h"
 #include "capabilities/contact_capability.h"
 #include "protocol/capmesh_dispatcher.h"
+#include "protocol/receipt_identity.h"
 #include "transport/ble_transport.h"
 #include "transport/http_transport.h"
 #include "esp_netif.h"
@@ -22,12 +23,14 @@ void app_main(void)
     ESP_LOGI(TAG, "==================================================");
 
     // 1. Initialize NVS
+    // A storage failure must not silently erase a pinned device identity.
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Storage initialization failed: %s. Storage is preserved.", esp_err_to_name(ret));
+        return;
     }
-    ESP_ERROR_CHECK(ret);
+    // Stop without a panic dump, which can disclose private material from crypto memory.
+    if (receipt_identity_init() != ESP_OK) return;
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());

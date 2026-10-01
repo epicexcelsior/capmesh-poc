@@ -23,3 +23,6 @@ capmesh = "capmesh.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.package-data]
+"capmesh.protocol" = ["receipt_keys.json"]

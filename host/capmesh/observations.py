@@ -7,6 +7,7 @@ import time
 
 from .protocol.auth import DEFAULT_SECRET, create_auth_payload, generate_nonce, verify_receipt
 from .protocol.models import InvocationReceipt, InvocationRequest
+from .protocol.identity import ReceiptPublicKey
 
 
 @dataclass(frozen=True)
@@ -52,7 +53,7 @@ class EvidenceError(ValueError):
 
 
 class ObservationVerifier:
-    def __init__(self, provider_keys: dict[str, str]):
+    def __init__(self, provider_keys: dict[str, str | ReceiptPublicKey]):
         # This is buyer configuration. Provider manifests cannot add keys to it.
         self.provider_keys = dict(provider_keys)
         self._consumed = set()
@@ -67,7 +68,9 @@ class ObservationVerifier:
             receipt.parameters) != (request.protocol, request.request_id, request.device_id,
                                     "state.observe", request.nonce, {"location": contract.location}):
             raise EvidenceError("CHALLENGE_MISMATCH: evidence does not match this request")
-        if not verify_receipt(receipt, secret=key):
+        authenticated = (verify_receipt(receipt, public_key=key) if isinstance(key, ReceiptPublicKey)
+                         else verify_receipt(receipt, secret=key))
+        if not authenticated:
             raise EvidenceError("INVALID_SIGNATURE: observation fields failed authentication")
         result = receipt.result or {}
         if (result.get("metric") != contract.metric or result.get("sensor") not in ("gpio9-contact", "simulated-contact")
@@ -93,5 +96,6 @@ class ObservationVerifier:
             "sample_agreement": f"{result['stable_samples']}/{result['total_samples']}",
             "confidence": None,
             "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+            "receipt_identity": "pinned-device-p256" if isinstance(key, ReceiptPublicKey) else "public-demo-hmac",
             "evidence_mode": "simulated" if result["sensor"] == "simulated-contact" else "physical-contact-demo",
         }

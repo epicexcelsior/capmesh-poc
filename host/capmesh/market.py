@@ -9,6 +9,8 @@ import time
 import uuid
 
 from .observations import EvidenceError, ObservationContract, ObservationVerifier, observation_request
+from .protocol.auth import DEFAULT_SECRET
+from .protocol.identity import ReceiptPublicKey
 
 
 class DemandLedger:
@@ -43,10 +45,14 @@ class DemandLedger:
 class ObservationMarket:
     """Mock-priced rehearsal buyer. Real payments go through the x402 gateway."""
 
-    def __init__(self, transports, provider_keys, ledger):
+    def __init__(self, transports, provider_keys, ledger, *, command_secrets=None):
         self.transports = transports
         self.verifier = ObservationVerifier(provider_keys)
         self.ledger = ledger
+        # Command authorization and receipt verification have different authorities.
+        self.command_secrets = {provider: DEFAULT_SECRET if isinstance(key, ReceiptPublicKey) else key
+                                for provider, key in provider_keys.items()}
+        self.command_secrets.update(command_secrets or {})
 
     async def observe(self, contract: ObservationContract):
         if contract.location != "demo-gate":
@@ -84,7 +90,7 @@ class ObservationMarket:
             if spent + price > Decimal(contract.max_price_usdc):
                 rejected.append({"provider": provider, "reason": "BUDGET_EXCEEDED"})
                 continue
-            request = observation_request(provider, contract, secret=self.verifier.provider_keys[provider])
+            request = observation_request(provider, contract, secret=self.command_secrets[provider])
             # Count even unsuccessful observations against the mock budget. Do not imply refunds.
             spent += price
             try:

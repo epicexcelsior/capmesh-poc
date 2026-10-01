@@ -43,7 +43,7 @@ export function observeHardware(purchase) {
 }
 export async function createGateway({ paymentServer, store, observe = observeHardware,
     origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false,
-    sensor = simulated ? 'simulated-contact' : 'gpio9-contact' } = {}) {
+    sensor = simulated ? 'simulated-contact' : 'gpio9-contact', assetsRoot = root } = {}) {
   const requirements = await paymentServer.buildPaymentRequirements({
     scheme: 'exact', price: { asset: USDC, amount: '1000' }, network: NETWORK, payTo,
   });
@@ -51,15 +51,21 @@ export async function createGateway({ paymentServer, store, observe = observeHar
   app.disable('x-powered-by');
   app.use(express.json({ limit: '2kb' }));
   app.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
-  app.get('/', (_req, res) => res.sendFile(resolve(root, 'docs/overview.html')));
-  app.get('/assets/fieldproof-demo.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-demo.webm')));
-  app.get('/assets/fieldproof-walkthrough.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-walkthrough.webm')));
-  app.get('/assets/fieldproof-submission.webm', (_req, res) => res.sendFile(resolve(root, 'docs/assets/fieldproof-submission.webm')));
-  app.get('/evidence/devnet-purchase.json', (_req, res) => res.sendFile(resolve(root, 'docs/evidence/devnet-purchase.json')));
-  app.get('/evidence/contact-states.json', (_req, res) => res.sendFile(resolve(root, 'docs/evidence/contact-states.json')));
+  // Check only these relative asset names for dotfiles, not the trusted checkout path.
+  for (const [route, file] of Object.entries({
+    '/': 'docs/overview.html', '/proof': 'docs/proof.html', '/proof.js': 'docs/proof.js',
+    '/receipt-keys.json': 'host/capmesh/protocol/receipt_keys.json',
+    '/evidence/device-signed-purchase.json': 'docs/evidence/device-signed-purchase.json',
+    '/assets/fieldproof-demo.webm': 'docs/assets/fieldproof-demo.webm',
+    '/assets/fieldproof-walkthrough.webm': 'docs/assets/fieldproof-walkthrough.webm',
+    '/assets/fieldproof-submission.webm': 'docs/assets/fieldproof-submission.webm',
+    '/evidence/devnet-purchase.json': 'docs/evidence/devnet-purchase.json',
+    '/evidence/contact-states.json': 'docs/evidence/contact-states.json',
+  })) app.get(route, (_req, res) => res.sendFile(file, { root: assetsRoot }));
   app.get('/health', (_req, res) => res.json({ ready: true, network: NETWORK, payTo,
     capability: 'state.observe', location: 'demo-gate', price_base_units: '1000',
-    sensor, mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
+    sensor, receipt_identity: sensor === 'gpio9-contact' ? 'pinned-device-p256' : 'public-demo-hmac',
+    mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
   app.get('/demand', (_req, res) => res.json(store.demand()));
   app.get('/manifest', (_req, res) => res.json({ product: 'FieldProof', metric: 'gate.closed',
     location: 'demo-gate', sensor,

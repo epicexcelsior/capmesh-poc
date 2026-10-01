@@ -5,6 +5,7 @@ import json
 import sys
 from capmesh.observations import ObservationContract, ObservationVerifier, observation_request
 from capmesh.protocol.auth import DEFAULT_SECRET
+from capmesh.protocol.identity import provisioned_observation_keys
 from capmesh.provider.observation_provider import SimulatedContactProvider
 from capmesh.transport.ble import BLETransportAdapter
 
@@ -18,7 +19,8 @@ async def run(purchase):
         raise RuntimeError('The provisioned contact provider is unavailable')
     request = observation_request(provider, contract, request_id=purchase['id'], nonce=purchase['nonce'])
     receipt = await transport.invoke(provider, request)
-    decision = ObservationVerifier({provider: DEFAULT_SECRET}).verify(receipt, request, contract)
+    keys = {provider: DEFAULT_SECRET} if simulated else provisioned_observation_keys()
+    decision = ObservationVerifier(keys).verify(receipt, request, contract)
     return {'receipt': asdict(receipt), 'decision': decision,
             'challenge': {'request_id': request.request_id, 'nonce': request.nonce,
                           'timestamp': request.timestamp, 'expiration': request.expiration}}

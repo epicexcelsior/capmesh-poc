@@ -5,7 +5,8 @@ import json
 
 from ..market import DemandLedger, ObservationMarket
 from ..observations import EvidenceError, ObservationContract, ObservationVerifier
-from ..protocol.auth import DEFAULT_SECRET
+from ..protocol.auth import DEFAULT_SECRET, compute_hmac_sha256, receipt_message
+from ..protocol.identity import provisioned_observation_keys
 from ..protocol.models import InvocationReceipt, InvocationRequest
 from ..provider.observation_provider import SimulatedContactProvider
 from ..transport.ble import BLETransportAdapter
@@ -17,22 +18,28 @@ async def run_observation_demo(*, simulated=False, closed=False, http_url=None, 
     physical = (SimulatedContactProvider(closed=closed) if simulated else
                 HTTPTransportAdapter(http_url, interface=http_interface) if http_url else BLETransportAdapter())
     provider = "sim-contact-01" if simulated else "esp32-c6-96a2"
+    receipt_keys = {provider: DEFAULT_SECRET} if simulated else provisioned_observation_keys()
     ledger = DemandLedger(ledger_path)
     try:
         contract = ObservationContract()
-        market = ObservationMarket([stale, physical], {"stale-contact": DEFAULT_SECRET, provider: DEFAULT_SECRET}, ledger)
+        market = ObservationMarket([stale, physical], {"stale-contact": DEFAULT_SECRET, **receipt_keys}, ledger)
         result = await market.observe(contract)
         result["mode"] = "SIMULATED" if simulated else "LIVE CONTACT DEMO"
         if result["status"] == "success":
             receipt = InvocationReceipt.from_dict(result["receipt"])
             request = InvocationRequest(**result["request"])
             attacks = {}
-            for label, candidate, challenge in [
+            cases = [
                 ("replayed_response", receipt, request),
                 ("different_challenge", receipt, replace(request, nonce=request.nonce + 1)),
                 ("tampered_state", replace(receipt, result={**receipt.result, "closed": not receipt.result["closed"]}), request),
-            ]:
-                verifier = market.verifier if label == "replayed_response" else ObservationVerifier({provider: DEFAULT_SECRET})
+            ]
+            if not simulated:
+                forged = replace(receipt, result={**receipt.result, "closed": not receipt.result["closed"]})
+                forged.receipt_signature = "v2:" + compute_hmac_sha256(DEFAULT_SECRET, receipt_message(forged))
+                cases.append(("forged_public_hmac", forged, request))
+            for label, candidate, challenge in cases:
+                verifier = market.verifier if label == "replayed_response" else ObservationVerifier(receipt_keys)
                 try:
                     verifier.verify(candidate, challenge, contract)
                     attacks[label] = "FAILED: accepted"

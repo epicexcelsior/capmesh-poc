@@ -22,6 +22,7 @@ flowchart LR
 |---|---|---|
 | Contact capability | Sample GPIO9 without driving the boot strap | `firmware/esp32/main/capabilities/contact_capability.c` |
 | Dispatcher | Validate authorization, serialize transport access, protect replay state, authenticate receipt | `firmware/esp32/main/protocol/capmesh_dispatcher.c` |
+| Receipt identity | Generate and retain a P-256 signing key in NVS | `firmware/esp32/main/protocol/receipt_identity.c` |
 | BLE / HTTP | Carry the same request and receipt | `host/capmesh/transport/`, `firmware/esp32/main/transport/` |
 | Observation contract | Pin metric, location, budget, and freshness | `host/capmesh/observations.py` |
 | Rehearsal market | Try candidates by price, reject stale evidence, record demand | `host/capmesh/market.py` |
@@ -32,9 +33,11 @@ flowchart LR
 
 ## Trust boundaries
 
-A manifest cannot establish its own provider identity. The buyer pins a known device ID and demo key.
-The shared public HMAC key authenticates the demonstration's wire fields. It cannot resist a hostile reader of this repository.
-Production requires per-device provisioning or asymmetric identity with a protected private key.
+A manifest cannot establish its own provider identity. The buyer pins a device ID and P-256 public key through trusted USB provisioning.
+The ESP32 signs observations with its persistent private key. The buyer rejects HMAC substitution and signatures from other keys.
+The [identity runbook](RECEIPT_IDENTITY.md) defines provisioning, migration, and storage recovery.
+Command authorization, simulated receipts, and LED compatibility retain the public demo HMAC.
+The device key resides in unencrypted NVS. Physical flash access can extract it. Production identity still requires protected storage and firmware integrity.
 
 The device timestamp derives from an authenticated host request and uptime. It is not independent time attestation.
 The receipt establishes what this firmware reports about its GPIO samples. It does not establish external physical truth.

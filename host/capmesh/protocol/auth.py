@@ -2,9 +2,15 @@ import hmac
 import hashlib
 import secrets
 import json
+import base64
+import binascii
 from dataclasses import asdict
 from typing import Dict, Any
 from .models import InvocationReceipt
+from .identity import ReceiptPublicKey
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec, utils
 
 DEFAULT_SECRET = "capmesh-secret-key-2026"
 
@@ -54,7 +60,7 @@ def create_auth_payload(
     raise ValueError(f"Unsupported auth_type: {auth_type}")
 
 def receipt_message(receipt: InvocationReceipt) -> str:
-    """Return the canonical receipt payload for the prototype HMAC."""
+    """Return the canonical receipt payload for HMAC or device signing."""
     if receipt.capability == "state.observe":
         if not receipt.parameters or not receipt.result:
             raise ValueError("Observation receipt is missing signed fields")
@@ -90,10 +96,26 @@ def receipt_message(receipt: InvocationReceipt) -> str:
         }, sort_keys=True, separators=(",", ":"))
 
 
-def verify_receipt(receipt: InvocationReceipt, secret: str = DEFAULT_SECRET, require_delivery_proof: bool = False) -> bool:
+def verify_receipt(receipt: InvocationReceipt, secret: str = DEFAULT_SECRET, require_delivery_proof: bool = False,
+                   *, public_key: ReceiptPublicKey | None = None) -> bool:
     """Verify the signed receipt fields and optional pad readback claim."""
-    if receipt.status != "success" or not receipt.receipt_signature:
+    if receipt.status != "success" or not isinstance(receipt.receipt_signature, str) or not receipt.receipt_signature:
         return False
+    if public_key is not None:
+        # A provisioned asymmetric identity never falls back to the public demo HMAC.
+        if receipt.capability != "state.observe" or not receipt.receipt_signature.startswith("v3:") or require_delivery_proof:
+            return False
+        try:
+            encoded = receipt.receipt_signature[3:]
+            signature = base64.b64decode(encoded, validate=True)
+            if len(signature) != 64 or base64.b64encode(signature).decode() != encoded:
+                return False
+            der = utils.encode_dss_signature(int.from_bytes(signature[:32], "big"), int.from_bytes(signature[32:], "big"))
+            key = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(), bytes.fromhex(public_key.sec1_hex))
+            key.verify(der, receipt_message(receipt).encode(), ec.ECDSA(hashes.SHA256()))
+            return True
+        except (InvalidSignature, KeyError, TypeError, ValueError, binascii.Error):
+            return False
     if not receipt.receipt_signature.startswith("v2:"):
         return False
     try:
