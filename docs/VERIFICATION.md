@@ -41,6 +41,12 @@ Unreapable cleanup stops the run immediately. A scheduled sample uses a new chal
 The pilot log records candidate-source hashes and its dirty-state flag. Raw logs remain ignored local state.
 The [diagnostic runbook](DEMO.md#record-scheduled-input-checks) owns commands, interruption, and log interpretation.
 No overnight completion is claimed from this three-sample pilot.
+The longer diagnostic started from a clean detached snapshot at `1624b15` with its own installed host environment.
+That snapshot passed 74 software tests with 10 hardware skips in 1.99 seconds.
+Its first real observation passed. The schedule requests 120 observations with 120-second gaps.
+The running process holds a sleep inhibitor. It changes no persistent power settings.
+The detached source remains fixed while development continues. Raw logs and live process state remain local.
+The final completed count and failure record require inspection after the run ends.
 No payment, firmware flash, board reset, GPIO output, peaq write, deployment, registration, or submission occurred during the pilot.
 The full legacy hardware suite includes GPIO8 actuator tests. It issued no GPIO20 operation.
 
