@@ -221,5 +221,17 @@ def observe_demo(simulated, closed, http_url, http_interface, ledger, provider, 
     if result["status"] != "success" or not result.get("attacks_passed"):
         raise SystemExit(1)
 
+@main.command("corroborate-demo")
+@click.option("--scenario", type=click.Choice(["all", "open", "closed", "conflict", "missing", "stale", "skew", "invalid", "replay"]),
+              default="all", help="Rehearse the pair rule with explicitly simulated signed fixtures")
+def corroborate_demo(scenario):
+    """Verify two configured contact answers. No payment or hardware."""
+    from .agent.corroboration_demo import SCENARIOS, run_corroboration_demo
+    scenarios = SCENARIOS if scenario == "all" else (scenario,)
+    results = [run_corroboration_demo(name) for name in scenarios]
+    click.echo(json.dumps(results, indent=2))
+    if any(result["pair"]["decision"] != ("DISPATCH" if result["scenario"] == "open" else "WAIT") for result in results):
+        raise SystemExit(1)
+
 if __name__ == "__main__":
     main()

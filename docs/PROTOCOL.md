@@ -51,6 +51,7 @@ fieldproof-observation-v1|protocol|request_id|provider|capability|location|nonce
 ```
 
 Encode `closed` as `0` or `1`.
+The JSON `closed` value must be a boolean before canonical encoding. Numeric and string contact values fail authentication.
 Physical observation receipts use ECDSA P-256 with SHA-256 over this message.
 `receipt_signature` contains `v3:` followed by standard padded base64 of the 64-byte, big-endian `r || s` signature.
 The buyer pins the public key through trusted USB provisioning. It rejects legacy HMAC substitution for that provider.
@@ -78,6 +79,10 @@ The buyer checks these conditions before it dispatches:
 Fresh open evidence produces DISPATCH. Closed, missing, stale, or invalid evidence produces WAIT.
 Confidence stays `null`. Sample agreement does not imply calibrated confidence.
 The in-process buyer replay set lasts for one verifier instance. Gateway purchase state persists in SQLite.
+
+The optional [two-observer policy](CORROBORATION.md) applies this envelope to two separately challenged receipts.
+It requires two configured identities, one evaluation time, and a bounded completion-time difference.
+It changes neither the device message nor the single-provider payment endpoint.
 
 ## Device replay and concurrency
 

@@ -72,6 +72,8 @@ Each provider ID uses 1–31 ASCII letters, digits, hyphens, or underscores.
 Each pin contains a lowercase, uncompressed P-256 point. Invalid curve points fail before network or Bluetooth access.
 Never put a private key in this file.
 Two configured public keys passed software verification. No second physical board was tested.
+The [pair policy and signed-fixture rehearsal](CORROBORATION.md) require both configured OPEN answers and reject conflicting or missing evidence.
+Its physical collection and payment gates remain open.
 
 ## Select the physical profile
 

@@ -79,13 +79,15 @@ Use the fixture as a demonstration. A deployed installation needs a defined faul
 |---|---|---|
 | External contact | Fixture closed/open yields two new signed readings. The buyer verifies the configured sensor, key, challenge, and age. | BOOT evidence proves the new installation |
 | Second device | Distinct provider IDs and keys verify separately. Swapped keys, provider IDs, and challenges fail. | Two boards automatically establish independent truth |
-| Corroboration | Contradictory or stale observations produce WAIT under an explicit buyer rule. | Two observers remove correlated faults or measure confidence |
+| Corroboration | Actual paired collection fits freshness and completion limits. Contradictory, stale, or missing evidence produces WAIT. | Two observers remove correlated faults or measure confidence |
 | Phone | Chrome displays controls, evidence, failures, and the same decision correctly. | Mobile layout proves wallet payment integration |
 | Wallet | An explicitly approved test payment settles once. Its independently verified receipt remains subject to freshness. | A wallet button alone proves machine autonomy |
 
 Two boards on one switch share its wiring and physical faults.
 Two separately installed sensors still require checked placement, permissions, and a failure model.
 Never turn sample agreement or observer count into a calibrated probability.
+The [pair policy](CORROBORATION.md) passed signed-fixture tests. Physical paired collection remains open.
+The measured single-board BLE round trip also requires a collection-time check before two observations can support one immediate decision.
 
 ## Use the next three days
 

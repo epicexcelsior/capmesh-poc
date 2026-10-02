@@ -1,7 +1,7 @@
 # FieldProof: start here
 
 **Decision: finish the existing MVP and submit the Germany bounty first.**
-As of October 2, 2026. This page condenses the decision. The linked records preserve its evidence.
+As of October 3, 2026. This page condenses the decision. The linked records preserve its evidence.
 
 ## The thesis to keep
 
@@ -60,4 +60,7 @@ The [parts and acceptance plan](HARDWARE_NEXT.md) prioritizes an external contac
 The [contact setup guide](CONTACT_SETUP.md) now defines prepared input selection, independent provider pins, and configuration recovery.
 The software rejects mixed simulation terms and mismatched buyer/gateway keys before payment.
 External-fixture and second-board physical tests remain open. The existing board still reads GPIO9.
+The [two-observer software policy](CORROBORATION.md) now rejects conflicting, missing, stale, invalid, skewed, and replayed pairs.
+Both configured receipts must report fresh, stable OPEN before DISPATCH. Signed fixtures establish software behavior only.
+Physical paired collection, paired payments, independent sensing, and customer need remain open.
 Do not replace the verified entry with an extension that misses its gates.

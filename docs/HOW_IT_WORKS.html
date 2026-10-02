@@ -103,6 +103,12 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <p>An earlier answer cannot answer a different challenge. A matching answer also needs a recent measurement time.</p>
 <p>The device clock starts from an authenticated host request. This prototype checks that time against the buyer clock. It lacks independent time attestation.</p>
 <p>Five matching samples show short-term agreement from one input. They are not five independent observers or a calibrated probability of correctness.</p>
+<h3>What changes with two observers?</h3>
+<p>The optional pair policy requires two configured device identities to report fresh, stable OPEN. Any missing, conflicting, stale, invalid, skewed, or replayed evidence produces WAIT.</p>
+<p>Both receipts use one evaluation time. The pair expires when its oldest observation or earliest request expires.</p>
+<p>Two valid signatures can disagree. They identify the reporting keys, not an independently verified physical truth. Two sensors can also share one wiring fault.</p>
+<p>Run <code>uv run --project host capmesh corroborate-demo --scenario all</code> to explore eight explicitly simulated signed-fixture scenes. It uses no hardware and moves no funds.</p>
+<p>The paid demonstration still uses one board. See the <a href="CORROBORATION.md">pair policy and physical acceptance gates</a> before claiming two-board operation.</p>
 <h3>Why can authentic evidence still produce WAIT?</h3>
 <p>The recorded purchase really settled, and its device signature remains valid. Its ten-second decision window expired.</p>
 <p>Replaying the receipt or verifying the chain cannot refresh that window. A new decision needs a new observation.</p>
@@ -155,6 +161,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <tr><th>Mode</th><th>Command</th><th>Port</th><th>Payment</th><th>Contact</th></tr>
 <tr><td>CLI adversarial loop</td><td><code>uv run --project host capmesh observe-demo --simulated</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
 <tr><td>CLI closed contact</td><td><code>uv run --project host capmesh observe-demo --simulated --closed</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>Two-observer policy</td><td><code>uv run --project host capmesh corroborate-demo --scenario all</code></td><td>—</td><td>none</td><td><span class="pill sim">signed fixtures</span></td></tr>
 <tr><td>CLI real hardware</td><td><code>uv run --project host capmesh observe-demo</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
 <tr><td>Browser simulator</td><td><code>cd gateway &amp;&amp; npm run demo</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill sim">simulated</span></td></tr>
 <tr><td>Browser + real contact</td><td><code>cd gateway &amp;&amp; npm run demo -- --physical</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
@@ -636,6 +643,8 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>FOCUS.md</code></td><td>Which product decision governs current work?</td></tr>
 <tr><td><code>BOUNTY_PLAN.md</code></td><td>Which acceptance gate and owner action comes next?</td></tr>
 <tr><td><code>PEAQ_INTEGRATION.md</code></td><td>Which peaq path was checked, and what blocks activation?</td></tr>
+<tr><td><code>CONTACT_SETUP.md</code></td><td>How do I select another input and provision another device?</td></tr>
+<tr><td><code>CORROBORATION.md</code></td><td>When do two configured answers justify one demo decision?</td></tr>
 </table></div>
 <p>Companion pages: <a href="overview.html">interactive dispatch desk</a> · <a href="diagnostics.html">diagnostics</a> · <a href="OVERVIEW.md">MVP overview</a> · <a href="DEMO.md">demo runbook</a> · <a href="VERIFICATION.md">verification record</a>.</p>
 </section>

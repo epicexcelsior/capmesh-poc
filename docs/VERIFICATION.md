@@ -4,6 +4,33 @@ Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 3 bounded two-observer policy
+
+Starting source: `59990ff`, pushed and confirmed against the remote branch.
+The new policy requires two distinct configured provider IDs and public P-256 pins.
+It verifies original challenges, exact sensors, stable samples, and both ages at one evaluation time.
+The default completion-time difference is at most two seconds. Only two acceptable OPEN receipts produce DISPATCH.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q tests/test_corroboration.py` | 42 passed in 0.23 seconds |
+| `uv run --project host pytest -q` | 140 passed, 10 hardware tests skipped in 1.46 seconds |
+| `uv run --project host capmesh corroborate-demo --scenario all` | Exit zero. Eight labeled signed-fixture scenarios returned their expected decisions and specific reasons. |
+| Pair recovery and reuse | Failed partial pairs preserved a valid member. Complete CLOSED or conflicting pairs consumed both tokens. A fresh pair still worked. |
+| Concurrent verification and caller mutation | One of two concurrent consumers returned DISPATCH. The other rejected replay. Caller mutation did not change the captured authenticated decision. |
+| Pair expiry | The oldest receipt or earliest request expiration bounded validity. The next second produced WAIT. |
+| Malformed contact regression | Before the fix, positive and negative infinity raised `OverflowError`. After strict Boolean canonicalization, seven malformed values returned WAIT and preserved valid-pair recovery. |
+| Read-only specialist review | Identity and verification reviewers reproduced the malformed-contact defect. The focused suites confirmed the fix. |
+| Explanation page | Desktop and 390-pixel browser checks passed. Both screenshots were inspected. No page error or horizontal overflow occurred. |
+
+Fixture signing keys remained in memory. No hardware, network request, wallet access, payment, firmware flash, or peaq write occurred in this feature's checks.
+The gateway and paid buyer still serve one provider per purchase. No paired payment or collector exists.
+The [pair guide](CORROBORATION.md) owns the rule and physical gates. Distinct keys do not establish independent physical sensing or calibrated confidence.
+The unchanged Node suite's latest executed result remains 41 passing tests in the compatibility section below.
+
+The separate fixed-source overnight diagnostic remains in progress. Its first 35 observed samples passed, with zero failures at this checkpoint.
+No terminal summary was observed. This is progress evidence, not a completed soak result.
+
 ## October 3 recorded-purchase compatibility
 
 Starting source: `d019109`, pushed and confirmed against the remote branch.

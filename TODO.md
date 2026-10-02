@@ -37,6 +37,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Build default GPIO9 and isolated GPIO18 candidates without flashing the working device.
 - [x] Test distinct software provider keys, swapped pins, wrong sensors, and changed configuration.
 - [x] Add a browser purchase check that refuses real payment and physical evidence.
+- [x] Verify a bounded two-observer policy with signed fixtures, expiry, disagreement, missing evidence, replay, and concurrent consumption.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.
 Publication, repository rename, and submission require explicit authorization.
@@ -65,7 +66,8 @@ Use [contact setup](docs/CONTACT_SETUP.md) for the prepared software. Its physic
 - [ ] Borrow the priority-one parts and assemble a hinged fixture.
 - [ ] Configure and verify an external input without changing receipt authentication or buyer freshness rules.
 - [ ] Provision a second board through trusted USB and test distinct device/key binding.
-- [ ] Test explicit contradictory, stale, and missing-observer behavior before claiming corroboration.
+- [x] Test contradictory, stale, and missing-observer software behavior with explicitly simulated signed fixtures.
+- [ ] Verify two-board collection time, actual disagreement, stale input, missing input, and swapped keys before claiming physical corroboration.
 - [ ] Record actual buyer need, existing alternative, permission, useful lifetime, and budget.
 - [ ] Test the public judge package on the optional Android phone.
 

@@ -58,6 +58,15 @@ The simulator invokes no hardware. This rehearsal requires no wallet and moves n
 The [physical runbook](DEMO.md#real-hardware) adds live BOOT checks with simulated payment.
 Close other BLE scans first. Keep BOOT released during reset.
 
+## Explain the optional pair extension
+
+After the core demonstration, run `uv run --project host capmesh corroborate-demo --scenario all`.
+This command moves no funds and invokes no hardware. Every result states SIMULATED SIGNED FIXTURES.
+Two fresh, stable OPEN answers produce DISPATCH. Disagreement, missing evidence, stale evidence, excessive skew, invalid signatures, and replay produce WAIT.
+Two signing keys establish distinct configured identities. They do not establish independent sensing or a probability of correctness.
+The [pair guide](CORROBORATION.md) explains expiry, recovery, and the remaining two-board collection gate.
+Keep this scene optional in the timed video. The main purchase still uses one board.
+
 ## Rehearse a 150-second technical demonstration
 
 Use these cues in your own words. They are demonstration prompts, not submission-field answers.

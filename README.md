@@ -11,6 +11,7 @@ For a plain-language explanation, start with [Understand the product](docs/HOW_I
 Practice with the [short demonstration and six explanation questions](docs/REHEARSAL.md).
 Prepare borrowed parts with the [three-day hardware plan and acceptance gates](docs/HARDWARE_NEXT.md).
 Configure an external input or second observer with [the contact setup guide](docs/CONTACT_SETUP.md).
+Rehearse the tested two-observer policy with [signed fixtures and explicit physical gates](docs/CORROBORATION.md).
 For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware
@@ -22,6 +23,7 @@ Start each command block at the repository root. Stop a running gateway with Ctr
 uv sync --project host
 uv run --project host capmesh observe-demo --simulated
 uv run --project host capmesh observe-demo --simulated --closed
+uv run --project host capmesh corroborate-demo --scenario all
 npm --prefix gateway ci
 npm --prefix gateway run demo
 ```
@@ -32,6 +34,8 @@ Run `npm --prefix gateway run demo -- --closed` to rehearse the closed-contact d
 
 The CLI adversarial loop rejects a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request.
 It records served and unmet demand in a local SQLite ledger.
+The pair rehearsal uses temporary signed fixtures. Both configured observers must report fresh, stable OPEN before DISPATCH.
+Missing, conflicting, stale, invalid, skewed, or replayed evidence produces WAIT. It uses no hardware and moves no funds.
 
 ## Inspect the recorded physical purchase
 

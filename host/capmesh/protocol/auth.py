@@ -65,6 +65,9 @@ def receipt_message(receipt: InvocationReceipt) -> str:
         if not receipt.parameters or not receipt.result:
             raise ValueError("Observation receipt is missing signed fields")
         result = receipt.result
+        # Canonicalize only protocol Booleans. Numeric coercion can accept malformed values or raise before rejection.
+        if type(result["closed"]) is not bool:
+            raise ValueError("Observation contact state must be a Boolean")
         return (
             f"fieldproof-observation-v1|{receipt.protocol}|{receipt.request_id}|{receipt.provider}|"
             f"{receipt.capability}|{receipt.parameters['location']}|{receipt.nonce}|"
