@@ -4,6 +4,31 @@ Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 3 peaq ownership boundary
+
+Starting source: `ad31124`, pushed and confirmed against the remote branch.
+The diagnostic now reads the proposed identity's owner through the published SDK's read-only context.
+Every contract call uses the same finalized block. No signing account or invented legacy address exists in this path.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q tests/test_peaq_readiness.py` | 12 passed in 0.06 seconds |
+| `uv run --project host pytest -q` | 146 passed, 10 hardware tests skipped in 1.52 seconds |
+| Isolated SDK 0.10.0 live diagnostic | Exit zero at finalized Agung block 10,997,811, chain ID 9990. |
+| Registry state | `MACHINE_NOT_FOUND` with decoded `ERC721NonexistentToken`. No local token exists at this block. |
+| Identity and economics | Proposed identity bytes and ID unchanged. Full tier-0 bond remained 0.4 native test tokens. Authority passed and both technical pause flags remained false. |
+| Error and RPC fixtures | Decoded absence, registered owner, and foreign home stayed distinct. RPC failures propagated. Different-block calls, state overrides, and transaction methods failed before network access. |
+| Read-only specialist review | No high-confidence P1/P2 issue remained. The reviewer exercised actual SDK registered, nonexistent, foreign-home, and failed reads with a fake provider. Every contract call stayed pinned. |
+
+The [public snapshot](evidence/peaq-agung-readiness.json) replaces the earlier readiness snapshot.
+No activation, reservation, approval, signature, account funding, service registration, or activity event occurred.
+An absent ID is not reserved and establishes no future availability. The [peaq guide](PEAQ_INTEGRATION.md) owns the remaining write gates.
+
+A local founder handout now explains the payment/evidence distinction, technical demonstration, commercial questions, and captured fixture decisions.
+All eight scene controls passed desktop and 390-pixel browser checks. Both screenshots were inspected.
+No page errors, horizontal overflow, or HTTP requests occurred. The handout performs no live verification, hardware access, or payment.
+It remains local preparation material and is not part of the public judge export.
+
 ## October 3 bounded two-observer policy
 
 Starting source: `59990ff`, pushed and confirmed against the remote branch.

@@ -1,6 +1,6 @@
 # peaq integration decision
 
-**October 2, 2026: Agung identity readiness passed. No machine activation or peaq transaction occurred.**
+**October 3, 2026: Agung readiness passed. The proposed ID was absent at the recorded block. No peaq transaction occurred.**
 Keep the Solana contact MVP frozen through the October 5 Germany submission.
 The next peaq flow connects the observer's identity to its public signing key and permitted observation service.
 This document owns peaq interfaces, readiness, and activation gates.
@@ -14,12 +14,13 @@ Its RPC transport permits only chain ID, block, bytecode, and contract reads. It
 
 The [recorded readiness result](evidence/peaq-agung-readiness.json) reports:
 
-| Read at finalized block 10,996,074 | Result |
+| Read at finalized block 10,997,811 | Result |
 |---|---|
 | Connected chain | Agung, chain ID 9990 |
 | Published deployment | `agung-2026-08-28` |
 | Seven contract addresses | All contain bytecode |
 | Six InfoDesk peer entries | All match the published snapshot |
+| Proposed machine ownership | Decoded `MACHINE_NOT_FOUND` / `ERC721NonexistentToken`; no local token exists at this block |
 | Subscription economic authority | `true` |
 | Global and proposed-machine technical pause | Both `false` |
 | Tier-0 full bond | `400000000000000000` base units |
@@ -51,7 +52,13 @@ The proposed ID is:
 
 The result means that the registry can derive an identity from these proposed bytes.
 It does not mean that FieldProof owns an activated identity.
-The diagnostic's `activated: false` states that it performs no activation. It does not query ownership or prove ID availability.
+The diagnostic now reads ownership through the SDK's supported `TokenomicsReadContext` interface. It requires no signing account or full wallet client.
+The RPC guard pins this lookup and all other contract reads to the same finalized block.
+`registry_state.status: not_found_at_block` requires the SDK's decoded nonexistent-token error.
+An RPC failure, rate limit, or undecoded revert fails visibly. A foreign home reports `homed_elsewhere` instead of absence.
+The diagnostic's `activated: false` states that it performs no activation.
+An absent ID is not reserved. Another actor can register it after this snapshot.
+An owner lookup does not establish key possession or the intended operator's right to that identity.
 
 Before activation, define the operator, controller, manufacturer field, verification method, and service endpoint.
 Use the approved SDK activation flow with explicit spending bounds and receipt reconciliation.
@@ -96,9 +103,11 @@ DO_NOT_TRACK=1 PEAQOS_TELEMETRY=0 uv run --no-project --with peaq-os-sdk==0.10.0
 ```
 
 Expect `chain_id: 9990`, `peers_match: true`, both pause flags `false`, and a proposed machine ID.
+Read `registry_state` separately. A registered owner, an absent token, and a foreign home represent different states.
 Add `--provider` and `--pins` after the script path to select a provisioned second observer.
 Pin-file paths resolve from the repository root. No second physical observer or activated identity is claimed.
 An unavailable RPC, changed peer, missing contract, wrong chain, or active pause produces a visible error and exits unsuccessfully.
+Contract reads at another block and state-override parameters also fail before network access.
 The script does not silently switch endpoints or deployments.
 
 The inspected wheel SHA256 is `508808bb565ec3bf088759e047cba12e70678aa3f9d0ef335c88c34ab90e0e3e`.

@@ -34,6 +34,7 @@ The [current 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) 
 See [verification](VERIFICATION.md) for exact checks and evidence limits.
 Start with [Understand the product](HOW_IT_WORKS.html#understand) for a plain-language explanation and demonstration sequence.
 The [peaq integration decision](PEAQ_INTEGRATION.md) records the actual registry reads and remaining activation inputs.
+The proposed peaq ID was absent at the current recorded finalized block. This check neither reserves nor activates it.
 
 Three commercial questions remain: does a buyer lack a useful fact, does the operator permit its sale, and can repeat delivery cover costs?
 One buyer conversation about an actual incident and a concrete paid pilot tests more than another broad competitor search.

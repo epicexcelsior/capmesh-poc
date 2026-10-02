@@ -31,6 +31,58 @@ def test_readiness_transport_refuses_signing_and_writes_before_network():
     assert sent == [("eth_chainId", [])]
 
 
+def test_owner_reads_use_the_finalized_snapshot_without_mutating_sdk_parameters():
+    module = load_checker()
+    sent = []
+
+    def send(method, params):
+        sent.append((method, params))
+        return {"result": "fixture"}
+
+    original = [{"to": "public contract", "data": "public call"}, "latest"]
+    module.guarded_request(send, "eth_call", original, read_block=123)
+    assert original[1] == "latest"
+    assert sent == [("eth_call", [original[0], "0x7b"])]
+    for params in [[original[0], "0x7a"], [original[0], "pending"], [original[0], "latest", {}]]:
+        with pytest.raises(ValueError):
+            module.guarded_request(send, "eth_call", params, read_block=123)
+    assert len(sent) == 1
+    with pytest.raises(PermissionError):
+        module.guarded_request(send, "eth_sendRawTransaction", [], read_block=123)
+
+
+class LookupError(Exception):
+    def __init__(self, code, solidity_error=None):
+        self.code = code
+        self.solidity_error = solidity_error
+
+
+def test_registry_read_distinguishes_owner_absence_foreign_home_and_failure():
+    module = load_checker()
+    owner = "0x" + "12" * 20
+    assert module.registration_state(lambda _: owner, 123, LookupError)["owner"] == owner
+
+    def lookup(code, solidity_error=None):
+        def read(_):
+            raise LookupError(code, solidity_error)
+        return read
+
+    absent = module.registration_state(lookup("MACHINE_NOT_FOUND", "ERC721NonexistentToken"), 123, LookupError)
+    assert absent["status"] == "not_found_at_block" and absent["owner"] is None
+    assert module.registration_state(lookup("MACHINE_HOMED_ELSEWHERE"), 123, LookupError)["status"] == "homed_elsewhere"
+    for code, solidity_error in [("READ_FAILED", None), ("RPC_RATE_LIMITED", None),
+                                  ("CHAIN_MISMATCH", None), ("MACHINE_NOT_FOUND", None)]:
+        with pytest.raises(LookupError):
+            module.registration_state(lookup(code, solidity_error), 123, LookupError)
+
+
+@pytest.mark.parametrize("owner", [None, "unverified", "0x" + "00" * 20, "0x" + "zz" * 20])
+def test_registry_read_rejects_invalid_owner(owner):
+    module = load_checker()
+    with pytest.raises(ValueError, match="invalid owner"):
+        module.registration_state(lambda _: owner, 123, LookupError)
+
+
 def test_identity_proposal_binds_only_the_public_pin():
     module = load_checker()
     pins = json.loads((Path(__file__).resolve().parents[1] / "host/capmesh/protocol/receipt_keys.json").read_text())

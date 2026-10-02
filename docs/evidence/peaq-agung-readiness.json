@@ -7,9 +7,9 @@
   },
   "rpc": "https://peaq-agung.api.onfinality.io/public",
   "chain_id": 9990,
-  "finalized_block": 10996074,
-  "block_hash": "0x41d6e2e1967ae5960cb46484daef400f0535be2c726aaf59d9c99cbf2c7d992b",
-  "block_timestamp": 1790970180,
+  "finalized_block": 10997811,
+  "block_hash": "0xaff09472f58a0f3d3c6d0ef92c64868617a5911679fd5ae92ba061ba3ba09353",
+  "block_timestamp": 1790980632,
   "contracts": {
     "info_desk": "0x72b66AF120c55371cA6e5Ce38D4e10dF1bA30Bb1",
     "machine_registry": "0x538da35489B1F0035799a8351E67835ae4ABb377",
@@ -35,6 +35,12 @@
     "computed_machine_id": "2044618828586167349407969644236800133676464971368659651643404080491769435145",
     "activated": false
   },
+  "registry_state": {
+    "status": "not_found_at_block",
+    "owner": null,
+    "code": "MACHINE_NOT_FOUND",
+    "solidity_error": "ERC721NonexistentToken"
+  },
   "activation_checks": {
     "economic_authority": true,
     "paused_global": false,
@@ -43,5 +49,5 @@
     "bond_base_units": "400000000000000000",
     "payment_token": "0x0000000000000000000000000000000000000809"
   },
-  "limits": "This snapshot excludes operator funding, allowance, gas, manufacturer, DID methods, and service endpoints. It does not authorize activation or establish sensor truth."
+  "limits": "This snapshot excludes operator funding, allowance, gas, manufacturer, DID methods, and service endpoints. A not-found ID is not reserved and can change after this block. This diagnostic does not authorize activation or establish sensor truth."
 }
