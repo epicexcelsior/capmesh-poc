@@ -6,8 +6,8 @@ FieldProof asks whether a demo gate is open, buys a contact observation, checks 
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [overview](docs/OVERVIEW.md), the [complete how-it-works and setup guide](docs/HOW_IT_WORKS.html), the [interactive dispatch desk](docs/overview.html), and the [MVP plan](docs/MVP_PLAN.md).
-The [submission checklist](docs/SUBMISSION.md) records track deadlines and remaining required fields. Follow the [bounty execution plan](docs/BOUNTY_PLAN.md) and [October 2 research decision](docs/research/2026-10-02-fieldproof.md).
+Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [condensed decision and next actions](docs/FOCUS.md). The [bounty execution plan](docs/BOUNTY_PLAN.md) owns deadlines and acceptance gates.
+For technical detail, use the [overview](docs/OVERVIEW.md), [how-it-works and setup guide](docs/HOW_IT_WORKS.html), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware
 

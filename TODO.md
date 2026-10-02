@@ -1,6 +1,6 @@
 # FieldProof acceptance status
 
-Canonical current state: [overview](docs/OVERVIEW.md) and [verification](docs/VERIFICATION.md).
+Start with [the condensed decision](docs/FOCUS.md). Use [verification](docs/VERIFICATION.md) for observed results.
 The previous phase tracker overstated payment, provider trust, and physical truth. Current evidence replaces those claims.
 
 - [x] Document the physical-evidence pivot and implementation plan.
@@ -28,7 +28,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Push the repository and make it public: https://github.com/epicexcelsior/capmesh-poc
 - [ ] Provide test access, presentation link, Colosseum project details, and submission contact.
 - [x] Preserve the buyer purchase ID after a lost payment connection or truncated delivery.
-- [x] Run the full current gateway suite: 20 tests pass with local sockets available.
+- [x] Run the gateway suite: 22 tests passed on October 2. See the verification record.
 - [x] Preserve purchase identity, buyer policy, metadata, recovery, recordings, evidence, and current documentation in local commits.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.

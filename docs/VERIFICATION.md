@@ -1,6 +1,6 @@
 # FieldProof verification record
 
-Date: October 1, 2026, Europe/Berlin.
+Current continuation: October 2, 2026, Europe/Berlin. Historical hardware and payment evidence dates to October 1.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
@@ -30,7 +30,7 @@ Browser tooling uses an existing Playwright installation. It is not an MVP runti
 The [research decision](research/2026-10-02-fieldproof.md) supersedes the inherited novelty and winner-causality claims.
 The [bounty execution plan](BOUNTY_PLAN.md) records owner actions and the research stop rule.
 
-## Automated checks
+## Historical October 1 automated checks
 
 | Command | Observed result |
 |---|---|
@@ -137,7 +137,7 @@ It does not claim an exploit against the public facilitator. Its own SDK also id
 The local ledger now enforces its own durable identity across facilitator-signature variants.
 No completed real purchase existed before this identity correction. Existing tagged simulation proofs retain their original hashes.
 
-## Video artifacts
+## Historical video artifacts
 
 | Artifact | Content | Duration | Bytes | SHA256 |
 |---|---|---|---|---|
@@ -150,8 +150,8 @@ The extended recording completed every scene before saving. `ffmpeg -v error -i 
 Public-quote and real-contact frames were extracted and visually inspected.
 The composed presentation passed full decode and visual inspection. Its 1,744 source packets remain unchanged.
 
-Both longer videos predate the successful public payment and human input checks.
-Their pending-payment captions describe the earlier state. Refresh those captions and add the verified evidence before submission.
+Both older longer videos predate the successful public payment and human input checks.
+Their pending-payment captions describe the earlier state. Use the current signed-receipt video from the October 2 record above.
 The recording script's new quote caption states that its scene executes no payment.
 
 ## Versions and limits
@@ -161,7 +161,8 @@ The chip is ESP32-C6FH4 revision v0.2, with 4 MB embedded flash and USB Serial/J
 Flashed application SHA256: `c56ca246115d4cab742916bfff09aa90afa0bfbbcebe7570fe7359ff06e4211a`.
 Node's built-in SQLite emits an experimental-feature warning.
 
-The public demo HMAC key, host-anchored time, reboot-cleared replay state, and single observer remain prototype limits.
+Historical receipts use the public demo HMAC key. Current physical receipts use the provisioned P-256 identity with unencrypted device storage.
+Host-anchored time, reboot-cleared replay state, and the single observer remain prototype limits.
 No external gate sensor, protected identity, calibrated confidence, vehicle controller, customer pilot, peaq activation, or public deployment exists.
 The [product review](STRATEGY.md#product-risks-and-decisions) identifies the decisions that require further evidence.
 
