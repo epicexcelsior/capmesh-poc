@@ -27,7 +27,7 @@ Sources, counterexamples, calculations, and uncertainties: [October 2 research d
 
 The October 2 continuation passed both held/released P-256 input checks and the full hardware suite.
 The review corrected setup, provisioning, documentation, and public-point validation defects.
-Current test counts and the intermittent legacy discovery miss live in [verification](VERIFICATION.md#october-2-ble-delivery-and-unattended-diagnostic).
+Current test counts and remaining discovery reliability limits live in [verification](VERIFICATION.md).
 The browser inspector now checks the recorded Solana transfer independently. No new payment ran in this continuation.
 The public inspector export passed local review. Publication and human registration remain pending owner actions.
 The [current 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) plays and passes full decoding.
@@ -57,4 +57,7 @@ Keep broader opportunities in the evidence archive.
 The founder authorized a bounded hardware extension on October 2.
 Keep the same contact question, receipt format, payment rail, and recorded fallback.
 The [parts and acceptance plan](HARDWARE_NEXT.md) prioritizes an external contact, then distinct device identities.
+The [contact setup guide](CONTACT_SETUP.md) now defines prepared input selection, independent provider pins, and configuration recovery.
+The software rejects mixed simulation terms and mismatched buyer/gateway keys before payment.
+External-fixture and second-board physical tests remain open. The existing board still reads GPIO9.
 Do not replace the verified entry with an extension that misses its gates.

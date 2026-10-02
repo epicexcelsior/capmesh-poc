@@ -28,24 +28,43 @@ Keep BOOT released during flashing and reset.
 3. Run `idf.py -p /dev/ttyACM0 app-flash`.
 4. Open `idf.py -p /dev/ttyACM0 monitor`.
 5. With BOOT released, press Reset.
-6. Read the `P256_PUBLIC_KEY=` line.
-7. Exit the monitor with **Ctrl+]**.
-8. Replace the intended provider's public pin in `host/capmesh/protocol/receipt_keys.json`.
-9. Run `uv sync --project host` from the repository root.
-10. Run `uv run --project host capmesh observe-demo --ledger :memory:`.
-11. Check `receipt_identity` equals `pinned-device-p256` and `attacks_passed` equals `true`.
-12. Reset the board with BOOT released.
-13. Check the USB public key matches the pin.
-14. Repeat the observation command.
+6. Read the `Device ID:` line.
+7. Read the `P256_PUBLIC_KEY=` line.
+8. Exit the monitor with **Ctrl+]**.
+9. Copy the checked-in public pin file to `.local/contact-pins.json` from the repository root.
+10. Add the USB-verified provider and public key to the copy's `providers` object.
+11. Preserve the original demonstration entry.
+12. Run `uv sync --project host` from the repository root.
+13. Run the observation command below with the USB-verified provider ID.
+14. Check `receipt_identity` equals `pinned-device-p256` and `attacks_passed` equals `true`.
+15. Reset the board with BOOT released.
+16. Check the USB public key matches the selected pin.
+17. Repeat the observation command.
+
+For a default GPIO9 build, run this command from the repository root.
+Replace `fieldproof_provider` with the new board's USB-verified ID before invocation.
+
+```bash
+fieldproof_provider=esp32-c6-96a2
+uv run --project host capmesh observe-demo --provider "$fieldproof_provider" \
+  --sensor gpio9-contact --pins .local/contact-pins.json --ledger :memory:
+```
+
+For another firmware input, select its matching sensor descriptor through [contact setup](CONTACT_SETUP.md).
+Do not replace the checked-in historical pin to add another device.
+An intentional replacement of the original board requires a reviewed migration of its historical inspector and buyer configuration.
 
 The attached demonstration uses provider ID `esp32-c6-96a2`.
-Another board requires an explicit provider-ID update in the bridge, paid buyer, and demo configuration.
+Another board requires explicit provider selection in the host, gateway, and paid buyer.
+Use a separate trusted public pin file to preserve the existing demonstration key.
+Follow [contact setup](CONTACT_SETUP.md#provision-a-second-device-without-replacing-the-first-pin).
 An ID derived from the MAC address does not establish identity by itself.
 
 The pin contains a 65-byte uncompressed SEC1 point as 130 lowercase hex characters, starting with `04`.
 The checked-in pin belongs to the attached demonstration board. It is public material.
 Python package data includes this file. The JavaScript buyer reads the same source file.
-Restart the JavaScript buyer after a pin change.
+Restart the JavaScript buyer and gateway after an operator pin-file change.
+Existing quotes retain their stored pin. A changed gateway key requires a new quote.
 
 Do not learn a replacement pin from a receipt or provider manifest.
 Use the trusted USB connection and verify the operator's intended device assignment.

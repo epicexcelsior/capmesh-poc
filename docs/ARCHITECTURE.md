@@ -20,11 +20,11 @@ flowchart LR
 
 | Component | Responsibility | Source |
 |---|---|---|
-| Contact capability | Sample GPIO9 without driving the boot strap | `firmware/esp32/main/capabilities/contact_capability.c` |
+| Contact capability | Sample the configured input without driving it. GPIO9 is the current default. | `firmware/esp32/main/capabilities/contact_capability.c` |
 | Dispatcher | Validate authorization, serialize transport access, protect replay state, authenticate receipt | `firmware/esp32/main/protocol/capmesh_dispatcher.c` |
 | Receipt identity | Generate and retain a P-256 signing key in NVS | `firmware/esp32/main/protocol/receipt_identity.c` |
 | BLE / HTTP | Carry the same request and receipt | `host/capmesh/transport/`, `firmware/esp32/main/transport/` |
-| Observation contract | Pin metric, location, budget, and freshness | `host/capmesh/observations.py` |
+| Observation contract | Pin metric, location, sensor, budget, and freshness | `host/capmesh/observations.py` |
 | Rehearsal market | Try candidates by price, reject stale evidence, record demand | `host/capmesh/market.py` |
 | Gateway | Enforce x402 verification and settlement before measurement | `gateway/server.js` |
 | Purchase ledger | Prevent duplicate settlement and preserve failure states | `gateway/store.js` |
@@ -38,6 +38,10 @@ flowchart LR
 A manifest cannot establish its own provider identity. The buyer pins a device ID and P-256 public key through trusted USB provisioning.
 The ESP32 signs observations with its persistent private key. The buyer rejects HMAC substitution and signatures from other keys.
 The [identity runbook](RECEIPT_IDENTITY.md) defines provisioning, migration, and storage recovery.
+The [contact setup guide](CONTACT_SETUP.md) defines input selection and additional provider pins.
+The paid buyer selects its provider, sensor, and public key from trusted configuration before any network request.
+The gateway compares those terms before it creates a quote. Its response cannot replace the buyer's key.
+Firmware configuration selects the actual input. A host setting cannot reconfigure the board.
 Command authorization, simulated receipts, and LED compatibility retain the public demo HMAC.
 The device key resides in unencrypted NVS. Physical flash access can extract it. Production identity still requires protected storage and firmware integrity.
 
@@ -51,10 +55,15 @@ SQLite is the source of truth for each local ledger. WAL mode and a busy timeout
 The purchase ID, challenge nonce, and transaction message hash have database uniqueness constraints.
 The hash excludes signature bytes because facilitator signing changes those bytes without creating another payment.
 The busy timeout runs before WAL initialization, so concurrent startup can wait for a database lock.
+Every quote stores its provider/sensor profile and the gateway's startup snapshot of the public pin.
+Startup migrates older ledgers under an immediate transaction. Old rows remain intact.
+Unbound legacy quotes require a fresh request. Changed provider, sensor, or key settings reject existing quotes before payment.
+The physical bridge uses the stored pin. A pin-file edit cannot change an already quoted delivery's verification key.
 An atomic reservation changes `quoted` to `settling` before the external settlement call.
 Only the writer that obtains this reservation can settle and measure.
 
 A successful purchase persists its receipt. Retrying returns that receipt and marks it cached.
+This retrieval remains available after contact configuration changes. It repeats neither payment nor measurement.
 A verifier must check its age again. The browser sets WAIT when the freshness window expires.
 
 Settlement timeouts and crashes require review because an external chain transaction and local database cannot commit atomically.

@@ -93,7 +93,7 @@ int capmesh_dispatcher_get_manifest(char *buf, size_t max_len)
     cJSON_AddItemToArray(caps, cap);
     cJSON *observe = cJSON_CreateObject();
     cJSON_AddStringToObject(observe, "id", "state.observe");
-    cJSON_AddStringToObject(observe, "description", "Fresh GPIO9 contact at demo-gate (BOOT button stand-in)");
+    cJSON_AddStringToObject(observe, "description", FIELDPROOF_CONTACT_DESCRIPTION);
     cJSON *observe_price = cJSON_CreateObject();
     cJSON_AddStringToObject(observe_price, "model", "fixed");
     cJSON_AddStringToObject(observe_price, "amount", "0.001");
@@ -336,7 +336,7 @@ static int observation_receipt(const char *req_id, uint32_t nonce, uint32_t star
     cJSON_AddItemToObject(receipt, "parameters", params);
     cJSON *result = cJSON_CreateObject();
     cJSON_AddStringToObject(result, "metric", "gate.closed");
-    cJSON_AddStringToObject(result, "sensor", "gpio9-contact");
+    cJSON_AddStringToObject(result, "sensor", FIELDPROOF_CONTACT_SENSOR);
     cJSON_AddBoolToObject(result, "closed", closed);
     cJSON_AddNumberToObject(result, "stable_samples", stable);
     cJSON_AddNumberToObject(result, "total_samples", FIELDPROOF_CONTACT_SAMPLES);
@@ -345,8 +345,8 @@ static int observation_receipt(const char *req_id, uint32_t nonce, uint32_t star
     cJSON_AddNumberToObject(receipt, "completed_at", end);
     char message[384];
     snprintf(message, sizeof(message),
-             "fieldproof-observation-v1|%s|%s|%s|state.observe|demo-gate|%" PRIu32 "|gate.closed|gpio9-contact|%d|%d|%d|%" PRIu32 "|%" PRIu32,
-             CAPMESH_PROTOCOL_VERSION, req_id, s_device_id, nonce, closed ? 1 : 0,
+             "fieldproof-observation-v1|%s|%s|%s|state.observe|demo-gate|%" PRIu32 "|gate.closed|%s|%d|%d|%d|%" PRIu32 "|%" PRIu32,
+             CAPMESH_PROTOCOL_VERSION, req_id, s_device_id, nonce, FIELDPROOF_CONTACT_SENSOR, closed ? 1 : 0,
              stable, FIELDPROOF_CONTACT_SAMPLES, start, end);
     char signature[92];
     if (receipt_identity_sign(message, signature, sizeof(signature)) != ESP_OK) {

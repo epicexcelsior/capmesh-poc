@@ -208,11 +208,15 @@ def serve_http(host: str, port: int):
 @click.option("--http-url", default=None, help="Use ESP32 HTTP instead of BLE")
 @click.option("--http-interface", default=None, help="Bind local HTTP to a Linux network interface")
 @click.option("--ledger", default=".local/demand.sqlite", help="Local SQLite demand ledger")
-def observe_demo(simulated, closed, http_url, http_interface, ledger):
+@click.option("--provider", default=None, help="Buyer-selected device ID. Discovery cannot replace its key")
+@click.option("--sensor", default="gpio9-contact", help="Buyer-selected physical input, such as gpio18-contact")
+@click.option("--pins", type=click.Path(exists=True, dir_okay=False), default=None, help="Trusted public receipt-pin JSON file")
+def observe_demo(simulated, closed, http_url, http_interface, ledger, provider, sensor, pins):
     """Ask whether the demo gate is open and reject stale or replayed evidence."""
     from .agent.observation_demo import run_observation_demo
     result = asyncio.run(run_observation_demo(simulated=simulated, closed=closed, http_url=http_url,
-                                            http_interface=http_interface, ledger_path=ledger))
+                                            http_interface=http_interface, ledger_path=ledger,
+                                            provider=provider, sensor=sensor, pins_path=pins))
     click.echo(json.dumps(result, indent=2))
     if result["status"] != "success" or not result.get("attacks_passed"):
         raise SystemExit(1)

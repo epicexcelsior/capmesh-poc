@@ -5,6 +5,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawn } from 'node:child_process';
+import { generateKeyPairSync } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { address, appendTransactionMessageInstruction, compileTransaction, createTransactionMessage,
   generateKeyPairSigner, getAddressEncoder, getTransactionDecoder, getTransactionEncoder,
@@ -13,8 +14,9 @@ import { createGateway, createPaymentServer, NETWORK, PAY_TO, USDC } from '../se
 import { PurchaseStore } from '../store.js';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 
-async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', assetsRoot } = {}) {
+async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', provider, receiptPins, assetsRoot } = {}) {
   const events = [];
+  const observations = [];
   const facilitator = {
     getSupported: async () => ({ kinds: [{ x402Version: 2, scheme: 'exact', network: NETWORK, extra: { feePayer: PAY_TO } }], extensions: [], signers: {} }),
     verify: async () => { events.push('verify'); return { isValid: valid, payer: PAY_TO }; },
@@ -23,17 +25,21 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   };
   const paymentServer = await createPaymentServer(facilitator);
   const store = new PurchaseStore(path);
-  const app = await createGateway({ paymentServer, store, simulated: true, sensor, assetsRoot, observe: async () => {
+  const app = await createGateway({ paymentServer, store, simulated: true, sensor, provider, receiptPins, assetsRoot, observe: async purchase => {
     events.push('measure');
+    observations.push(purchase);
     if (deliveryFails) throw new Error('device unavailable');
     return { decision: { decision: 'DISPATCH', evidence_mode: 'simulated' }, receipt: { simulated: true, completed_at: Math.floor(Date.now() / 1000) } };
   } });
   const server = app.listen(0, '127.0.0.1');
   await once(server, 'listening');
   const url = `http://127.0.0.1:${server.address().port}`;
+  const health = await (await fetch(`${url}/health`)).json();
+  const contact = health.contact;
   t.after(async () => { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); store.close(); });
   async function purchase(nonce = 123) {
-    const created = await fetch(`${url}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nonce }) });
+    const created = await fetch(`${url}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nonce, contact, receipt_public_key: health.receipt_public_key }) });
     assert.equal(created.status, 201);
     const request = await created.json();
     const route = `${url}/observe/${request.id}`;
@@ -44,8 +50,104 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
       payload: { transaction: Buffer.from('FIELDPROOF-SIM:fixture-proof').toString('base64') } }, challenge };
   }
   const pay = (route, payload) => fetch(route, { headers: { 'PAYMENT-SIGNATURE': encodePaymentSignatureHeader(payload) } });
-  return { url, events, store, purchase, pay };
+  return { url, events, observations, store, purchase, pay };
 }
+
+test('external contact terms survive restart and reach the observation worker unchanged', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-contact-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'purchases.sqlite');
+  const first = await fixture(t, { path, sensor: 'gpio18-contact' });
+  const p = await first.purchase();
+  assert.deepEqual(p.request.contact, { provider: 'esp32-c6-96a2', sensor: 'gpio18-contact' });
+  const second = await fixture(t, { path, sensor: 'gpio18-contact' });
+  assert.deepEqual(second.store.get(p.request.id).contact, p.request.contact);
+  assert.equal((await second.pay(`${second.url}/observe/${p.request.id}`, p.payload)).status, 200);
+  assert.deepEqual(second.events, ['verify', 'settle', 'measure']);
+  assert.deepEqual(second.observations[0].contact, p.request.contact);
+  assert.match(second.observations[0].receipt_public_key, /^04[0-9a-f]{128}$/);
+});
+
+test('sensor, provider, or key changes reject old quotes before a payment challenge', async t => {
+  const rotatedPin = generateKeyPairSync('ec', { namedCurve: 'prime256v1' }).publicKey.export({ format: 'der', type: 'spki' }).subarray(-65).toString('hex');
+  for (const change of [{ sensor: 'gpio19-contact' },
+    { provider: 'second-board', receiptPins: { 'second-board': rotatedPin } },
+    { receiptPins: { 'esp32-c6-96a2': rotatedPin } }]) {
+    const dir = mkdtempSync(join(tmpdir(), 'fieldproof-reconfigure-'));
+    t.after(() => rmSync(dir, { recursive: true, force: true }));
+    const path = join(dir, 'purchases.sqlite');
+    const first = await fixture(t, { path, sensor: 'gpio18-contact' });
+    const p = await first.purchase();
+    const second = await fixture(t, { path, sensor: 'gpio18-contact', ...change });
+    const route = `${second.url}/observe/${p.request.id}`;
+    assert.equal((await fetch(route)).status, 409);
+    assert.equal((await second.pay(route, p.payload)).status, 409);
+    assert.deepEqual(second.events, []);
+    assert.equal(second.store.get(p.request.id).state, 'quoted');
+  }
+});
+
+test('cached delivered evidence remains retrievable after contact configuration changes', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-cached-contact-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'purchases.sqlite');
+  const first = await fixture(t, { path, sensor: 'gpio18-contact' });
+  const p = await first.purchase();
+  assert.equal((await first.pay(p.route, p.payload)).status, 200);
+  const second = await fixture(t, { path, sensor: 'gpio19-contact' });
+  const response = await second.pay(`${second.url}/observe/${p.request.id}`, p.payload);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).evidence_cached, true);
+  assert.deepEqual(second.events, []);
+});
+
+test('external input requests require matching explicit terms and reject an empty body', async t => {
+  const f = await fixture(t, { sensor: 'gpio18-contact' });
+  for (const body of [{}, { nonce: 1 }, { nonce: 1, contact: { provider: 'esp32-c6-96a2', sensor: 'gpio9-contact' } }]) {
+    const response = await fetch(`${f.url}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    assert.equal(response.status, 400);
+  }
+  assert.equal((await fetch(`${f.url}/requests`, { method: 'POST' })).status, 400);
+  assert.deepEqual(f.store.demand(), []);
+  assert.deepEqual(f.events, []);
+});
+
+test('legacy ledger migration preserves rows and rejects unbound quotes without payment', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-migration-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'purchases.sqlite');
+  const old = new DatabaseSync(path);
+  old.exec(`CREATE TABLE purchases (id TEXT PRIMARY KEY, nonce INTEGER NOT NULL UNIQUE,
+    location TEXT NOT NULL, max_age_seconds INTEGER NOT NULL, expires_at INTEGER NOT NULL, state TEXT NOT NULL,
+    proof_hash TEXT UNIQUE, settlement TEXT, result TEXT, error TEXT);
+    INSERT INTO purchases VALUES ('legacy', 1, 'demo-gate', 10, 9999999999, 'quoted', NULL, NULL, NULL, NULL);
+    INSERT INTO purchases VALUES ('delivered', 2, 'demo-gate', 10, 9999999999, 'delivered', 'proof', NULL, '{"receipt":{}}', NULL);`);
+  old.close();
+  const f = await fixture(t, { path });
+  assert.equal(f.store.get('legacy').contact, null);
+  assert.equal(f.store.get('delivered').result, '{"receipt":{}}');
+  assert.equal((await fetch(`${f.url}/observe/legacy`)).status, 410);
+  assert.deepEqual(f.events, []);
+});
+
+test('unprovisioned physical provider fails startup before building a payment offer', async () => {
+  const store = new PurchaseStore(':memory:');
+  try {
+    const paymentServer = { buildPaymentRequirements: () => assert.fail('No quote for an unprovisioned provider') };
+    await assert.rejects(createGateway({ paymentServer, store, provider: 'missing', sensor: 'gpio18-contact' }), /provisioned/);
+  } finally { store.close(); }
+});
+
+test('a different buyer pin fails before quote creation, verification, settlement, or measurement', async t => {
+  const f = await fixture(t, { sensor: 'gpio18-contact' });
+  const otherPin = generateKeyPairSync('ec', { namedCurve: 'prime256v1' }).publicKey.export({ format: 'der', type: 'spki' }).subarray(-65).toString('hex');
+  const response = await fetch(`${f.url}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nonce: 789, contact: { provider: 'esp32-c6-96a2', sensor: 'gpio18-contact' }, receipt_public_key: otherPin }) });
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /public pin/);
+  assert.deepEqual(f.events, []);
+  assert.deepEqual(f.store.demand(), []);
+});
 
 test('physical contact metadata stays separate from simulated settlement', async t => {
   const f = await fixture(t, { sensor: 'gpio9-contact' });

@@ -9,6 +9,9 @@ from .protocol.auth import DEFAULT_SECRET, create_auth_payload, generate_nonce, 
 from .protocol.models import InvocationReceipt, InvocationRequest
 from .protocol.identity import ReceiptPublicKey
 
+CONTACT_INPUT_PINS = frozenset({0, 1, 2, 3, 6, 7, 9, 18, 19, 20, 21, 22, 23})
+CONTACT_SENSORS = frozenset(f"gpio{pin}-contact" for pin in CONTACT_INPUT_PINS)
+
 
 @dataclass(frozen=True)
 class ObservationContract:
@@ -16,12 +19,15 @@ class ObservationContract:
     metric: str = "gate.closed"
     max_age_seconds: int = 10
     max_price_usdc: str = "0.003"
+    sensor: str | None = None
 
     def __post_init__(self):
         if not re.fullmatch(r"[a-z0-9-]{1,16}", self.location):
             raise ValueError("Location must contain 1–16 lowercase letters, digits, or hyphens")
         if self.metric != "gate.closed":
             raise ValueError("The MVP supports only gate.closed")
+        if self.sensor is not None and (not isinstance(self.sensor, str) or self.sensor not in CONTACT_SENSORS | {"simulated-contact"}):
+            raise ValueError("Select a supported GPIO contact or explicitly simulated contact")
         if type(self.max_age_seconds) is not int or not 1 <= self.max_age_seconds <= 30:
             raise ValueError("Freshness must be 1–30 seconds")
         price = Decimal(self.max_price_usdc)
@@ -73,7 +79,8 @@ class ObservationVerifier:
         if not authenticated:
             raise EvidenceError("INVALID_SIGNATURE: observation fields failed authentication")
         result = receipt.result or {}
-        if (result.get("metric") != contract.metric or result.get("sensor") not in ("gpio9-contact", "simulated-contact")
+        accepted_sensors = (contract.sensor,) if contract.sensor else ("gpio9-contact", "simulated-contact")
+        if (result.get("metric") != contract.metric or result.get("sensor") not in accepted_sensors
             or type(result.get("closed")) is not bool
             or type(result.get("stable_samples")) is not int
             or type(result.get("total_samples")) is not int

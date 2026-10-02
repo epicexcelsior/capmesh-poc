@@ -10,6 +10,7 @@ Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receip
 For a plain-language explanation, start with [Understand the product](docs/HOW_IT_WORKS.html#understand).
 Practice with the [short demonstration and six explanation questions](docs/REHEARSAL.md).
 Prepare borrowed parts with the [three-day hardware plan and acceptance gates](docs/HARDWARE_NEXT.md).
+Configure an external input or second observer with [the contact setup guide](docs/CONTACT_SETUP.md).
 For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware
@@ -86,6 +87,12 @@ Hold BOOT while the observation runs to represent a closed contact. Release BOOT
 Do not hold BOOT during reset or flashing. GPIO9 is a boot strap.
 Human press/release verification passed: held BOOT produced CLOSED/WAIT, and released BOOT produced OPEN/DISPATCH. Both states returned five matching samples.
 
+The firmware supports an explicitly configured dry-contact input. GPIO9 remains the default.
+The host accepts `--provider`, `--sensor`, and `--pins` for operator-selected physical profiles.
+The gateway uses `FIELDPROOF_PROVIDER_ID`, `FIELDPROOF_CONTACT_SENSOR`, and `FIELDPROOF_RECEIPT_PINS`.
+The paid buyer accepts the same three settings as CLI flags. Pin-file paths are relative to the repository root in these commands.
+The [setup guide](docs/CONTACT_SETUP.md) separates successful software checks from pending physical verification.
+
 ## Run the Devnet payment gateway
 
 ```bash
@@ -107,6 +114,8 @@ node gateway/buyer.js /path/to/disposable.keypair.json
 
 The client rejects other networks, assets, recipients, and amounts above 0.001 USDC.
 It checks the device receipt independently and derives its decision from the contact state.
+It compares the selected provider, sensor, and its trusted public pin with the quote before payment.
+The gateway stores those terms and rejects an older quote after configuration changes.
 It never prints key material. Do not use a funded mainnet keypair.
 
 Retries return the original evidence without a second settlement or measurement.
@@ -120,6 +129,15 @@ uv run --project host pytest -q
 uv run --project host pytest -q --hardware
 npm --prefix gateway test
 ```
+
+With the full simulator running, verify its browser purchase and the recorded inspector:
+
+```bash
+node scripts/check_purchase_ui.cjs /path/to/playwright http://127.0.0.1:4022
+node scripts/check_receipt_ui.cjs /path/to/playwright http://127.0.0.1:4022
+```
+
+The purchase check refuses physical evidence and real-payment gateways. It verifies simulation, configured terms, expiry, and phone width.
 
 The default Python run skips hardware tests explicitly. `--hardware` requires the board and fails if it is unavailable.
 There is no declared Python formatter or type checker in the original repository.

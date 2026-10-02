@@ -38,6 +38,8 @@ This readiness result does not replace the SDK's full activation preflight.
 
 The proposed machine type is `FieldProofContactObserverV1`.
 The credential subject contains a versioned schema, the ESP32 provider ID, and the existing public P-256 pin.
+The diagnostic accepts an operator-selected provider and trusted public pin file for another observer.
+Changing either value changes the proposed identity bytes. Missing or invalid pins fail before RPC access.
 The script sends these exact public bytes to `MachineRegistry.computeTokenId` at the recorded block.
 It preserves the resulting 256-bit identifier as a decimal string. JavaScript numbers cannot preserve every identifier of this size.
 
@@ -94,6 +96,8 @@ DO_NOT_TRACK=1 PEAQOS_TELEMETRY=0 uv run --no-project --with peaq-os-sdk==0.10.0
 ```
 
 Expect `chain_id: 9990`, `peers_match: true`, both pause flags `false`, and a proposed machine ID.
+Add `--provider` and `--pins` after the script path to select a provisioned second observer.
+Pin-file paths resolve from the repository root. No second physical observer or activated identity is claimed.
 An unavailable RPC, changed peer, missing contract, wrong chain, or active pause produces a visible error and exits unsuccessfully.
 The script does not silently switch endpoints or deployments.
 

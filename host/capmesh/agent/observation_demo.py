@@ -2,9 +2,10 @@
 
 from dataclasses import replace
 import json
+import re
 
 from ..market import DemandLedger, ObservationMarket
-from ..observations import EvidenceError, ObservationContract, ObservationVerifier
+from ..observations import CONTACT_SENSORS, EvidenceError, ObservationContract, ObservationVerifier
 from ..protocol.auth import DEFAULT_SECRET, compute_hmac_sha256, receipt_message
 from ..protocol.identity import provisioned_observation_keys
 from ..protocol.models import InvocationReceipt, InvocationRequest
@@ -13,15 +14,29 @@ from ..transport.ble import BLETransportAdapter
 from ..transport.http import HTTPTransportAdapter
 
 
-async def run_observation_demo(*, simulated=False, closed=False, http_url=None, http_interface=None, ledger_path=".local/demand.sqlite"):
+async def run_observation_demo(*, simulated=False, closed=False, http_url=None, http_interface=None,
+                               ledger_path=".local/demand.sqlite", provider=None, sensor="gpio9-contact", pins_path=None):
+    if provider is None:
+        provider = "sim-contact-01" if simulated else "esp32-c6-96a2"
+    if not isinstance(provider, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,31}", provider):
+        raise ValueError("Select a provider ID with 1–31 letters, digits, hyphens, or underscores")
+    if not simulated and (not isinstance(sensor, str) or sensor not in CONTACT_SENSORS):
+        raise ValueError("Physical mode requires a configured GPIO contact sensor")
+    if simulated and (not isinstance(sensor, str) or sensor not in {"gpio9-contact", "simulated-contact"}):
+        raise ValueError("Simulation reports simulated-contact and cannot select a physical GPIO")
+    contract = ObservationContract(sensor="simulated-contact" if simulated else sensor)
+    if simulated:
+        receipt_keys = {provider: DEFAULT_SECRET}
+    else:
+        pins = provisioned_observation_keys(pins_path)
+        if provider not in pins:
+            raise ValueError("The selected provider has no buyer-provisioned public key")
+        receipt_keys = {provider: pins[provider]}
     stale = SimulatedContactProvider("stale-contact", stale_seconds=60, price="0.0001")
-    physical = (SimulatedContactProvider(closed=closed) if simulated else
+    physical = (SimulatedContactProvider(provider, closed=closed) if simulated else
                 HTTPTransportAdapter(http_url, interface=http_interface) if http_url else BLETransportAdapter())
-    provider = "sim-contact-01" if simulated else "esp32-c6-96a2"
-    receipt_keys = {provider: DEFAULT_SECRET} if simulated else provisioned_observation_keys()
     ledger = DemandLedger(ledger_path)
     try:
-        contract = ObservationContract()
         market = ObservationMarket([stale, physical], {"stale-contact": DEFAULT_SECRET, **receipt_keys}, ledger)
         result = await market.observe(contract)
         result["mode"] = "SIMULATED" if simulated else "LIVE CONTACT DEMO"

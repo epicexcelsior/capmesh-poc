@@ -9,6 +9,8 @@ The **buyer** asks one question and sets a price and freshness limit.
 The **gateway** quotes the observation and checks payment through x402, a machine-readable HTTP payment protocol.
 After settlement, the **ESP32** reads its input and signs an answer.
 The **buyer verifier** checks that answer before it derives DISPATCH or WAIT.
+Before payment, the buyer and gateway compare the selected device, sensor, and independently provisioned public key.
+Each quote retains those settings. A gateway restart cannot rewrite its promised input or signing key.
 
 ```mermaid
 flowchart LR
@@ -99,6 +101,7 @@ Automatic refunds do not exist. A retry cannot silently settle the same purchase
 <details><summary>4. What does the physical demonstration establish?</summary>
 
 The board reads GPIO9 and signs the reported state. BOOT represents a contact.
+Configured-input software now supports an external fixture. New physical readings must verify its actual installation before the demo claims that result.
 It establishes neither a working external gate nor robot movement, safe passage, location attestation, or production security.
 
 </details>

@@ -5,6 +5,8 @@ As of October 2, 2026. This plan uses the founder's reported Munich MakerSpace a
 Parts availability, reservations, and local prices remain unverified. This document authorizes no purchase.
 
 The next result must show a physical fixture that changes the measured state.
+The [contact setup guide](CONTACT_SETUP.md) now covers configured firmware input, buyer selection, and separate public pins.
+Software checks and both candidate builds passed. Physical fixture and second-board checks remain open.
 A second board then tests distinct device identities. A phone tests reviewer access and an optional wallet workflow.
 These upgrades do not establish customer demand or safe robot motion.
 

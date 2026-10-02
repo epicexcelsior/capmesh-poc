@@ -1,0 +1,13 @@
+menu "FieldProof contact observer"
+
+config FIELDPROOF_CONTACT_GPIO
+    int "Read-only dry-contact input GPIO"
+    range 0 23
+    default 9
+    help
+        GPIO9 reads the BOOT button in the existing demonstration.
+        An external dry contact needs a verified board pin and ground wiring.
+        Supported chip pins are 0, 1, 2, 3, 6, 7, 9, and 18 through 23.
+        Other pins fail compilation. Do not connect a powered output.
+
+endmenu

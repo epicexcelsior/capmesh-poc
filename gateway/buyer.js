@@ -1,35 +1,29 @@
 import { readFile } from 'node:fs/promises';
-import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createPublicKey, randomInt, verify } from 'node:crypto';
+import { randomInt, verify } from 'node:crypto';
+import { isDeepStrictEqual, parseArgs } from 'node:util';
 import { createKeyPairSignerFromBytes } from '@solana/kit';
 import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { decodePaymentResponseHeader } from '@x402/core/http';
 import { NETWORK, USDC, PAY_TO } from './server.js';
+import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
 
-const receiptPins = JSON.parse(readFileSync(new URL('../host/capmesh/protocol/receipt_keys.json', import.meta.url), 'utf8'));
-if (receiptPins.algorithm !== 'ecdsa-p256-sha256') throw new Error('Unsupported provisioned receipt algorithm');
-const provisionedKey = receiptPins.providers['esp32-c6-96a2'];
-
-function receiptKey(sec1Hex) {
-  if (!/^04[0-9a-f]{128}$/.test(sec1Hex || '')) throw new Error('Buyer has no provisioned P-256 receipt key');
-  // SPKI: id-ecPublicKey, prime256v1, uncompressed SEC1 point.
-  return createPublicKey({ key: Buffer.from('3059301306072a8648ce3d020106082a8648ce3d030107034200' + sec1Hex, 'hex'),
-    format: 'der', type: 'spki' });
-}
+const provisionedKey = loadReceiptPins()[DEFAULT_CONTACT.provider];
 
 export function allowedOffers(offers, payTo = PAY_TO) {
   return offers.filter(offer => offer.scheme === 'exact' && offer.network === NETWORK && offer.asset === USDC &&
     offer.payTo === payTo && /^\d+$/.test(offer.amount) && BigInt(offer.amount) > 0n && BigInt(offer.amount) <= 1000n);
 }
 
-export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000), publicKey = provisionedKey) {
-  const r = body.receipt, s = r?.result;
-  if (!r || r.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.provider !== 'esp32-c6-96a2' ||
+export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000), publicKey = provisionedKey, selectedContact = DEFAULT_CONTACT) {
+  const contact = contactContract(selectedContact);
+  const r = body?.receipt, s = r?.result;
+  if (!r || r.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.provider !== contact.provider ||
       r.capability !== 'state.observe' || r.request_id !== purchase.id || r.nonce !== purchase.nonce ||
-      r.parameters?.location !== 'demo-gate' || s?.metric !== 'gate.closed' || s.sensor !== 'gpio9-contact' ||
+      r.parameters?.location !== 'demo-gate' || Object.keys(r.parameters).length !== 1 ||
+      s?.metric !== 'gate.closed' || s.sensor !== contact.sensor ||
       typeof s.closed !== 'boolean' || s.total_samples !== 5 || s.stable_samples !== 5 ||
       !Number.isInteger(r.started_at) || !Number.isInteger(r.completed_at) || r.started_at > r.completed_at ||
       r.started_at < purchase.created_at - 2 || r.completed_at > now + 2 || now - r.completed_at > purchase.max_age_seconds) {
@@ -49,20 +43,24 @@ export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000
     receipt_identity: 'pinned-device-p256' };
 }
 
-export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', { receiptPublicKey = provisionedKey } = {}) {
+export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', options = {}) {
+  const contact = contactContract(options.contact);
+  const receiptPublicKey = options.receiptPublicKey ?? loadReceiptPins(options.pinsPath)[contact.provider];
   receiptKey(receiptPublicKey); // Buyer configuration, never a key from the gateway response.
   const url = new URL(origin);
   if (url.protocol !== 'http:' || url.hostname !== '127.0.0.1') throw new Error('The prototype buyer accepts only a loopback gateway');
   const nonce = randomInt(1, 0x7fffffff);
   const createdAt = Math.floor(Date.now() / 1000);
   const created = await fetch(new URL('/requests', url), { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nonce, location: 'demo-gate', max_age_seconds: 10 }), signal: AbortSignal.timeout(10000) });
+    body: JSON.stringify({ nonce, location: 'demo-gate', max_age_seconds: 10, contact, receipt_public_key: receiptPublicKey }),
+    signal: AbortSignal.timeout(10000) });
   if (created.status !== 201) throw new Error(`Request creation failed: HTTP ${created.status}`);
   const purchase = { ...await created.json(), created_at: createdAt };
   const expectedUrl = new URL(`/observe/${purchase.id}`, url).href;
-  if (purchase.nonce !== nonce || purchase.observe_url !== expectedUrl ||
-      purchase.location !== 'demo-gate' || purchase.max_age_seconds !== 10) {
-    throw new Error('Gateway changed the buyer challenge, location, freshness limit, or endpoint');
+  if (!/^[0-9a-f]{16}$/.test(purchase.id) || purchase.nonce !== nonce || purchase.observe_url !== expectedUrl ||
+      purchase.location !== 'demo-gate' || purchase.max_age_seconds !== 10 || !isDeepStrictEqual(purchase.contact, contact) ||
+      purchase.receipt_public_key !== receiptPublicKey) {
+    throw new Error('Gateway changed the buyer challenge, contact contract, public pin, location, freshness limit, or endpoint');
   }
   const client = new x402Client();
   client.registerPolicy((_version, offers) => allowedOffers(offers));
@@ -77,16 +75,23 @@ export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', {
     if (settlement.success !== true || settlement.network !== NETWORK || !settlement.transaction) throw new Error('No successful Devnet settlement response');
     const body = await response.json();
     return { purchase_id: purchase.id, challenge: { id: purchase.id, nonce, created_at: createdAt,
-      location: purchase.location, max_age_seconds: purchase.max_age_seconds }, settlement,
-      ...checkEvidence(body, purchase, Math.floor(Date.now() / 1000), receiptPublicKey), receipt: body.receipt };
+      location: purchase.location, max_age_seconds: purchase.max_age_seconds, contact }, settlement,
+      ...checkEvidence(body, purchase, Math.floor(Date.now() / 1000), receiptPublicKey, contact), receipt: body.receipt };
   } catch { throw new Error(`Payment response or evidence failed verification. Keep purchase ID ${purchase.id} for review before another payment.`); }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const path = process.argv[2];
-  if (!path) throw new Error('Usage: node buyer.js /path/to/disposable.keypair.json [http://127.0.0.1:4021]');
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: {
+    provider: { type: 'string', default: DEFAULT_CONTACT.provider },
+    sensor: { type: 'string', default: DEFAULT_CONTACT.sensor }, pins: { type: 'string' },
+  } });
+  const [path, origin] = positionals;
+  if (!path || positionals.length > 2) throw new Error('Usage: node buyer.js keypair.json [http://127.0.0.1:4021] [--provider ID --sensor gpio18-contact --pins public-pins.json]');
+  const contact = contactContract({ provider: values.provider, sensor: values.sensor });
+  const receiptPublicKey = loadReceiptPins(values.pins)[contact.provider];
+  receiptKey(receiptPublicKey);
   const bytes = JSON.parse(await readFile(path, 'utf8'));
   if (!Array.isArray(bytes) || bytes.length !== 64 || !bytes.every(v => Number.isInteger(v) && v >= 0 && v <= 255)) throw new Error('Use a 64-byte Solana CLI keypair file');
   const signer = await createKeyPairSignerFromBytes(Uint8Array.from(bytes));
-  console.log(JSON.stringify(await buyObservation(signer, process.argv[3]), null, 2));
+  console.log(JSON.stringify(await buyObservation(signer, origin, { contact, receiptPublicKey }), null, 2));
 }

@@ -4,6 +4,7 @@ import { PurchaseStore } from './store.js';
 
 const port = Number(process.env.CAPMESH_GATEWAY_PORT || 4022);
 const physical = process.argv.includes('--physical');
+const sensor = physical ? process.env.FIELDPROOF_CONTACT_SENSOR || 'gpio9-contact' : 'simulated-contact';
 const facilitator = {
   getSupported: async () => ({ kinds: [{ x402Version: 2, scheme: 'exact', network: NETWORK, extra: { feePayer: PAY_TO } }], extensions: [], signers: {} }),
   verify: async payload => ({ isValid: Buffer.from(payload.payload.transaction, 'base64').toString().startsWith('FIELDPROOF-SIM:') }),
@@ -13,7 +14,7 @@ const facilitator = {
 const paymentServer = await createPaymentServer(facilitator);
 const store = new PurchaseStore(physical ? '.local/sim-payment-physical.sqlite' : '.local/sim-purchases.sqlite');
 const app = await createGateway({ paymentServer, store, simulated: true, origin: `http://127.0.0.1:${port}`,
-  sensor: physical ? 'gpio9-contact' : 'simulated-contact',
+  sensor, provider: process.env.FIELDPROOF_PROVIDER_ID || (physical ? 'esp32-c6-96a2' : 'sim-contact-01'),
   observe: purchase => observeHardware({ ...purchase, simulated: !physical, closed: process.argv.includes('--closed') }),
 });
 app.listen(port, '127.0.0.1', () => {

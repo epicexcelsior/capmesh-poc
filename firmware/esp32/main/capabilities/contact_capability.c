@@ -17,7 +17,8 @@ esp_err_t contact_capability_init(void)
 
 void contact_capability_sample(bool *closed, int *stable_samples)
 {
-    // The BOOT button is a contact-demo stand-in, not a deployed gate sensor.
+    // An input-to-ground contact reads CLOSED. An open circuit reads OPEN.
+    // This wiring cannot distinguish an open contact from a broken wire.
     *closed = gpio_get_level(FIELDPROOF_CONTACT_GPIO) == 0;
     *stable_samples = 1;
     for (int i = 1; i < FIELDPROOF_CONTACT_SAMPLES; i++) {

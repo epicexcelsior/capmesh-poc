@@ -2,7 +2,8 @@
 
 The MVP uses the existing `capmesh/0.1` JSON envelope. `state.observe` is the new capability.
 The provisioned metric is `gate.closed`, and the provisioned location is `demo-gate`.
-The sensor is GPIO9 in input mode. The onboard BOOT button represents a contact in this demo.
+The attached board reads GPIO9. The onboard BOOT button represents a contact in this demo.
+`CONFIG_FIELDPROOF_CONTACT_GPIO` selects another supported input at build time. The signed descriptor follows that setting.
 
 ## Request
 
@@ -39,7 +40,7 @@ It is disposable demonstration material, not a credential for a deployed service
 ## Measurement and receipt
 
 After authorization, the device reads five contact samples at approximately 10-millisecond intervals.
-`closed=true` means GPIO9 reads low. `stable_samples` counts samples that match the first sample.
+`closed=true` means the configured input reads low. `stable_samples` counts samples that match the first sample.
 The buyer requires five matching samples. It returns WAIT for unstable evidence.
 
 The response includes the challenge nonce, requested location, metric, sensor, state, sample counts, and epoch timestamps.
@@ -56,6 +57,9 @@ The buyer pins the public key through trusted USB provisioning. It rejects legac
 See the [identity runbook](RECEIPT_IDENTITY.md) for pin format, storage limits, and recovery.
 The receipt fits a 512-byte BLE characteristic. JSON field order does not affect the canonical message.
 Simulated receipts use `simulated-contact` and retain `v2:` plus the lowercase HMAC digest. The buyer labels their identity separately.
+Explicit physical contracts accept only their selected `gpioN-contact` descriptor.
+The supported chip GPIO list and physical prerequisites live in [contact setup](CONTACT_SETUP.md).
+The v3 envelope and canonical message stay unchanged. No new sensor type or multi-observer rule is implied.
 
 ## Buyer verification
 
@@ -101,6 +105,13 @@ Changing a resource wrapper cannot authorize another purchase with the same tran
 Solana transaction signatures do not independently sign HTTP resource metadata. Purchase binding is enforced by this gateway ledger.
 
 SQLite stores the unique purchase nonce, unique proof hash, settlement result, receipt, and review state.
+It also stores the immutable contact profile and startup snapshot of the public receipt key.
+For an external profile, `POST /requests` requires `contact: {provider, sensor}` and the buyer-owned `receipt_public_key`.
+The gateway rejects different terms before it creates the purchase. It returns those exact terms in the quote.
+The paid buyer sends and checks these terms for every profile, including the default GPIO9 demonstration.
+Default legacy requests can omit them. Nondefault physical profiles require both fields.
+Changed gateway settings reject an existing quote before a payment challenge, verification, or settlement.
+Legacy quoted rows require a new request. Delivered historical rows retain their cached-evidence behavior.
 A retry returns the original receipt. It does not refresh its timestamp.
 States are `quoted`, `settling`, `payment_failed`, `settlement_unknown`, `measuring`, `delivered`, and `delivery_failed`.
 A crash during settlement or measurement leaves a reviewable state. No automatic retry repeats those effects.

@@ -5,10 +5,12 @@ The SDK supplies the published deployment snapshot and contract ABIs.
 """
 
 from dataclasses import asdict
+import argparse
 from importlib.metadata import version
 import json
 from pathlib import Path
 import sys
+import re
 from cryptography.hazmat.primitives.asymmetric import ec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,18 +26,22 @@ def guarded_request(send, method, params):
     return send(method, params)
 
 
-def observer_subject(pins):
-    key = pins.get("providers", {}).get("esp32-c6-96a2", "")
+def observer_subject(pins, provider="esp32-c6-96a2"):
+    if not isinstance(provider, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,31}", provider):
+        raise ValueError("Select a valid observer provider ID.")
+    key = pins.get("providers", {}).get(provider, "")
     if (pins.get("algorithm") != "ecdsa-p256-sha256" or not isinstance(key, str)
             or len(key) != 130 or not key.startswith("04")):
         raise ValueError("The observer has no provisioned P-256 public key.")
     ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(), bytes.fromhex(key))
     # These proposed identity bytes are explicit. They do not certify a location or operator permission.
-    return json.dumps({"schema": "fieldproof-observer-v1", "provider": "esp32-c6-96a2",
+    return json.dumps({"schema": "fieldproof-observer-v1", "provider": provider,
                        "public_key_sec1_hex": key.lower()}, sort_keys=True, separators=(",", ":")).encode()
 
 
-def run():
+def run(provider_id="esp32-c6-96a2", pins_path=None):
+    pins = json.loads((ROOT / (pins_path or "host/capmesh/protocol/receipt_keys.json")).read_text())
+    subject = observer_subject(pins, provider_id)
     if version("peaq-os-sdk") != SDK_VERSION:
         raise ValueError(f"Use peaq-os-sdk=={SDK_VERSION} for the recorded deployment snapshot.")
     from web3 import Web3, HTTPProvider
@@ -77,8 +83,6 @@ def run():
         if actual.lower() != expected.lower():
             raise ValueError(f"InfoDesk does not confirm the published {role} address.")
 
-    pins = json.loads((ROOT / "host/capmesh/protocol/receipt_keys.json").read_text())
-    subject = observer_subject(pins)
     machine_type = "FieldProofContactObserverV1"
     registry = contract("machine_registry", MACHINE_REGISTRY_ABI)
     machine_id = read(registry.functions.computeTokenId(machine_type, subject))
@@ -108,8 +112,12 @@ def run():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--provider", default="esp32-c6-96a2", help="Operator-selected provider ID")
+    parser.add_argument("--pins", help="Trusted public pin file, relative to the repository root or absolute")
+    arguments = parser.parse_args()
     try:
-        print(json.dumps(run(), indent=2))
+        print(json.dumps(run(arguments.provider, arguments.pins), indent=2))
     except Exception as error:
         print(f"Agung readiness check failed: {error}", file=sys.stderr)
         sys.exit(1)

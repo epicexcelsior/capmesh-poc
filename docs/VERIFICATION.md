@@ -1,8 +1,56 @@
 # FieldProof verification record
 
-Current continuation: October 2, 2026, Europe/Berlin. Public paid evidence dates to October 1.
+Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates to October 1.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 2–3 configured contact and quote boundaries
+
+Starting source: `c21c4d9`. The attached firmware, signing pin, and fixed-source overnight diagnostic remain unchanged.
+The new software selects a physical provider, exact input descriptor, and independently provisioned public key.
+It supports separate public pins for additional providers. No second physical device or external fixture was tested.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q`, final expanded suite | 97 passed, 10 hardware tests skipped in 1.87 seconds |
+| `npm --prefix gateway test`, final expanded suite | 40 passed, 0 failed in 956.39 milliseconds |
+| Default ESP-IDF 6.1 GPIO9 build | Passed. Binary size `0x1371c0`. No flash. |
+| Isolated ESP-IDF 6.1 GPIO18 build | Passed. Configuration confirms GPIO18. Binary size `0x1371d0`. No flash. |
+| Isolated GPIO12 negative build | Expected rejection. Compiler stopped at the supported-input static assertion. `idf.py` exited 2. |
+| Configured signed test receipts | Exact GPIO18/provider/key accepted. Wrong sensors, provider IDs, keys, and challenges rejected. Software fixtures only. |
+| Purchase configuration and migration | Terms survived reopening. Provider, sensor, or pin changes rejected old quotes before payment. Legacy rows survived migration. Cached delivery remained retrievable. |
+| Buyer/gateway different-key regression | Reproduced settlement before independent receipt rejection in the candidate. Fixed handshake rejects before quote creation or paid fetch. |
+| Gateway CLI invalid-provider preflight | Exited before contacting the instrumented facilitator. Zero facilitator requests. |
+| Mixed live/simulated contract regression | Reproduced a LIVE CONTACT DEMO label on simulated evidence with a valid test signature. Strict mode guards now reject before transport or ledger creation. |
+| Browser startup regression | Delayed `/health` reproduced an enabled quote button before configuration. The new readiness assertion failed before the fix and passed afterward. |
+| Default browser simulation | Configured terms, OPEN/DISPATCH, expired WAIT, desktop and phone width passed. No funds or hardware. |
+| Custom-provider closed browser simulation | `sim-secondary`, configured terms, CLOSED/WAIT, expired WAIT, desktop and phone width passed. No funds or hardware. |
+| Browser checker against real Devnet mode | Expected refusal before browser launch or purchase creation. Only `/health` was read. |
+| Recorded browser inspector regression | Original signature, expiry, attacks, both signed BOOT states, damaged archives, RPC fixtures and 429 recovery passed. No new payment or hardware. |
+| Current public-facilitator preflight | Exact x402 V2 Devnet USDC quote for 1,000 base units passed with the selected contact and pin. No payment signature, settlement, or measurement. |
+| Current read-only Agung diagnostic | Finalized block 10,997,348. Chain 9990, peers matched, pause flags false, authority true, bond unchanged. Proposed default ID remained unchanged. No activation. |
+| JavaScript syntax, Python compilation, and diff whitespace | Passed for touched runtime and check scripts. No formatter or type checker is declared. |
+
+The unpaid public quote has purchase ID `dfab502ace9a49a1`.
+Read-only ledger inspection confirmed `quoted`, with null proof, settlement, and result fields.
+The temporary real gateway and custom-provider simulator were stopped after verification.
+The default full simulator remains available for rehearsal. It invokes no hardware.
+
+Both candidate builds used the reviewed source changes before commit. Their application version metadata identifies `c21c4d9-dirty`.
+The unflashed GPIO9 binary SHA256 is `1f9ad627cc133fddfa6041cc859a7e1f24c2d7d0e2382dc8574bf0cde5051cb7`.
+The unflashed GPIO18 binary SHA256 is `b3bff73c87b7586b65d6a299ab3227d5c929ffa2610189dc4e61a34c44a15267`.
+These hashes do not describe the currently flashed board.
+Firmware compile checks establish configuration and build validity. They do not establish wiring or physical sampling on GPIO18.
+
+Independent review also corrected the new-board provisioning procedure and gateway validation order.
+The buyer compares its existing trusted pin with the quote. It never provisions from the echoed key.
+The gateway snapshots that pin and stores it with each quote. The bridge does not reload a changed pin file after settlement.
+Legacy default requests retain compatibility. Nondefault physical profiles require explicit contact and public-pin terms.
+Actual device unavailability or incorrect firmware settings can still cause paid delivery failure and manual refund review.
+
+The exact configuration and physical acceptance procedure lives in [contact setup](CONTACT_SETUP.md).
+The current hardware remains GPIO9. The standalone recorded inspector remains bound to the original device and recorded evidence.
+No new payment, GPIO20 output, firmware flash, reset, peaq write, deployment, registration, or submission occurred in this change.
 
 ## October 2 BLE delivery and unattended diagnostic
 

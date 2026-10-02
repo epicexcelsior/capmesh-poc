@@ -45,6 +45,21 @@ def test_identity_proposal_binds_only_the_public_pin():
         module.observer_subject({"providers": {}})
 
 
+def test_selected_peaq_subject_binds_provider_and_key_without_discovery():
+    module = load_checker()
+    pins = json.loads((Path(__file__).resolve().parents[1] / "host/capmesh/protocol/receipt_keys.json").read_text())
+    another = ec.derive_private_key(11, ec.SECP256R1()).public_key().public_bytes(
+        serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint).hex()
+    pins["providers"]["second-observer"] = another
+    subject = module.observer_subject(pins, "second-observer")
+    assert json.loads(subject)["provider"] == "second-observer"
+    assert json.loads(subject)["public_key_sec1_hex"] == another
+    assert subject != module.observer_subject(pins)
+    for provider in ["unknown", "../board", None]:
+        with pytest.raises(ValueError):
+            module.observer_subject(pins, provider)
+
+
 @pytest.mark.parametrize("key", ["04" + "00" * 64, "04" + "zz" * 64, None])
 def test_identity_proposal_rejects_an_invalid_public_point(key):
     module = load_checker()

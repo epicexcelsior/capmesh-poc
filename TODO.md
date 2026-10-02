@@ -32,6 +32,11 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Preserve purchase identity, buyer policy, metadata, recovery, recordings, evidence, and current documentation in local commits.
 - [x] Verify both recorded P-256 input states in the browser without purchasing or measuring hardware.
 - [x] Add the founder rehearsal and six explanation questions.
+- [x] Support explicit physical input and provider selection without changing v3 receipt authentication.
+- [x] Bind buyer/gateway public pins before payment and persist quote configuration across restarts.
+- [x] Build default GPIO9 and isolated GPIO18 candidates without flashing the working device.
+- [x] Test distinct software provider keys, swapped pins, wrong sensors, and changed configuration.
+- [x] Add a browser purchase check that refuses real payment and physical evidence.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.
 Publication, repository rename, and submission require explicit authorization.
@@ -54,6 +59,7 @@ The signed-receipt technical video is ready locally. Registration, founder prese
 ## Bounded physical extension
 
 Use [the parts and acceptance plan](docs/HARDWARE_NEXT.md). Preserve the existing contact question and recorded fallback.
+Use [contact setup](docs/CONTACT_SETUP.md) for the prepared software. Its physical acceptance gates remain open.
 
 - [ ] Identify the exact board and external contact before assigning a GPIO.
 - [ ] Borrow the priority-one parts and assemble a hinged fixture.

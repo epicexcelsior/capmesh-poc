@@ -9,6 +9,7 @@ import { decodePaymentSignatureHeader, encodePaymentRequiredHeader, encodePaymen
 import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { getTransactionDecoder } from '@solana/kit';
 import { PurchaseStore } from './store.js';
+import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
 
 export const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 export const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
@@ -43,7 +44,12 @@ export function observeHardware(purchase) {
 }
 export async function createGateway({ paymentServer, store, observe = observeHardware,
     origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false,
-    sensor = simulated ? 'simulated-contact' : 'gpio9-contact', assetsRoot = root } = {}) {
+    sensor = simulated ? 'simulated-contact' : 'gpio9-contact',
+    provider = sensor === 'simulated-contact' ? 'sim-contact-01' : DEFAULT_CONTACT.provider, assetsRoot = root,
+    receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS) } = {}) {
+  const contact = contactContract({ provider, sensor }, { simulated });
+  const publicKey = sensor === 'simulated-contact' ? null : receiptPins[provider];
+  if (sensor !== 'simulated-contact') receiptKey(publicKey);
   const requirements = await paymentServer.buildPaymentRequirements({
     scheme: 'exact', price: { asset: USDC, amount: '1000' }, network: NETWORK, payTo,
   });
@@ -67,20 +73,30 @@ export async function createGateway({ paymentServer, store, observe = observeHar
   })) app.get(route, (_req, res) => res.sendFile(file, { root: assetsRoot }));
   app.get('/health', (_req, res) => res.json({ ready: true, network: NETWORK, payTo,
     capability: 'state.observe', location: 'demo-gate', price_base_units: '1000',
-    sensor, receipt_identity: sensor === 'gpio9-contact' ? 'pinned-device-p256' : 'public-demo-hmac',
+    provider, sensor, contact, receipt_public_key: publicKey,
+    receipt_identity: sensor === 'simulated-contact' ? 'public-demo-hmac' : 'pinned-device-p256',
     mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
   app.get('/demand', (_req, res) => res.json(store.demand()));
   app.get('/manifest', (_req, res) => res.json({ product: 'FieldProof', metric: 'gate.closed',
-    location: 'demo-gate', sensor,
+    location: 'demo-gate', sensor, provider, contact, receipt_public_key: publicKey,
     price: '0.001 USDC', confidence: null, create_request: '/requests' }));
   app.post('/requests', (req, res) => {
-    const { nonce, location = 'demo-gate', max_age_seconds = 10 } = req.body || {};
+    const body = req.body || {};
+    const { nonce, location = 'demo-gate', max_age_seconds = 10 } = body;
     if (!Number.isInteger(nonce) || nonce < 1 || nonce > 0x7fffffff || location !== 'demo-gate' ||
         !Number.isInteger(max_age_seconds) || max_age_seconds < 1 || max_age_seconds > 30) {
       return res.status(400).json({ error: 'Use a positive 32-bit nonce, demo-gate, and freshness from 1 to 30 seconds' });
     }
+    if ((body.contact !== undefined && !isDeepStrictEqual(body.contact, contact)) ||
+        (body.contact === undefined && sensor !== 'simulated-contact' && !isDeepStrictEqual(contact, DEFAULT_CONTACT))) {
+      return res.status(400).json({ error: 'Request the configured provider and sensor explicitly. Check the local manifest.' });
+    }
+    if ((body.receipt_public_key !== undefined && body.receipt_public_key !== publicKey) ||
+        (sensor !== 'simulated-contact' && !isDeepStrictEqual(contact, DEFAULT_CONTACT) && body.receipt_public_key === undefined)) {
+      return res.status(400).json({ error: 'The requested public pin does not match the configured contact key. Use your trusted device pin.' });
+    }
     const purchase = { id: randomUUID().replaceAll('-', '').slice(0, 16), nonce, location,
-      max_age_seconds, expires_at: Math.floor(Date.now() / 1000) + 120 };
+      contact, receipt_public_key: publicKey, max_age_seconds, expires_at: Math.floor(Date.now() / 1000) + 120 };
     try { store.create(purchase); }
     catch (error) {
       if (String(error.message).includes('UNIQUE')) return res.status(409).json({ error: 'Nonce already belongs to a purchase' });
@@ -91,7 +107,16 @@ export async function createGateway({ paymentServer, store, observe = observeHar
   app.get('/observe/:id', async (req, res) => {
     const purchase = store.get(req.params.id);
     if (!purchase) return res.status(404).json({ error: 'Unknown observation purchase' });
-    const resource = { url: `${origin}/observe/${purchase.id}`, description: 'Fresh gate contact evidence at demo-gate', mimeType: 'application/json' };
+    // Reject changed or legacy quotes before advertising a payment challenge.
+    // Delivered receipts still use the cached-evidence path below.
+    if (purchase.state === 'quoted') {
+      if (Math.floor(Date.now() / 1000) > purchase.expires_at) return res.status(410).json({ error: 'Purchase expired. Create a new request.' });
+      if (!purchase.contact) return res.status(410).json({ error: 'Legacy quote has no persisted device contract. Create a new request. No payment occurred.' });
+      if (!isDeepStrictEqual(purchase.contact, contact) || purchase.receipt_public_key !== publicKey) {
+        return res.status(409).json({ error: 'Gateway contact configuration changed. Create a new request. No payment occurred.' });
+      }
+    }
+    const resource = { url: `${origin}/observe/${purchase.id}`, description: `Fresh gate contact evidence at demo-gate (${purchase.contact?.provider || 'legacy quote'}, ${purchase.contact?.sensor || 'unbound input'})`, mimeType: 'application/json' };
     const challenge = async error => {
       const required = await paymentServer.createPaymentRequiredResponse(requirements, resource, error);
       res.set('PAYMENT-REQUIRED', encodePaymentRequiredHeader(required));
@@ -129,7 +154,6 @@ export async function createGateway({ paymentServer, store, observe = observeHar
       }
       return res.status(409).json({ error: purchase.error || 'Purchase requires settlement or delivery review', state: purchase.state });
     }
-    if (Math.floor(Date.now() / 1000) > purchase.expires_at) return res.status(410).json({ error: 'Purchase expired. Create a new request.' });
     let verified;
     try { verified = await paymentServer.verifyPayment(payload, requirements[0]); }
     catch { return res.status(503).json({ error: 'Payment verification unavailable. No measurement occurred.' }); }
@@ -182,8 +206,13 @@ export async function createGateway({ paymentServer, store, observe = observeHar
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.CAPMESH_GATEWAY_PORT || 4021);
+  const contact = contactContract({ provider: process.env.FIELDPROOF_PROVIDER_ID || DEFAULT_CONTACT.provider,
+    sensor: process.env.FIELDPROOF_CONTACT_SENSOR || DEFAULT_CONTACT.sensor });
+  const receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS);
+  receiptKey(receiptPins[contact.provider]);
   const paymentServer = await createPaymentServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL || 'https://x402.org/facilitator' }));
   const store = new PurchaseStore(resolve(root, '.local/purchases.sqlite'));
-  const app = await createGateway({ paymentServer, store, origin: `http://127.0.0.1:${port}`, payTo: process.env.SOLANA_PAY_TO || PAY_TO });
+  const app = await createGateway({ paymentServer, store, origin: `http://127.0.0.1:${port}`, payTo: process.env.SOLANA_PAY_TO || PAY_TO,
+    ...contact, receiptPins });
   app.listen(port, '127.0.0.1', () => console.log(`FieldProof gateway on http://127.0.0.1:${port}`));
 }
