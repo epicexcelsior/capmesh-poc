@@ -63,7 +63,8 @@ It records served and unmet demand.
 Executed attack checks reject repeated requests, repeated responses, changed challenges, and changed results.
 BLE and Wi-Fi measurements passed on the attached board.
 Human press/release verification passed: held BOOT produced CLOSED/WAIT, and released BOOT produced OPEN/DISPATCH.
-[Physical state evidence](evidence/contact-states.json) preserves both authenticated receipts.
+[Device-signed physical state evidence](evidence/device-signed-contact-states.json) preserves both October 2 P-256 receipts.
+The older HMAC state checks remain historical evidence.
 
 ## Solana integration
 
@@ -74,7 +75,7 @@ SQLite reserves each transaction proof once and preserves its purchase state and
 
 A public-facilitator purchase settled 0.001 Devnet USDC and then returned a real authenticated GPIO9 observation.
 Independent RPC checks confirmed the successful transaction, configured mint, buyer debit, and merchant credit.
-[Payment evidence](evidence/devnet-purchase.json) records the transaction and receipt. The public gateway also returns the expected 402 offer.
+[Paid P-256 evidence](evidence/device-signed-purchase.json) records the current transaction and receipt. The public gateway also returns the expected 402 offer.
 Tests execute verification, settlement, retries, and failures through the real SDK with a simulated facilitator.
 The signing test creates and cryptographically verifies an Ed25519 buyer signature against a local RPC fixture.
 The live purchase establishes the chain integration separately from these unit tests.
@@ -92,7 +93,9 @@ This supports a path toward demand-directed sensor installations and existing ma
 
 No peaq identity or revenue event is activated.
 The current [Solana onboarding guide](https://docs.peaq.xyz/peaqos/guides/onboard-on-solana) reports paused onboarding and a mainnet-only flow.
-The next useful peaq step is an observer identity and an honest activity history after onboarding resumes or a funded peaq path is authorized.
+The read-only Agung registry check now verifies deployment peers and activation flags and derives a proposed observer ID from the public key.
+No machine activation or activity event exists. The [peaq integration decision](PEAQ_INTEGRATION.md) records the bounded native testnet path and remaining inputs.
+The next useful peaq step is an activated observer identity and honest activity history after an explicit operator and funding decision.
 The public command HMAC key does not provide private authorization. Physical receipts use buyer-pinned P-256 identity with unencrypted device storage.
 Simulated payments and Devnet tokens do not establish real revenue.
 

@@ -7,7 +7,8 @@ The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
 Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [condensed decision and next actions](docs/FOCUS.md). The [bounty execution plan](docs/BOUNTY_PLAN.md) owns deadlines and acceptance gates.
-For technical detail, use the [overview](docs/OVERVIEW.md), [how-it-works and setup guide](docs/HOW_IT_WORKS.html), and [interactive dispatch desk](docs/overview.html).
+For a plain-language explanation, start with [Understand the product](docs/HOW_IT_WORKS.html#understand).
+For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware
 
@@ -28,6 +29,27 @@ Run `npm run demo -- --closed` to rehearse the closed-contact decision.
 
 The CLI adversarial loop rejects a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request.
 It records served and unmet demand in a local SQLite ledger.
+
+## Inspect the recorded physical purchase
+
+With a local gateway running, open `http://127.0.0.1:4022/proof`.
+The browser verifies the actual device signature and rejects a changed state, another challenge, and another key.
+Select **Verify recorded payment** for an independent, read-only Solana Devnet transaction query.
+The chain check verifies the mint, payer, merchant, transfer instruction, and exact token balance changes.
+No inspector button purchases evidence or invokes hardware. The authentic recorded receipt is expired and stays WAIT.
+
+Export a standalone inspector for judge review:
+
+```bash
+python3 scripts/export_judge_demo.py .local/judge-demo
+python3 -m http.server 8787 --bind 127.0.0.1 --directory .local/judge-demo
+```
+
+Open `http://127.0.0.1:8787`. The exporter also creates `.local/judge-demo.zip` and a SHA256 manifest.
+It copies only public evidence, browser code, the public verification pin, and the current technical video.
+It refuses to overwrite an existing directory or archive. Select a new output name for another export.
+This package inspects recorded evidence. Use the simulator commands above to exercise a complete purchase without funding.
+Publication remains an owner action. Serve the exported directory on HTTPS for browser cryptography outside localhost.
 
 ## Run with the ESP32
 
@@ -69,7 +91,7 @@ npm start
 The gateway binds to `127.0.0.1:4021`. It offers x402 V2 `exact` payment for 1,000 base units of Devnet USDC.
 An unpaid request returns `402` and `PAYMENT-REQUIRED`. Verification and successful settlement precede measurement.
 A public-facilitator purchase completed on October 1, 2026. Independent Devnet RPC checks confirmed the exact USDC transfer before the physical measurement.
-See the [transaction and receipt](docs/evidence/devnet-purchase.json) and [physical state checks](docs/evidence/contact-states.json).
+See the [paid device-signed receipt](docs/evidence/device-signed-purchase.json) and [device-signed physical state checks](docs/evidence/device-signed-contact-states.json).
 
 Create a purchase with `POST /requests` and a positive 32-bit `nonce`.
 Request its `observe_url` with a compatible x402 client.
@@ -105,6 +127,7 @@ The [verification record](docs/VERIFICATION.md) lists executed checks and remain
 - [Protocol](docs/PROTOCOL.md): authenticated requests, observation receipts, freshness, and replay limits.
 - [Architecture](docs/ARCHITECTURE.md): device, buyer, gateway, ledgers, and payment boundaries.
 - [Overview](docs/OVERVIEW.md): pivot, verified results, strategy, and unfinished acceptance gates.
+- [peaq integration](docs/PEAQ_INTEGRATION.md): read-only Agung registry readiness, proposed observer identity, and activation gates.
 
 Command authorization uses a public demo HMAC key. Physical observation receipts use a persistent P-256 key pinned by the buyer. Unencrypted flash storage does not protect that key against physical access.
 Discovery cannot certify its own provider. Buyer configuration pins demo identities.

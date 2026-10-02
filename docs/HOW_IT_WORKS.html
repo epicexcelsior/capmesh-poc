@@ -13,12 +13,12 @@ h2{font-size:27px;line-height:1.18;margin:0 0 10px}h3{font-size:18px;margin:22px
 p{max-width:78ch}a{color:var(--sea)}.lead{font-size:21px;max-width:800px}
 .tag{font-size:12px;background:#d4e5ed;padding:7px 10px;display:inline-block}
 .section{border-top:1px solid var(--line);margin-top:40px;padding-top:26px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.grid>div{min-width:0}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .note{font-size:14px;color:var(--dim);max-width:80ch}.notice{border-left:4px solid var(--amber);padding:10px 18px;background:#fff8e9;max-width:86ch}
 .ok{border-left:4px solid var(--teal);padding:10px 18px;background:#eaf6f2;max-width:86ch}
-table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}td,th{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--sea)}
+.table-scroll{overflow-x:auto;max-width:100%}table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}td,th{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--sea)}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12.5px;background:#183146;color:#eef4f8;padding:16px;overflow:auto;margin:10px 0}
-code{background:#dfebf1;padding:1px 5px;font-size:13.5px}
+code{background:#dfebf1;padding:1px 5px;font-size:13.5px;overflow-wrap:anywhere}
 ol.flow,ul.plain{max-width:82ch;padding-left:22px}ol.flow li,ul.plain li{margin:7px 0}
 .steps{counter-reset:s;list-style:none;padding:0;max-width:88ch}
 .steps>li{counter-increment:s;position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--line)}
@@ -46,10 +46,11 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <section>
 <div class="label">Physical evidence before an autonomous agent acts</div>
 <h1>Ask the gate.<br>Pay for the answer.<br>Check it before you move.</h1>
-<p class="lead">FieldProof buys a fresh reading of one physical contact, proves the reading answers the exact question that was paid for, proves it is not old, and returns <code>DISPATCH</code> or <code>WAIT</code>.</p>
-<p>This page is the complete reference. It covers the parts the 2:30 video does not reach: the wire protocol, the payment state machine, the failure and recovery paths, the test suites, the threat model, and the exact commands to run every mode yourself.</p>
+<p class="lead">A robot near someone else's gate needs a current answer before its next decision. FieldProof demonstrates the purchase and verification of that answer.</p>
+<p>Start with the explanation below. Then run the demonstration and inspect its evidence. The <a href="FOCUS.md">current focus</a> owns the product decision. The <a href="VERIFICATION.md">verification record</a> owns executed checks.</p>
 <ul class="toc">
-<li><a href="#special">What makes it special</a></li>
+<li><a href="#understand">Understand the product</a></li>
+<li><a href="#special">What this MVP demonstrates</a></li>
 <li><a href="#run">Run it yourself</a></li>
 <li><a href="#purchase">Anatomy of one purchase</a></li>
 <li><a href="#architecture">Architecture</a></li>
@@ -58,7 +59,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <li><a href="#device">What the device does</a></li>
 <li><a href="#verified">Verified results</a></li>
 <li><a href="#suite">Test suites</a></li>
-<li><a href="#build">What the last six commits built</a></li>
+<li><a href="#build">Build history</a></li>
 <li><a href="#limits">Threat model and limits</a></li>
 <li><a href="#judge">Five-minute demo script</a></li>
 <li><a href="#map">Repository map</a></li>
@@ -66,12 +67,67 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 </ul>
 </section>
 
+<section class="section" id="understand">
+<div class="label">Start here · Founder explanation</div>
+<h2>Understand the product</h2>
+<h3>One buyer, one operator, one immediate decision</h3>
+<p>Example: a delivery robot reaches an access point operated by another company. Its controller needs the current gate-contact state.</p>
+<p>The operator permits sale of that observation. The buyer pays for one answer. Its controller decides whether that answer helps the next action.</p>
+<p>This is the product hypothesis. We have no robot customer or installed gate. Our ESP32 button represents the contact.</p>
+<p>A ten-second answer fits a nearby decision. It cannot predict gate state after a long trip. It also cannot grant access permission.</p>
+<h3>What each part does</h3>
+<div class="table-scroll"><table>
+<tr><th>Part</th><th>Plain explanation</th></tr>
+<tr><td>Buyer</td><td>The program that needs an answer. It sets the question, price limit, trusted device, and useful-time window.</td></tr>
+<tr><td>Gateway</td><td>The operator's service desk. It creates the quote, checks payment, contacts the board, and stores the result.</td></tr>
+<tr><td>Solana Devnet</td><td>The payment test network. A public transaction records a transfer of test USDC. These funds are not business revenue.</td></tr>
+<tr><td>ESP32-C6</td><td>The observer. It reads BOOT on GPIO9 five times and signs its answer with its persistent private key.</td></tr>
+<tr><td>Buyer verifier</td><td>A separate program that checks the signature, exact question, measurement contract, and age before it accepts the answer.</td></tr>
+<tr><td>Controller</td><td>The future robot's control software. It retains access permission and motion-safety checks. The MVP contains no vehicle controller.</td></tr>
+</table></div>
+<p>All software roles run on one laptop in this demonstration. Separate roles establish verification boundaries. They do not demonstrate separate commercial operators.</p>
+<h3>Why pay with x402?</h3>
+<p><code>402 Payment Required</code> is an HTTP response. HTTP is the request protocol your browser uses.</p>
+<p>The x402 protocol adds machine-readable payment terms. A compatible buyer checks those terms, signs a constrained transaction, and retries the request.</p>
+<p>The facilitator verifies and submits the payment. The gateway reads the sensor only after successful settlement.</p>
+<p>Our paid buyer permits Solana Devnet USDC, one merchant, and a maximum payment of 0.001 USDC. It needs no checkout form.</p>
+<p>An ordinary authenticated API remains an alternative. x402 helps when separate operators need per-request payment without a shared billing account.</p>
+<h3>Why sign the answer?</h3>
+<p>The device keeps a private signing key. The buyer stores its matching public key, called an identity pin.</p>
+<p>A valid signature ties the reported fields to that private key. The gateway cannot change the contact state without invalidating the signature.</p>
+<p>The buyer installs its pin through trusted provisioning. Accepting any public key advertised by a provider defeats this identity check.</p>
+<p>A signature does not certify wiring, location, truthful firmware, or permission. Physical key extraction remains possible because device storage is unencrypted.</p>
+<h3>Why use a challenge and an expiration?</h3>
+<p>The buyer supplies a new nonce: a number that identifies this question. The device signs that nonce with the answer.</p>
+<p>An earlier answer cannot answer a different challenge. A matching answer also needs a recent measurement time.</p>
+<p>The device clock starts from an authenticated host request. This prototype checks that time against the buyer clock. It lacks independent time attestation.</p>
+<p>Five matching samples show short-term agreement from one input. They are not five independent observers or a calibrated probability of correctness.</p>
+<h3>Why can authentic evidence still produce WAIT?</h3>
+<p>The recorded purchase really settled, and its device signature remains valid. Its ten-second decision window expired.</p>
+<p>Replaying the receipt or verifying the chain cannot refresh that window. A new decision needs a new observation.</p>
+<p><code>DISPATCH</code> means the demo accepts fresh OPEN evidence. It does not mean the robot has permission or a safe path.</p>
+<h3>What happens if payment succeeds and delivery fails?</h3>
+<p>The gateway preserves the payment and marks <code>delivery_failed</code>. An operator must review the failure and any refund.</p>
+<p>The payment and sensor response do not share an atomic transaction. A blockchain payment alone does not prove delivery.</p>
+<p>A retry returns the stored answer if delivery completed. It never silently purchases another answer or resets the evidence timestamp.</p>
+<h3>Where does peaq fit?</h3>
+<p>The proposed peaq role is the observer's registered identity and honest service history. Solana remains the demonstrated observation-payment rail.</p>
+<p>The current Agung diagnostic reads the published machine registry and computes an ID from the public device pin. It does not activate a machine.</p>
+<p>An activated identity can later connect an operator, verification method, and service endpoint. Registration alone cannot certify sensor truth or installation.</p>
+<p>See the <a href="PEAQ_INTEGRATION.md">peaq integration decision</a> for measured readiness, remaining inputs, and the documented Solana-onboarding limitation.</p>
+<h3>What creates a durable business?</h3>
+<p>The unvalidated opportunity is a recurring buyer workflow across operator boundaries. Payment and freshness mechanisms already have predecessors.</p>
+<p>Start with one buyer incident. Identify the missing fact, current alternative, useful-time window, operator permission, and cost of a wrong decision.</p>
+<p>Then test repeated delivery and a real budget. Query counts and a test-token transfer do not justify installing a sensor fleet.</p>
+<p>Future advantages depend on authorized supply, useful coverage, reliable delivery, and repeat customers. The MVP establishes none of those commercial results.</p>
+</section>
+
 <section class="section" id="special">
 <div class="label">01 · Position</div>
-<h2>What makes it special</h2>
+<h2>What this MVP demonstrates</h2>
 <div class="grid">
 <div>
-<h3>It buys a physical fact, not a data stream</h3>
+<h3>It buys one physical observation</h3>
 <p>The market is one observation of one contact at one location, priced at 0.001 Devnet USDC. The buyer pays before the sensor is read. The sensor is read only after the payment succeeds.</p>
 <h3>The evidence carries its own question</h3>
 <p>Every receipt is bound to the challenge nonce, device, location, metric, and time that produced it. An old answer cannot satisfy a new challenge. A changed answer fails its signature.</p>
@@ -80,11 +136,11 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 </div>
 <div>
 <h3>Three independent implementations must agree</h3>
-<p>Firmware C, host Python, and buyer JavaScript each build the same canonical authentication string. A change in one breaks the tests in the others.</p>
+<p>Firmware C, host Python, and buyer JavaScript implement the same receipt message. The physical and browser checks exercise their agreement on recorded device signatures.</p>
 <h3>The honest claims are written down</h3>
 <p>The product does not claim occupancy sensing, location attestation, calibrated confidence, or independent corroboration. The limits are in the docs, not hidden.</p>
 <h3>It runs with no hardware at all</h3>
-<p>A reviewer with only Python and Node can execute the full adversarial loop and the payment gate in under two minutes.</p>
+<p>A reviewer with Python and Node can execute the adversarial loop and simulated payment gate. Setup time depends on installed prerequisites.</p>
 </div>
 </div>
 <div class="notice"><b>Scope of the stand-in.</b> The ESP32-C6 BOOT button on GPIO9 represents a gate contact. FieldProof does not control a vehicle. <code>DISPATCH</code> is a demo recommendation over one contact.</div>
@@ -94,7 +150,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <div class="label">02 · Setup</div>
 <h2>Run it yourself</h2>
 <p>Prerequisites for every mode: <b>Python 3.10+</b>, <b>uv</b>, and <b>Node.js 22.13+</b> with built-in <code>node:sqlite</code>. Firmware work additionally needs <b>ESP-IDF 6.1</b> and <b>esptool 5.4</b>.</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Mode</th><th>Command</th><th>Port</th><th>Payment</th><th>Contact</th></tr>
 <tr><td>CLI adversarial loop</td><td><code>uv run --project host capmesh observe-demo --simulated</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
 <tr><td>CLI closed contact</td><td><code>uv run --project host capmesh observe-demo --simulated --closed</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
@@ -102,8 +158,8 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <tr><td>Browser simulator</td><td><code>cd gateway &amp;&amp; npm run demo</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill sim">simulated</span></td></tr>
 <tr><td>Browser + real contact</td><td><code>cd gateway &amp;&amp; npm run demo -- --physical</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
 <tr><td>Real payment gateway</td><td><code>cd gateway &amp;&amp; npm start</code></td><td>4021</td><td><span class="pill real">Solana Devnet USDC</span></td><td><span class="pill real">ESP32 after settlement</span></td></tr>
-</table>
-<p class="note">The recorder expects four gateways at once: 4021 real payment, 4022 open simulator, 4023 real contact with simulated settlement, and 4024 closed simulator.</p>
+</table></div>
+<p class="note">Run one mode at a time for your rehearsal. The current signed-receipt walkthrough inspects recorded payment evidence and executes browser verification.</p>
 
 <h3>Step by step — no hardware</h3>
 <ol class="steps">
@@ -155,24 +211,24 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <div class="branch">Before any money moves, the client re-reads the quote. If the gateway widened the freshness limit, moved the location, changed the endpoint, or raised the price, the purchase stops here.</div></li>
 <li><b>The buyer signs and settles</b>The x402 V2 SDK and Solana Kit build the transaction. The gateway verifies, reserves a unique proof, and settles on Devnet.</li>
 <li><b>The gateway marks the purchase as measuring</b><code>gateway/store.js</code>
-<div class="branch">An atomic reservation moves <code>quoted</code> to <code>settling</code> before the external call. Only the writer holding the reservation may settle and measure.</div></li>
+<div class="branch">An atomic reservation moves <code>quoted</code> to <code>settling</code> before settlement. Successful settlement then moves it to <code>measuring</code>.</div></li>
 <li><b>The device authenticates the request</b><code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code>
 <div class="branch">It rebuilds the canonical request string, checks the HMAC, checks the expiration, and checks the replay table. Rejection returns <code>AUTH_INVALID</code>, <code>AUTH_EXPIRED</code>, <code>NONCE_CACHE_FULL</code>, or <code>BUSY</code>.</div></li>
 <li><b>The device samples GPIO9 five times</b><code>firmware/esp32/main/capabilities/contact_capability.c</code>
 <div class="branch">Roughly 10 milliseconds apart. <code>closed=true</code> means GPIO9 reads low. <code>stable_samples</code> counts samples that match the first sample.</div></li>
-<li><b>The receipt is signed and returned</b>The device builds the canonical observation string over every result field and prefixes the digest with <code>v2:</code>. The receipt fits a 512-byte BLE characteristic.</li>
-<li><b>The buyer runs nine checks</b><code>gateway/buyer.js</code> — see the protocol section below. Any failure produces <code>WAIT</code>.</li>
+<li><b>The receipt is signed and returned</b>The device signs the canonical observation string with ECDSA P-256 and SHA-256. The <code>v3:</code> receipt fits a 512-byte BLE characteristic.</li>
+<li><b>The buyer verifies the receipt</b><code>gateway/buyer.js</code> checks the pinned signature, buyer challenge, contact contract, and age. Failure stops the paid buyer.</li>
 <li><b>The buyer derives the decision</b>Open plus fresh plus authenticated produces <code>DISPATCH</code>. Closed, missing, stale, replayed, or invalid produces <code>WAIT</code>. Confidence stays <code>null</code>.</li>
 </ol>
 <h3>Where the flow deliberately breaks</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Failure</th><th>Stored state</th><th>What the system does</th></tr>
 <tr><td>Settlement throws or times out</td><td><code>settlement_unknown</code></td><td>Preserved for review. No automatic repetition of the payment.</td></tr>
 <tr><td>Facilitator returns an error</td><td><code>payment_failed</code></td><td>No measurement happens. The buyer keeps the purchase ID in its error.</td></tr>
 <tr><td>Payment succeeded, device unreachable</td><td><code>delivery_failed</code></td><td>The settled transaction is preserved for refund review. Automatic refunds do not exist.</td></tr>
 <tr><td>Crash during measurement</td><td><code>measuring</code></td><td>Preserved. Inspect device logs. Never settle again for this purchase.</td></tr>
 <tr><td>Client loses the connection</td><td>unchanged</td><td>The next call to the same purchase returns the original receipt without a second settlement.</td></tr>
-</table>
+</table></div>
 </section>
 
 <section class="section" id="architecture">
@@ -234,7 +290,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 </svg>
 
 <h3>Components</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Component</th><th>Responsibility</th><th>Source</th></tr>
 <tr><td>Contact capability</td><td>Sample GPIO9 without driving the boot strap</td><td><code>firmware/esp32/main/capabilities/contact_capability.c</code></td></tr>
 <tr><td>Dispatcher</td><td>Authorize, serialize transport access, protect replay state, sign receipts</td><td><code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code></td></tr>
@@ -245,12 +301,13 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <tr><td>Purchase ledger</td><td>Prevent duplicate settlement and preserve failure states</td><td><code>gateway/store.js</code></td></tr>
 <tr><td>Paid buyer</td><td>Limit Devnet spending and check the receipt independently</td><td><code>gateway/buyer.js</code></td></tr>
 <tr><td>Dispatch desk</td><td>Show quote, evidence, decision, age, limits, and demand</td><td><code>docs/overview.html</code></td></tr>
-</table>
+</table></div>
 <h3>Trust boundaries</h3>
 <ul class="plain">
-<li>A manifest cannot establish its own provider identity. The buyer pins a known device ID and demo key.</li>
-<li>The shared public HMAC key authenticates the wire fields of this demonstration. It cannot resist a hostile reader of this repository.</li>
-<li>Production needs per-device provisioning or asymmetric identity with a protected private key.</li>
+<li>A manifest cannot establish its own identity. The buyer pins the device ID and P-256 public key through trusted USB provisioning.</li>
+<li>Physical observation receipts use the persistent private device key. The buyer rejects substitution with the public demo HMAC.</li>
+<li>Command authorization, simulated receipts, and legacy LED checks retain public demo HMAC. Command authorization is not private access control.</li>
+<li>The private device key resides in unencrypted NVS. Production needs protected storage and firmware integrity.</li>
 <li>The device timestamp derives from an authenticated host request and uptime. It is not independent time attestation.</li>
 <li>The receipt establishes what this firmware reports about its GPIO samples. It does not establish external physical truth.</li>
 </ul>
@@ -273,24 +330,24 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
   "expiration": 1790807070,
   "authorization": {"type": "hmac-sha256-v2", "token": "64-lowercase-hex-characters"}
 }</pre>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Field</th><th>Rule</th></tr>
 <tr><td><code>request_id</code></td><td>1–16 ASCII letters, digits, hyphens, or underscores.</td></tr>
 <tr><td><code>nonce</code></td><td>Integer from 1 to 2,147,483,647. Fractional JSON numbers fail validation.</td></tr>
 <tr><td><code>expiration</code></td><td>Follows <code>timestamp</code> by at most 300 seconds.</td></tr>
 <tr><td>Location</td><td>Only the single provisioned location is accepted.</td></tr>
-</table>
+</table></div>
 
 <h3>The two canonical strings</h3>
 <p>Both sides must produce byte-identical UTF-8 messages. Field names are replaced by values. Integers are decimal with no padding. JSON field order does not matter.</p>
 <pre>fieldproof-auth-v1|request_id|device_id|state.observe|location|nonce|timestamp|expiration</pre>
 <pre>fieldproof-observation-v1|protocol|request_id|provider|capability|location|nonce|
 metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
-<p class="note"><code>closed</code> is encoded as <code>0</code> or <code>1</code>. The receipt digest is lowercase hex prefixed with <code>v2:</code> in <code>receipt_signature</code>. Simulated receipts use <code>simulated-contact</code> as the sensor, so the buyer labels them visibly.</p>
-<div class="notice"><b>Three implementations must agree.</b> The canonical strings are built independently in <code>firmware/esp32/main/protocol/capmesh_dispatcher.c</code>, <code>host/capmesh/protocol/auth.py</code>, and <code>gateway/buyer.js</code>. A change in any one of them fails the suites in the others.</div>
+<p class="note"><code>closed</code> is encoded as <code>0</code> or <code>1</code>. Physical receipt signatures use <code>v3:</code> plus padded base64 of the 64-byte <code>r || s</code> P-256 signature. Simulated receipts retain <code>v2:</code> HMAC and <code>simulated-contact</code>. See <a href="PROTOCOL.md">the canonical protocol</a> and <a href="RECEIPT_IDENTITY.md">identity provisioning</a>.</p>
+<div class="notice"><b>Receipt implementations must agree.</b> Firmware, Python, and JavaScript construct the same canonical receipt message. Request authorization remains a separate HMAC message. See <a href="PROTOCOL.md">the canonical protocol</a>.</div>
 
-<h3>The nine buyer checks</h3>
-<table>
+<h3>The buyer acceptance rules</h3>
+<div class="table-scroll"><table>
 <tr><th>#</th><th>Check</th><th>Rejects</th></tr>
 <tr><td>1</td><td>The provider key exists in buyer configuration</td><td>An unknown or rogue provider</td></tr>
 <tr><td>2</td><td>Protocol, request ID, provider, capability, nonce, and location match the challenge</td><td>A receipt that answers a different question</td></tr>
@@ -299,9 +356,10 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td>5</td><td>All five samples agree and the state is a JSON boolean</td><td>Unstable evidence</td></tr>
 <tr><td>6</td><td>Measurement starts after the challenge, with at most two seconds of clock tolerance</td><td>Evidence from before the question</td></tr>
 <tr><td>7</td><td>Completion follows start and is not more than two seconds in the future</td><td>Impossible timestamps</td></tr>
-<tr><td>8</td><td>Evidence age fits the contract and the request has not expired</td><td>Stale or expired evidence</td></tr>
-<tr><td>9</td><td>This provider and nonce pair has not been consumed</td><td>A replayed response</td></tr>
-</table>
+<tr><td>8</td><td>Evidence age fits the contract. The Python verifier also checks request expiration.</td><td>Stale or expired evidence</td></tr>
+<tr><td>9</td><td>The Python verifier refuses a consumed provider and nonce pair.</td><td>A replayed response in that verifier session</td></tr>
+</table></div>
+<p class="note">The paid buyer creates a new challenge per purchase. Gateway retries return the original receipt for the same purchase. The recorded inspector permits repeated inspection without claiming a new observation.</p>
 <p>Fresh open evidence produces <code>DISPATCH</code>. Closed, missing, stale, or invalid evidence produces <code>WAIT</code>. Confidence stays <code>null</code>.</p>
 
 <h3>Device replay and concurrency</h3>
@@ -328,12 +386,12 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <p>The gateway pins the network, the USDC mint, the merchant, the exact scheme, and 1,000 base units. It matches the payment resource to the stored purchase and checks every advertised requirement.</p>
 
 <h3>What is real and what is simulated</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Path</th><th>Settlement</th><th>Moves funds</th><th>Trust it as</th></tr>
 <tr><td><code>npm start</code></td><td>Public x402 facilitator on Solana Devnet</td><td>Yes — real Devnet USDC</td><td>On-chain integration result</td></tr>
 <tr><td><code>npm run demo</code></td><td>Fake facilitator through the real x402 SDK</td><td>No</td><td>Protocol rehearsal only</td></tr>
 <tr><td><code>capmesh observe-demo</code></td><td>Mock budget in process</td><td>No</td><td>Adversarial loop rehearsal only</td></tr>
-</table>
+</table></div>
 <div class="notice"><b>Never describe a simulated payment as an on-chain result.</b> The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.</div>
 
 <h3>Proof uniqueness</h3>
@@ -346,7 +404,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 </ul>
 
 <h3>The seven purchase states</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>State</th><th>Meaning</th><th>Next action</th></tr>
 <tr><td><code>quoted</code></td><td>Challenge created, nothing paid</td><td>Pay or abandon</td></tr>
 <tr><td><code>settling</code></td><td>Atomic reservation held, external call in flight</td><td>Wait. Do not start a second settlement</td></tr>
@@ -355,7 +413,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>measuring</code></td><td>Settled, device measurement in flight</td><td>Inspect device logs. Never settle again</td></tr>
 <tr><td><code>delivered</code></td><td>Receipt persisted</td><td>Retry returns the original receipt</td></tr>
 <tr><td><code>delivery_failed</code></td><td>Settled but evidence unavailable</td><td>Refund review. Automatic refunds do not exist</td></tr>
-</table>
+</table></div>
 <p class="note">A retry returns the original receipt and marks it cached. It does not refresh the timestamp. The browser re-checks age and sets <code>WAIT</code> when the freshness window closes.</p>
 
 <h3>Buyer safety rails</h3>
@@ -399,52 +457,54 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 
 <section class="section" id="verified">
 <div class="label">08 · Evidence</div>
-<h2>Verified results — October 1, 2026</h2>
+<h2>Verified results</h2>
 <div class="cards">
-<div class="card"><strong>40 / 40</strong><span>Hardware-enabled Python tests passed in 135.23 s</span></div>
-<div class="card"><strong>20 / 20</strong><span>Gateway Node tests passed in 0.60 s</span></div>
+<div class="card"><strong>P-256</strong><span>Persistent device identity, independently verified</span></div>
+<div class="card"><strong>2 states</strong><span>Human-held CLOSED and released OPEN, October 2</span></div>
 <div class="card"><strong>0.001</strong><span>Devnet USDC settled before measurement</span></div>
-<div class="card"><strong>6 s</strong><span>Evidence age at the DISPATCH decision</span></div>
+<div class="card"><strong>10 s</strong><span>Buyer freshness limit. Authentic old evidence stays WAIT.</span></div>
 </div>
+<p>See the <a href="VERIFICATION.md">canonical verification record</a> for current test counts, commands, failures, and evidence limits.</p>
 
 <h3>Payment evidence</h3>
 <dl class="dl">
-<dt>Transaction</dt><dd><code>5T9cAims9tmCcgYV6KkuTedn9DhPjKmAVwENqoLjyA4GfboLfcwtTAu93Vk7kCNDyfR6QUVEpFq3XpdY7bDHoe8A</code></dd>
-<dt>Slot</dt><dd>506294679 · commitment <code>confirmed</code> · <code>transaction_error: null</code></dd>
+<dt>Transaction</dt><dd><code>4XSokajCzpoKy7bEQGF6NPpsvVLjo4Q5bSuH73hiuiXP23PbhuHN8pWeJ9fBxwjGk58iiv1Xqu5MTTmwQGggnBLw</code></dd>
+<dt>Slot</dt><dd>506374923 · commitment <code>confirmed</code> · <code>transaction_error: null</code></dd>
 <dt>Mint</dt><dd><code>4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU</code> (USDC)</dd>
 <dt>Merchant</dt><dd><code>CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA</code> · delta <code>+1000</code></dd>
 <dt>Payer</dt><dd><code>2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf</code> · delta <code>-1000</code></dd>
 <dt>RPC check</dt><dd><code>https://api.devnet.solana.com</code>, measured after the chain block</dd>
-<dt>Purchase ID</dt><dd><code>5776367cd42b408e</code> · decision <code>DISPATCH</code></dd>
-<dt>Receipt</dt><dd><code>gate.closed=false</code>, <code>5/5</code> stable samples, signature <code>v2:404a4205…46b3</code></dd>
+<dt>Purchase ID</dt><dd><code>3e063c69ce654ed1</code> · <code>DISPATCH</code> when verified on October 1</dd>
+<dt>Receipt</dt><dd><code>gate.closed=false</code>, <code>5/5</code> samples, buyer-pinned <code>v3:</code> P-256 signature</dd>
 </dl>
-<p><a href="evidence/devnet-purchase.json">Inspect the recorded transaction and receipt</a>.</p>
+<p><a href="evidence/device-signed-purchase.json">Inspect the recorded signed purchase</a>. Open <code>/proof</code> on a local gateway to verify its signature and query the chain.</p>
 
 <h3>Human contact-state evidence</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Human action</th><th>Contact</th><th>Agreement</th><th>Age</th><th>Decision</th></tr>
 <tr><td>Held BOOT</td><td><code>closed: true</code></td><td>5/5</td><td>5 s</td><td><code>WAIT</code> — gate contact is closed</td></tr>
-<tr><td>Released BOOT</td><td><code>closed: false</code></td><td>5/5</td><td>5 s</td><td><code>DISPATCH</code> — gate contact is open</td></tr>
-</table>
-<p class="note">The method: the user held and released BOOT. Separate BLE observations authenticated each state. No reset or output drive occurred. No payment happened in these two direct sensor checks.</p>
-<p><a href="evidence/contact-states.json">Inspect both authenticated receipts</a>.</p>
+<tr><td>Released BOOT</td><td><code>closed: false</code></td><td>5/5</td><td>4 s</td><td><code>DISPATCH</code> — gate contact is open</td></tr>
+</table></div>
+<p class="note">On October 2, separate BLE observations verified each state with the buyer-pinned P-256 key. No reset, output operation, or payment occurred.</p>
+<p><a href="evidence/device-signed-contact-states.json">Inspect both device-signed receipts</a>. The older <a href="evidence/contact-states.json">October 1 state checks</a> retain historical HMAC signatures.</p>
 
 <h3>Video artifacts</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>File</th><th>Length</th><th>Contents</th></tr>
-<tr><td><code>assets/fieldproof-submission.webm</code></td><td>2:30</td><td>Live walkthrough. Real BLE evidence, simulated payment. Passes every recorder scene.</td></tr>
-<tr><td><code>assets/fieldproof-walkthrough.webm</code></td><td>2:30</td><td>Simulator footage with explanatory title cards.</td></tr>
-<tr><td><code>assets/fieldproof-demo.webm</code></td><td>69 s</td><td>Short rehearsal including the CLI adversarial loop results.</td></tr>
-</table>
-<div class="notice"><b>Known gap.</b> The 2:30 artifacts predate the verified paid purchase and the human state-change checks. Their earlier captions still describe a pending payment. Refresh them or add the newer evidence before the final upload.</div>
+<tr><td><a href="assets/fieldproof-signed-receipt.webm">fieldproof-signed-receipt.webm</a></td><td>149.76 s</td><td>Current technical walkthrough. Recorded public payment and device receipt, executed browser verification and attacks. Captioned, no audio.</td></tr>
+<tr><td><code>assets/fieldproof-submission.webm</code></td><td>2:30</td><td>Historical real BLE contact with simulated payment and HMAC receipts.</td></tr>
+<tr><td><code>assets/fieldproof-walkthrough.webm</code></td><td>2:30</td><td>Historical simulator footage with explanatory title cards.</td></tr>
+<tr><td><code>assets/fieldproof-demo.webm</code></td><td>69 s</td><td>Historical simulator rehearsal and CLI adversarial results.</td></tr>
+</table></div>
+<div class="notice"><b>Use the current signed-receipt walkthrough.</b> It meets the technical video's length requirement. The separate founder presentation and public viewing links remain owner actions.</div>
 </section>
 
 <section class="section" id="suite">
 <div class="label">09 · Tests</div>
 <h2>Test suites</h2>
 <h3>Python — <code>uv run --project host pytest -q</code></h3>
-<p class="note">Default run: 30 passed, 10 hardware tests skipped. With <code>--hardware</code> and the board attached: 40 passed.</p>
-<table>
+<p class="note">The default run skips ten hardware tests. <code>--hardware</code> requires the board. Exact executed results live in <a href="VERIFICATION.md">VERIFICATION.md</a>.</p>
+<div class="table-scroll"><table>
 <tr><th>File</th><th>Proves</th></tr>
 <tr><td><code>test_protocol.py</code></td><td>Discovery and manifest, valid invocation, replay rejected, expired request rejected, invalid signature rejected, unknown capability rejected. Mirrored over HTTP.</td></tr>
 <tr><td><code>test_observations.py</code></td><td>Receipt fields bind to the challenge. Tampered results and proofs fail. Unstable or future evidence is rejected. A cheaper stale provider loses. A contact change flips the decision. Unmet demand stops dispatch.</td></tr>
@@ -452,10 +512,10 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>test_http_interface.py</code></td><td>The explicit interface carries manifest, invocation, and receipt polling.</td></tr>
 <tr><td><code>test_network_http.py</code></td><td>The live HTTP transport. Requires a listening device.</td></tr>
 <tr><td><code>hardware_replay_capacity.py</code></td><td>The 64-entry nonce table under real BLE.</td></tr>
-</table>
+</table></div>
 <h3>Node — <code>cd gateway &amp;&amp; npm test</code></h3>
 <p class="note">20 tests, 0 failures.</p>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Group</th><th>Proves</th></tr>
 <tr><td>Buyer policy</td><td>Rejects the wrong chain. Derives the decision from authenticated fresh contact evidence. Refuses a gateway that widens the freshness limit before payment. Refuses a non-loopback gateway.</td></tr>
 <tr><td>Failure retention</td><td>Keeps the purchase ID when the connection fails during payment. Keeps it when settled evidence delivery is truncated.</td></tr>
@@ -464,14 +524,14 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td>Recovery</td><td>Settlement precedes measurement. Retry returns the original evidence. An expired cached receipt returns <code>WAIT</code> without repeating payment or measurement.</td></tr>
 <tr><td>Concurrency</td><td>Concurrent requests settle and measure once. The ledger survives restart and enforces unique proof across writers. Startup waits for a concurrent lock before enabling WAL.</td></tr>
 <tr><td>Separation</td><td>Physical contact metadata stays separate from simulated settlement. A pinned SDK stack builds a verifiable buyer signature without a live chain.</td></tr>
-</table>
+</table></div>
 </section>
 
 <section class="section" id="build">
 <div class="label">10 · History</div>
-<h2>What the last six commits built</h2>
-<p class="note">Range <code>d873a81..ed8d539</code> — 63 files, +6,260 / −1,637. The repository holds 13 commits and 81 tracked files.</p>
-<table>
+<h2>Build history</h2>
+<p class="note">These checkpoints preserve the MVP's development. Git history owns exact dates and diffs. Current verification appears above.</p>
+<div class="table-scroll"><table>
 <tr><th>Commit</th><th>What landed</th></tr>
 <tr><td><code>278ea34</code></td><td>Defines the FieldProof MVP plan, acceptance gates, and pivot from the LED marketplace.</td></tr>
 <tr><td><code>63300ea</code></td><td>The challenge-bound ESP32 pivot. 33 files, +2,250 / −459. New contact capability, dispatcher, canonical authentication, replay table, and host-side observation contract.</td></tr>
@@ -479,7 +539,10 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>d4e13a4</code></td><td>Evidence and submission documentation.</td></tr>
 <tr><td><code>dd1ebdc</code></td><td>Hardening plus live integration evidence. Touches <code>buyer.js</code>, <code>server.js</code>, <code>simulate.js</code>, <code>store.js</code> and adds 127 lines of gateway tests. Commits both evidence JSON files and the three video artifacts.</td></tr>
 <tr><td><code>ed8d539</code></td><td>Records the verified MVP results and prioritizes buyer validation over marketplace breadth.</td></tr>
-</table>
+<tr><td><code>196f16b</code></td><td>Persistent P-256 device identity, buyer pins, reset verification, and a paid signed observation.</td></tr>
+<tr><td><code>1ef57de</code></td><td>Current signed-receipt walkthrough and browser attack inspector.</td></tr>
+<tr><td><code>844fdc6</code></td><td>Condensed research findings and bounty-first focus.</td></tr>
+</table></div>
 </section>
 
 <section class="section" id="limits">
@@ -489,10 +552,10 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <div>
 <h3>What the evidence does establish</h3>
 <ul class="plain">
-<li>That the device read GPIO9 at the stated time and reports it consistently.</li>
-<li>That the reading answers the exact nonce, location, and metric that were paid for.</li>
-<li>That the reading is inside the ten-second freshness window.</li>
-<li>That the payment settled on Devnet before the reading was taken.</li>
+<li>The signing key authenticates the reported GPIO9 samples and host-anchored timestamps.</li>
+<li>The signed answer matches the buyer's exact nonce, location, and metric.</li>
+<li>The live verifier accepted the observation within its ten-second window. Historical evidence is now expired.</li>
+<li>Independent chain reads confirm the recorded Devnet transfer. Recorded host timestamps place settlement before measurement.</li>
 </ul>
 <h3>What it does not establish</h3>
 <ul class="plain">
@@ -505,7 +568,8 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <div>
 <h3>Known structural limits</h3>
 <ul class="plain">
-<li>A repository reader can forge the shared demo HMAC key.</li>
+<li>A repository reader can forge command authorization and simulated HMAC receipts. The physical buyer refuses HMAC substitution for its P-256 pin.</li>
+<li>Unencrypted device storage permits physical extraction of the private P-256 key.</li>
 <li>The location is a provisioned label with no attestation.</li>
 <li>Time derives from an authenticated host request. Reboot clears the anchor and the replay table.</li>
 <li>Cached evidence keeps its original time and becomes <code>WAIT</code> after expiry.</li>
@@ -523,13 +587,14 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <h2>Five-minute demo script</h2>
 <ol class="steps">
 <li><b>Open the dispatch desk</b>Run <code>cd gateway &amp;&amp; npm run demo</code>, then open <code>http://127.0.0.1:4022</code>. The header shows <code>SIMULATED PAYMENT · NO FUNDS MOVED</code>.</li>
-<li><b>State the question</b>An autonomous vehicle needs fresh gate state before it moves. Budget 0.001 USDC. Freshness 10 seconds. One provisioned contact observer.</li>
+<li><b>State the question</b>A robot already near an external gate needs permitted contact state for its next decision. Budget 0.001 USDC. Freshness ten seconds.</li>
 <li><b>Request the quote</b>Select <b>Get payment quote</b>. Show the 402 response with the exact amount, network, asset, and recipient. No evidence yet.</li>
 <li><b>Complete the purchase</b>Select <b>Run simulation</b>. Show the payment mode label, the receipt, and the <code>DISPATCH</code> decision with <code>5/5</code> agreement.</li>
 <li><b>Show expiry</b>Wait eleven seconds. The desk flips to <code>WAIT</code> with <code>Evidence expired</code>. Explain that a cached receipt never becomes fresh on retry.</li>
 <li><b>Run the adversarial loop</b>In another terminal run <code>uv run --project host capmesh observe-demo --simulated</code>. Show the cheaper stale provider rejected, the replayed answer rejected, the changed answer rejected, and the replayed device request rejected.</li>
-<li><b>Show demand</b>Point at the served and unmet counts. Explain that a future operator could use repeated demand to choose an installation site.</li>
-<li><b>Close on the limits</b>One contact. One location. A public demo key. No independent observer, no production identity, no calibrated confidence, no peaq transaction, no customer pilot.</li>
+<li><b>Inspect recorded payment</b>Open <code>/proof</code>. Select <b>Verify recorded payment</b>. Explain that a chain read moves no funds and cannot refresh the expired receipt.</li>
+<li><b>Break the receipt</b>Flip its state, change its challenge, and use another key. Restore the original. Its valid signature still produces <code>WAIT</code> because it expired.</li>
+<li><b>Close on the next test</b>One recurring buyer and authorized operator must establish the useful-time window, budget, reliability, and permission. Test counts and demand counters do not establish customer demand.</li>
 </ol>
 <div class="notice"><b>Do not say</b> that simulated settlement is an on-chain payment. Switch to <code>npm start</code> plus <code>node buyer.js</code> when you need a real Devnet result.</div>
 <h3>With real hardware in the demo</h3>
@@ -539,18 +604,18 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <section class="section" id="map">
 <div class="label">13 · Navigation</div>
 <h2>Repository map</h2>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Path</th><th>Contents</th></tr>
 <tr><td><code>firmware/esp32/</code></td><td>ESP-IDF application: contact capability, dispatcher, BLE and HTTP transports.</td></tr>
 <tr><td><code>host/</code></td><td>The <code>capmesh</code> Python package: protocol auth, observation contract, market rehearsal, transports, CLI.</td></tr>
 <tr><td><code>gateway/</code></td><td>x402 gateway, purchase store, paid buyer, simulator, and the Node test suite.</td></tr>
 <tr><td><code>tests/</code></td><td>Python suites and the hardware replay capacity script.</td></tr>
-<tr><td><code>scripts/</code></td><td><code>build_walkthrough.py</code> and <code>record_demo.cjs</code> for the video artifacts.</td></tr>
-<tr><td><code>docs/</code></td><td>This page, the interactive dispatch desk, diagnostics, the eleven Markdown documents, the evidence JSON, and the three videos.</td></tr>
+<tr><td><code>scripts/</code></td><td>Video tools, browser verification, public inspector export, hardware latency diagnostic, and read-only Agung readiness.</td></tr>
+<tr><td><code>docs/</code></td><td>This explanation, the dispatch desk, receipt inspector, canonical records, public evidence, and walkthroughs.</td></tr>
 <tr><td><code>.local/</code>, <code>*.keypair.json</code>, <code>.env</code>, <code>*.sqlite</code>, <code>build/</code>, <code>node_modules/</code></td><td>Ignored. Never committed.</td></tr>
-</table>
+</table></div>
 <h3>Which document answers which question</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Document</th><th>Question it answers</th></tr>
 <tr><td><code>README.md</code></td><td>How do I run it?</td></tr>
 <tr><td><code>OVERVIEW.md</code></td><td>What changed, and what is verified now?</td></tr>
@@ -564,38 +629,40 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>DECISIONS.md</code></td><td>Why was each direction chosen?</td></tr>
 <tr><td><code>FEASIBILITY_AND_HOLES.md</code></td><td>What is not yet proven?</td></tr>
 <tr><td><code>LEARNING.md</code></td><td>What was learned during the build?</td></tr>
-<tr><td><code>TODO.md</code></td><td>What is done and what is left?</td></tr>
-</table>
+<tr><td><code>FOCUS.md</code></td><td>Which product decision governs current work?</td></tr>
+<tr><td><code>BOUNTY_PLAN.md</code></td><td>Which acceptance gate and owner action comes next?</td></tr>
+<tr><td><code>PEAQ_INTEGRATION.md</code></td><td>Which peaq path was checked, and what blocks activation?</td></tr>
+</table></div>
 <p>Companion pages: <a href="overview.html">interactive dispatch desk</a> · <a href="diagnostics.html">diagnostics</a> · <a href="OVERVIEW.md">MVP overview</a> · <a href="DEMO.md">demo runbook</a> · <a href="VERIFICATION.md">verification record</a>.</p>
 </section>
 
 <section class="section" id="gaps">
 <div class="label">14 · Submission</div>
 <h2>Deadlines and open items</h2>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Track</th><th>Deadline in UTC</th><th>Local</th></tr>
 <tr><td>Germany MVP</td><td>October 5, 2026 · 21:59:59 UTC</td><td>23:59:59 CEST</td></tr>
 <tr><td>peaq machine economy</td><td>October 13, 2026 · 06:59:00 UTC</td><td>08:59 CEST</td></tr>
-</table>
+</table></div>
 <h3>Required fields</h3>
-<table>
+<div class="table-scroll"><table>
 <tr><th>Field</th><th>State</th></tr>
 <tr><td>Public repository</td><td>Public at <code>https://github.com/epicexcelsior/capmesh-poc</code></td></tr>
-<tr><td>Test access</td><td>Open — every mode runs from the README with no credentials</td></tr>
-<tr><td>Payment evidence</td><td>Committed at <code>docs/evidence/devnet-purchase.json</code></td></tr>
-<tr><td>Contact-state evidence</td><td>Committed at <code>docs/evidence/contact-states.json</code></td></tr>
-<tr><td>Presentation link</td><td>Missing — upload the refreshed 2:30 walkthrough</td></tr>
+<tr><td>Test access</td><td>CLI and browser simulation run from the README without funding. The exported inspector needs no wallet. Live paid mode needs a disposable funded Devnet buyer.</td></tr>
+<tr><td>Payment evidence</td><td><code>docs/evidence/device-signed-purchase.json</code> records the current paid P-256 receipt.</td></tr>
+<tr><td>Contact-state evidence</td><td><code>docs/evidence/device-signed-contact-states.json</code> records both current device-signed states.</td></tr>
+<tr><td>Presentation link</td><td>Pending owner publication of the current technical walkthrough and recording of the founder presentation.</td></tr>
 <tr><td>Colosseum project</td><td>Missing — register under Germany and provide the link</td></tr>
 <tr><td>Team contact</td><td>Missing — supply it in the submission form</td></tr>
 <tr><td>peaq submission answer</td><td>Missing — answer truthfully at submission time</td></tr>
-</table>
-<div class="notice"><b>Open work.</b> Refresh the video captions so they show the verified paid result and both human contact states. Then upload the video and paste the presentation, Colosseum, and contact values into the form. Exact steps are in <a href="SUBMISSION.md">SUBMISSION.md</a>.</div>
+</table></div>
+<div class="notice"><b>Open work.</b> The technical walkthrough and public inspector package are ready for review. Publication, registration, contact selection, and submission need owner action. Follow <a href="BOUNTY_PLAN.md">the bounty execution plan</a>.</div>
 </section>
 
 </main>
 <footer>
 FieldProof · local prototype · evidence supports a decision, and a device authenticator does not prove physical truth.
-Run <code>uv run --project host pytest -q --hardware</code>, <code>cd gateway &amp;&amp; npm test</code>, and <code>npm run demo</code> to reproduce every claim on this page.
+Use <a href="VERIFICATION.md">the verification record</a> for reproducible checks and historical evidence. A rehearsal cannot establish a customer pilot or production security.
 </footer>
 </body>
 </html>

@@ -44,6 +44,24 @@ The current script uses an updated quote caption. Add the newer evidence before 
 No funds move in this script. Do not describe fake facilitator settlement as an on-chain payment.
 For closed-contact rehearsal, restart the simulator with `npm run demo -- --closed`.
 
+## Inspect the recorded signed purchase
+
+1. Open `/proof` on the running local gateway.
+2. Check VALID signature, MATCHES challenge, 5/5 AGREE, and expired WAIT.
+3. Select **Flip contact state** and check REJECTED signature.
+4. Select **Change challenge** and check REJECTED binding.
+5. Select **Use another key** and check REJECTED signature.
+6. Select **Verify original** and check VALID with expired WAIT.
+7. Select **Verify recorded payment**.
+8. Check the confirmed slot, expected mint, payer −1000, and merchant +1000 base units.
+9. Check that the evidence remains expired WAIT.
+
+The signature tests run locally in Web Crypto. The payment check needs internet access to the public Devnet RPC.
+An unavailable or rate-limited RPC produces NOT VERIFIED. The button permits a manual retry and leaves receipt verification intact.
+The inspector never sends funds or measures hardware.
+The [README export steps](../README.md#inspect-the-recorded-physical-purchase) create a static package for judge review.
+The [founder explanation](HOW_IT_WORKS.html#understand) connects the demonstration to the buyer workflow and its limits.
+
 ## Real hardware
 
 1. Stop other BLE scans.
@@ -56,7 +74,8 @@ For closed-contact rehearsal, restart the simulator with `npm run demo -- --clos
 8. Check OPEN and DISPATCH.
 
 Do not press Reset while you hold BOOT. This combination can enter the ROM download mode.
-This human press/release sequence passed on October 1, 2026. [Both authenticated receipts](evidence/contact-states.json) record the results.
+The P-256 human press/release sequence passed on October 2, 2026. [Both device-signed receipts](evidence/device-signed-contact-states.json) record it.
+The older [October 1 checks](evidence/contact-states.json) retain historical HMAC receipts.
 
 ## Public-facilitator payment
 
@@ -69,7 +88,7 @@ This human press/release sequence passed on October 1, 2026. [Both authenticated
 If the connection or evidence delivery fails, keep the purchase ID from the buyer error. Review it before another payment.
 The keypair stays outside the repository. The client accepts only loopback endpoints and 0.001 USDC on the configured Devnet mint.
 This successful payment gate passed on October 1, 2026. The user funded the disposable buyer through the supported faucet interface.
-Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer. [Payment evidence](evidence/devnet-purchase.json) records the result.
+Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer. [Paid P-256 evidence](evidence/device-signed-purchase.json) records the current signed purchase.
 
 ## Failure review
 

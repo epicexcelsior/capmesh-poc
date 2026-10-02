@@ -19,17 +19,20 @@ Signatures, request objects, and a local demand ledger are supporting mechanisms
 - **Keep operational evidence separate from training data.** Training datasets require different capture, licensing, and quality controls.
 - **Match freshness to the action.** A ten-second contact observation fits an immediate nearby decision. It cannot predict availability after a long trip.
 - **Customer economics remain unvalidated.** The demo price establishes neither revenue nor willingness to pay. Query counts do not justify installations.
-- **Prioritize useful integration.** peaq onboarding has a documented limitation. Resolve it after the MVP package, before any activation or spending.
+- **Prioritize useful integration.** Solana onboarding has a documented limitation. Native Agung registry readiness now passes. Activation remains a separate, bounded decision.
 
 Sources, counterexamples, calculations, and uncertainties: [October 2 research decision](research/2026-10-02-fieldproof.md).
 
 ## What works and what remains open
 
-The October 2 checks passed: 47 Python tests, 22 gateway tests, and a fresh-checkout CLI and browser rehearsal.
-Ten hardware tests were skipped. No new physical run or public payment ran that day.
-Earlier recorded evidence contains the real Devnet payment and physical input checks.
+The October 2 continuation passed the full 57-test hardware suite and separate held/released P-256 input checks.
+The expanded default suite passed 51 tests and skipped ten hardware cases. The gateway suite passed 26 tests.
+The browser inspector now checks the recorded Solana transfer independently. No new payment ran in this continuation.
+The public inspector export passed local review. Publication and human registration remain pending owner actions.
 The [current 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) plays and passes full decoding.
 See [verification](VERIFICATION.md) for exact checks and evidence limits.
+Start with [Understand the product](HOW_IT_WORKS.html#understand) for a plain-language explanation and demonstration sequence.
+The [peaq integration decision](PEAQ_INTEGRATION.md) records the actual registry reads and remaining activation inputs.
 
 Three commercial questions remain: does a buyer lack a useful fact, does the operator permit its sale, and can repeat delivery cover costs?
 One buyer conversation about an actual incident and a concrete paid pilot tests more than another broad competitor search.

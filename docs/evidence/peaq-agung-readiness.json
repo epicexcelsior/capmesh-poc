@@ -1,0 +1,47 @@
+{
+  "method": "Public Agung contract reads at one finalized block. No wallet, signature, approval, or transaction.",
+  "sdk": {
+    "package": "peaq-os-sdk",
+    "version": "0.10.0",
+    "deployment_id": "agung-2026-08-28"
+  },
+  "rpc": "https://peaq-agung.api.onfinality.io/public",
+  "chain_id": 9990,
+  "finalized_block": 10996074,
+  "block_hash": "0x41d6e2e1967ae5960cb46484daef400f0535be2c726aaf59d9c99cbf2c7d992b",
+  "block_timestamp": 1790970180,
+  "contracts": {
+    "info_desk": "0x72b66AF120c55371cA6e5Ce38D4e10dF1bA30Bb1",
+    "machine_registry": "0x538da35489B1F0035799a8351E67835ae4ABb377",
+    "machine_state_and_sync": "0xA7D33726232aae30622643a18047f0Ca3e159da9",
+    "machine_subscription": "0xaDCc5dD8CD57E3198B881c3388F25D2fD69B5aDc",
+    "cross_chain_mirror": "0xd5F8d5944c5d488B1cD698D642FC8156a8CD0c0c",
+    "machine_bridge_adapter": "0x0406e7bE522AEa626aee54f6258D415215e59F76",
+    "subscription_token_provision_pool": "0x8A3692Ad0AcF79BB89413514Af9957d95032e19B"
+  },
+  "contract_bytecode_lengths": {
+    "info_desk": 170,
+    "machine_registry": 170,
+    "machine_state_and_sync": 170,
+    "machine_subscription": 170,
+    "cross_chain_mirror": 170,
+    "machine_bridge_adapter": 15108,
+    "subscription_token_provision_pool": 170
+  },
+  "peers_match": true,
+  "identity_proposal": {
+    "machine_type": "FieldProofContactObserverV1",
+    "credential_subject_utf8": "{\"provider\":\"esp32-c6-96a2\",\"public_key_sec1_hex\":\"046218c52391433f9a687743192c5558a121320b8fa664931e5aaa1b6e5fbf342f9411913c8b72c91a3e7b9762e34e77955ed6035b81fa27ab7770dd8d4922ed63\",\"schema\":\"fieldproof-observer-v1\"}",
+    "computed_machine_id": "2044618828586167349407969644236800133676464971368659651643404080491769435145",
+    "activated": false
+  },
+  "activation_checks": {
+    "economic_authority": true,
+    "paused_global": false,
+    "paused_machine": false,
+    "tier": 0,
+    "bond_base_units": "400000000000000000",
+    "payment_token": "0x0000000000000000000000000000000000000809"
+  },
+  "limits": "This snapshot excludes operator funding, allowance, gas, manufacturer, DID methods, and service endpoints. It does not authorize activation or establish sensor truth."
+}

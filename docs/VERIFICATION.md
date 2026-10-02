@@ -1,8 +1,65 @@
 # FieldProof verification record
 
-Current continuation: October 2, 2026, Europe/Berlin. Historical hardware and payment evidence dates to October 1.
+Current continuation: October 2, 2026, Europe/Berlin. Public paid evidence dates to October 1.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 2 device, inspector, and peaq continuation
+
+Starting source: `844fdc6`. No firmware or payment-path behavior changed in this continuation.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q --hardware` | 57 passed in 116.87 seconds before the four new packaging/readiness cases |
+| `uv run --project host pytest -q`, expanded final software suite | 51 passed, 10 hardware tests skipped in 1.19 seconds |
+| `npm test` in `gateway`, expanded final suite | 26 passed, 0 failed in 941.99 milliseconds |
+| Held BOOT, `scripts/check_device_latency.py` | Real BLE input. P-256 signature verified. CLOSED, WAIT, 5/5 agreement, five-second evidence age. |
+| Released BOOT, separate diagnostic | Real BLE input. P-256 signature verified. OPEN, DISPATCH, 5/5 agreement, four-second evidence age. |
+| Recorded inspector, actual public Devnet RPC | VERIFIED TRANSFER. Slot 506374923, successful execution, expected mint, payer −1000 and merchant +1000 base units. |
+| Final `querySettlement` module, live Devnet RPC | The actual transaction passed the final strict response and transfer checks. No funds moved. |
+| `scripts/check_receipt_ui.cjs`, gateway | Original, expiry, altered state, another challenge, another key, restored original, and phone width passed. No page errors. |
+| Same browser check, exported `/judge-demo-v2/index.html` under a URL prefix | All receipt, RPC fixture, retry, and phone-width checks passed. |
+| Browser payment-check fixtures | Exact transfer passed. HTTP 429 produced NOT VERIFIED. Manual retry passed. Receipt remained expired WAIT throughout. |
+| `tests/test_judge_export.py` | Public whitelist and URL paths passed. Existing directory and archive refusal passed. No private fixture entered the ZIP. |
+| `tests/test_peaq_readiness.py` | RPC write/signing refusal and identity-input binding passed. No SDK dependency entered the MVP environment. |
+| `scripts/check_peaq_readiness.py`, isolated SDK 0.10.0 | Agung chain 9990, finalized block 10996074, seven contracts contain code, six peer addresses match, economic authority true, both pause flags false. |
+| Documented `uv run --no-project --with peaq-os-sdk==0.10.0` command | Installed the isolated SDK and completed the public read-only diagnostic successfully. |
+| Committed contact-state re-verification | Both original signatures, challenges, historical decisions, and ten-second expiry passed. |
+| How-it-works browser review | All 16 relative document links and section anchors passed. Desktop and 390 × 844 views were visually inspected. |
+| Export manifest and ZIP | All seven asset hashes and every ZIP member match the exported files. No private state appears in the whitelist. |
+| Final export video in Chromium | Metadata loaded: 149.76 seconds, 1280 × 900. |
+| JavaScript syntax, Python compilation, staged diff and secret-pattern review | All passed. No formatter or static type checker is declared. |
+
+The [device-signed contact evidence](evidence/device-signed-contact-states.json) preserves both current human-controlled readings.
+These direct measurements moved no funds and issued no GPIO output operation.
+The historical October 1 contact-state file retains its HMAC signatures.
+The October 2 checks used the existing P-256 identity. They did not reprovision, flash, reset, or burn device security settings.
+No GPIO20 output operation occurred. The unverified bare LED is not evidence of a controlled optical result.
+
+The first hardware-suite attempt failed ten hardware cases because Bluetooth was soft-blocked and powered off.
+Unblocking and powering the adapter restored access. The next full hardware run passed all 57 collected cases.
+This recovery corrects local adapter state. It does not establish that Bluetooth cannot become blocked again.
+
+The latency diagnostic measured 14.31 seconds for discovery plus the held reading, and 13.24 seconds for the released reading.
+Evidence ages were five and four seconds at acceptance. These are different measurements from total operation duration.
+SDK implicit scans accounted for only part of that duration. No transport optimization or independent time guarantee is claimed.
+
+The exporter initially created a directory before it discovered an existing ZIP conflict.
+A focused regression reproduced the failure. The exporter now checks both target paths before copying assets.
+The package contains recorded evidence only. The full simulator separately exercises a complete purchase without funding.
+The final reviewed ZIP has 7,909,635 bytes and SHA256 `cd56f54b379c82ac61f186931558a9633e03660f2c6b19eba60c6c925f055b73`.
+Its video retains the current walkthrough hash listed below.
+
+The guide initially overflowed a 390-pixel phone viewport to 741 pixels.
+Wide tables and unbroken identifiers caused the overflow. Table scroll containers and identifier wrapping restored the 390-pixel page width.
+The review retained visible content and table columns.
+
+The peaq diagnostic reads public contract state and computes a proposed ID from the device public pin.
+It does not query ownership, activate a machine, sign, approve a bond, submit an event, or use mainnet funds.
+The [peaq readiness evidence](evidence/peaq-agung-readiness.json) and [integration decision](PEAQ_INTEGRATION.md) record exact values and remaining gates.
+The SDK remains isolated from the firmware, host, and gateway dependency sets.
+
+No new paid transfer, public deployment, external judge session, registration, or submission occurred in this continuation.
 
 ## October 2 research continuation and judge rehearsal
 
@@ -23,7 +80,8 @@ Current source before documentation changes: `1ef57de`.
 The current video SHA256 is `616055dba5d09aac805bd114f79d5808918975f9031a8ad990b0b31ec85da6e3`.
 A paid-result video frame and current browser screenshots were visually inspected.
 The rehearsal uses simulated payment and simulated hardware. It moves no funds.
-No hardware, mainnet, new public payment, deployment, or external judge session ran on October 2.
+That earlier rehearsal used no hardware, mainnet, new public payment, deployment, or external judge session.
+The later physical and public read-only checks appear above.
 The fresh checkout came from the committed source, not private local configuration.
 Browser tooling uses an existing Playwright installation. It is not an MVP runtime dependency.
 
@@ -158,7 +216,8 @@ The recording script's new quote caption states that its scene executes no payme
 
 ESP-IDF 6.1.0, esptool 5.4.0, Node.js 24.10.0, CPython 3.13.13, Solana Kit 5.5.1, and x402 2.27.0.
 The chip is ESP32-C6FH4 revision v0.2, with 4 MB embedded flash and USB Serial/JTAG.
-Flashed application SHA256: `c56ca246115d4cab742916bfff09aa90afa0bfbbcebe7570fe7359ff06e4211a`.
+The earlier application SHA256 was `c56ca246115d4cab742916bfff09aa90afa0bfbbcebe7570fe7359ff06e4211a`.
+The current signed-receipt firmware reports `8012b267e1c10878a46700989bf9a49a1a1c988bcc4ce1b7ec2808f1491423fb` in the [identity record](evidence/receipt-identity-checks.json).
 Node's built-in SQLite emits an experimental-feature warning.
 
 Historical receipts use the public demo HMAC key. Current physical receipts use the provisioned P-256 identity with unencrypted device storage.
@@ -167,5 +226,6 @@ No external gate sensor, protected identity, calibrated confidence, vehicle cont
 The [product review](STRATEGY.md#product-risks-and-decisions) identifies the decisions that require further evidence.
 
 Git, sockets, USB, and BLE access are restored. No current access restriction blocks the completed local integration.
-Local source and evidence checkpoint: `dd1ebdc`. Source and evidence were pushed and made public in `ed8d539`.
+Historical source and evidence checkpoint: `dd1ebdc`. That earlier source and evidence were pushed in `ed8d539`.
+This continuation's changes remain local. No push or publication occurred.
 Video upload, account registration, contact selection, and submission remain owner tasks.

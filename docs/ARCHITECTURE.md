@@ -30,6 +30,8 @@ flowchart LR
 | Purchase ledger | Prevent duplicate settlement and preserve failure states | `gateway/store.js` |
 | Paid buyer | Limit Devnet spending and check the receipt independently | `gateway/buyer.js` |
 | Dispatch desk | Show quote, evidence, decision, age, limits, and local demand | `docs/overview.html` |
+| Recorded inspector | Verify a device receipt in Web Crypto and independently read the recorded Devnet transfer | `docs/proof.js`, `docs/settlement.mjs` |
+| Public export | Copy a fixed public-asset whitelist into a static inspector and ZIP | `scripts/export_judge_demo.py` |
 
 ## Trust boundaries
 
@@ -71,7 +73,23 @@ The current gateway does not issue refunds.
 | `npm start` | Public Solana Devnet facilitator | Real ESP32 contact after settlement |
 
 The last mode completed a public-facilitator Devnet purchase and a real GPIO9 observation.
-The [payment evidence](evidence/devnet-purchase.json) records the successful transaction and independently checked token balance changes.
+The [paid P-256 evidence](evidence/device-signed-purchase.json) records the current successful transaction and independently checked token balance changes.
 The simulator cannot settle funds and exists only in a separate startup command.
 Node's built-in SQLite avoids another production database dependency. It requires Node.js 22.13+ and currently emits an experimental-feature warning.
 The x402 client and Solana Kit provide conforming transaction signing without a custom partial payment verifier.
+
+## Recorded evidence and judge access
+
+The browser inspector uses the installed buyer pin, not a key supplied by the recorded receipt.
+Its chain check independently reads `getTransaction` from the fixed Solana Devnet RPC.
+It requires successful execution, the expected signature, USDC mint, token program, payer, merchant, exact balance changes, and a matching transfer instruction.
+This read trusts the selected RPC. It neither purchases evidence nor establishes payment-delivery atomicity.
+The recorded receipt retains its original time and remains expired.
+
+The static export contains only public assets. It cannot access wallets, device authorization, purchase ledgers, or the physical bridge.
+It works under a URL prefix. A remote host must serve it through HTTPS for browser cryptography.
+The full simulator remains a separate local purchase rehearsal with explicit simulation labels.
+
+The optional Agung diagnostic leaves the MVP runtime unchanged.
+It reads the published peaq deployment and derives a proposed observer ID from the public pin.
+No peaq write or activated identity exists. The [peaq integration decision](PEAQ_INTEGRATION.md) owns that separate path.

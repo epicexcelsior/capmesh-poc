@@ -1,0 +1,111 @@
+{
+  "method": "User held and released BOOT on October 2, 2026. Separate BLE observations verified each state with the provisioned P-256 public key. No reset or GPIO output operation occurred.",
+  "payment_mode": "No payment in these two direct input checks.",
+  "held": {
+    "payment_mode": "No payment. One real BLE input measurement.",
+    "timing_seconds": {
+      "discovery_and_manifest": 9.288,
+      "invocation_and_delivery": 5.02,
+      "total": 14.308
+    },
+    "sdk_implicit_scan_seconds": [
+      0.281,
+      0.254
+    ],
+    "challenge": {
+      "request_id": "obs-10ed6d85",
+      "nonce": 283995525,
+      "timestamp": 1790969695,
+      "expiration": 1790969725
+    },
+    "decision": {
+      "decision": "WAIT",
+      "reason": "Gate contact is closed",
+      "closed": true,
+      "age_seconds": 5,
+      "sample_agreement": "5/5",
+      "confidence": null,
+      "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+      "receipt_identity": "pinned-device-p256",
+      "evidence_mode": "physical-contact-demo"
+    },
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "obs-10ed6d85",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": true,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790969695,
+      "completed_at": 1790969695,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v3:PhjxYGs4iyQ0q6C/EeBNAMLoYcFPseVgv3G4s0JxOuo0W1mfDKx28O7Z+XKsjU40m/Do85YT0Z1i3QHC3nIuQA==",
+      "error": null,
+      "nonce": 283995525
+    }
+  },
+  "released": {
+    "payment_mode": "No payment. One real BLE input measurement.",
+    "timing_seconds": {
+      "discovery_and_manifest": 9.244,
+      "invocation_and_delivery": 3.996,
+      "total": 13.24
+    },
+    "sdk_implicit_scan_seconds": [
+      0.747,
+      0.378
+    ],
+    "challenge": {
+      "request_id": "obs-67e36fb3",
+      "nonce": 1742958515,
+      "timestamp": 1790969934,
+      "expiration": 1790969964
+    },
+    "decision": {
+      "decision": "DISPATCH",
+      "reason": "Gate contact is open",
+      "closed": false,
+      "age_seconds": 4,
+      "sample_agreement": "5/5",
+      "confidence": null,
+      "confidence_note": "Sample agreement is not calibrated confidence or independent corroboration",
+      "receipt_identity": "pinned-device-p256",
+      "evidence_mode": "physical-contact-demo"
+    },
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "obs-67e36fb3",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": false,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790969934,
+      "completed_at": 1790969934,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v3:A4jDExcHjK7QCAmc/boJzFQUEM9+X1Szj6B7ictJFkanhsnZF6fohzbMdo7z7+ZAoJ7Ydg2HGcnFvL6iQWJbbA==",
+      "error": null,
+      "nonce": 1742958515
+    }
+  },
+  "limits": "BOOT represents a contact. These historical receipts now exceed the ten-second freshness window. Device time remains host-anchored. No external gate or sensor truth attestation exists."
+}

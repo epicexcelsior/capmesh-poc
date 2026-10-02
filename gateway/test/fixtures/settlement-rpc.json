@@ -1,0 +1,140 @@
+{
+  "slot": 506374923,
+  "blockTime": 1790881722,
+  "transaction": {
+    "signatures": [
+      "4XSokajCzpoKy7bEQGF6NPpsvVLjo4Q5bSuH73hiuiXP23PbhuHN8pWeJ9fBxwjGk58iiv1Xqu5MTTmwQGggnBLw",
+      "76pfNPe4RBheAzJ48uErgG1oZ9bNZgdCc97WCroamvcgQo5t53WrphVhLqpGDcKigAWvPSCuNEcSy8C6BFHDf19"
+    ],
+    "message": {
+      "accountKeys": [
+        {
+          "pubkey": "CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5",
+          "signer": true,
+          "source": "transaction",
+          "writable": true
+        },
+        {
+          "pubkey": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+          "signer": true,
+          "source": "transaction",
+          "writable": false
+        },
+        {
+          "pubkey": "9yWHscth87KsftHxJx5LSyrhwyFGrojcE4BzwNiZ8coA",
+          "signer": false,
+          "source": "transaction",
+          "writable": true
+        },
+        {
+          "pubkey": "B55G2a3NKe9s2R9avLfW9EKqhLELjyQvFY5DQggBPejm",
+          "signer": false,
+          "source": "transaction",
+          "writable": true
+        },
+        {
+          "pubkey": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+          "signer": false,
+          "source": "transaction",
+          "writable": false
+        },
+        {
+          "pubkey": "ComputeBudget111111111111111111111111111111",
+          "signer": false,
+          "source": "transaction",
+          "writable": false
+        },
+        {
+          "pubkey": "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+          "signer": false,
+          "source": "transaction",
+          "writable": false
+        },
+        {
+          "pubkey": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "signer": false,
+          "source": "transaction",
+          "writable": false
+        }
+      ],
+      "instructions": [
+        {
+          "parsed": {
+            "info": {
+              "authority": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+              "destination": "9yWHscth87KsftHxJx5LSyrhwyFGrojcE4BzwNiZ8coA",
+              "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+              "source": "B55G2a3NKe9s2R9avLfW9EKqhLELjyQvFY5DQggBPejm",
+              "tokenAmount": {
+                "amount": "1000",
+                "decimals": 6,
+                "uiAmount": 0.001,
+                "uiAmountString": "0.001"
+              }
+            },
+            "type": "transferChecked"
+          },
+          "program": "spl-token",
+          "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "stackHeight": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "err": null,
+    "preTokenBalances": [
+      {
+        "accountIndex": 2,
+        "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "owner": "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA",
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "uiTokenAmount": {
+          "amount": "86614400",
+          "decimals": 6,
+          "uiAmount": 86.6144,
+          "uiAmountString": "86.6144"
+        }
+      },
+      {
+        "accountIndex": 3,
+        "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "owner": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "uiTokenAmount": {
+          "amount": "19999000",
+          "decimals": 6,
+          "uiAmount": 19.999,
+          "uiAmountString": "19.999"
+        }
+      }
+    ],
+    "postTokenBalances": [
+      {
+        "accountIndex": 2,
+        "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "owner": "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA",
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "uiTokenAmount": {
+          "amount": "86615400",
+          "decimals": 6,
+          "uiAmount": 86.6154,
+          "uiAmountString": "86.6154"
+        }
+      },
+      {
+        "accountIndex": 3,
+        "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "owner": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "uiTokenAmount": {
+          "amount": "19998000",
+          "decimals": 6,
+          "uiAmount": 19.998,
+          "uiAmountString": "19.998"
+        }
+      }
+    ],
+    "innerInstructions": []
+  }
+}

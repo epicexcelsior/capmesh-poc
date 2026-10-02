@@ -1,3 +1,5 @@
+import { querySettlement } from './settlement.mjs';
+
 const el = id => document.getElementById(id);
 const controls = ['original', 'tamper', 'challenge', 'identity'];
 let recorded, pin, differentKey;
@@ -63,7 +65,10 @@ async function experiment(mode = 'original') {
 }
 
 async function init() {
-  const [evidenceResponse, pinsResponse] = await Promise.all([fetch('/evidence/device-signed-purchase.json'), fetch('/receipt-keys.json')]);
+  const [evidenceResponse, pinsResponse] = await Promise.all([
+    fetch(new URL('./evidence/device-signed-purchase.json', import.meta.url)),
+    fetch(new URL('./receipt-keys.json', import.meta.url)),
+  ]);
   if (!evidenceResponse.ok || !pinsResponse.ok) throw new Error('Committed evidence or buyer configuration is unavailable.');
   recorded = (await evidenceResponse.json()).purchase;
   const pins = await pinsResponse.json();
@@ -77,6 +82,22 @@ async function init() {
   el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().slice(11, 19) + ' UTC';
   el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(recorded.settlement.transaction) + '?cluster=devnet';
   controls.forEach(id => { el(id).onclick = () => experiment(id); });
+  el('chain-query').disabled = false;
+  el('chain-query').onclick = async () => {
+    el('chain-query').disabled = true;
+    status('chain-status', 'CHECKING', 'expired');
+    el('chain-result').textContent = 'Querying Solana Devnet. No payment or hardware request occurs.';
+    try {
+      const result = await querySettlement(recorded);
+      status('chain-status', 'VERIFIED TRANSFER', 'pass');
+      el('chain-result').textContent = JSON.stringify(result, null, 2);
+    } catch (error) {
+      status('chain-status', 'NOT VERIFIED', 'expired');
+      el('chain-result').textContent = error.name === 'TimeoutError'
+        ? 'The Devnet RPC query timed out after 15 seconds. Try again.'
+        : error.message;
+    } finally { el('chain-query').disabled = false; }
+  };
   await experiment();
 }
 

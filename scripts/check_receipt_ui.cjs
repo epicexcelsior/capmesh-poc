@@ -1,6 +1,6 @@
 // Read-only browser checks against committed evidence. Requires installed Playwright and Chromium.
 const { chromium } = require(process.argv[2] || 'playwright');
-const { mkdirSync } = require('node:fs');
+const { mkdirSync, readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const assert = require('node:assert/strict');
 const root = resolve(__dirname, '..');
@@ -11,7 +11,7 @@ const root = resolve(__dirname, '..');
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto(new URL('/proof', process.argv[3] || 'http://127.0.0.1:4021').href);
+    await page.goto(new URL(process.argv[4] || '/proof', process.argv[3] || 'http://127.0.0.1:4021').href);
     await page.waitForFunction(() => !document.getElementById('original').disabled);
     assert.equal(await page.textContent('#signature'), 'VALID');
     assert.equal(await page.textContent('#binding'), 'MATCHES');
@@ -29,10 +29,37 @@ const root = resolve(__dirname, '..');
     await page.waitForFunction(() => document.getElementById('signature').textContent === 'REJECTED');
     await page.click('#original');
     await page.waitForFunction(() => document.getElementById('signature').textContent === 'VALID');
+    // Deterministic RPC fixtures exercise the browser states. They do not assert a live chain lookup.
+    const fixture = JSON.parse(readFileSync(resolve(root, 'gateway/test/fixtures/settlement-rpc.json'), 'utf8'));
+    let queries = 0;
+    await page.route('https://api.devnet.solana.com/', async route => {
+      const request = route.request();
+      assert.equal(request.method(), 'POST');
+      const body = request.postDataJSON();
+      assert.equal(body.method, 'getTransaction');
+      assert.equal(body.params[1].commitment, 'confirmed');
+      queries += 1;
+      await route.fulfill(queries === 2
+        ? { status: 429, body: 'Rate limit fixture' }
+        : { contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: body.id, result: fixture }) });
+    });
+    await page.click('#chain-query');
+    await page.waitForFunction(() => document.getElementById('chain-status').textContent === 'VERIFIED TRANSFER');
+    assert.match(await page.textContent('#chain-result'), /"merchant_delta_base_units": "1000"/);
+    assert.equal(await page.textContent('#decision'), 'WAIT');
+    await page.click('#chain-query');
+    await page.waitForFunction(() => document.getElementById('chain-status').textContent === 'NOT VERIFIED');
+    assert.match(await page.textContent('#chain-result'), /HTTP 429/);
+    assert.equal(await page.isDisabled('#chain-query'), false);
+    assert.equal(await page.textContent('#signature'), 'VALID');
+    assert.equal(await page.textContent('#decision'), 'WAIT');
+    await page.click('#chain-query');
+    await page.waitForFunction(() => document.getElementById('chain-status').textContent === 'VERIFIED TRANSFER');
+    assert.equal(queries, 3);
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.screenshot({ path: resolve(root, '.local/receipt-mobile.png'), fullPage: true });
     assert.deepEqual(errors, []);
-    console.log('Browser receipt checks passed: original, expired, tampered, changed challenge, another key, restored original, mobile width.');
+    console.log('Browser receipt checks passed: original, expired, tampered, changed challenge, another key, restored original, RPC fixture success, HTTP 429 and retry, unchanged WAIT, mobile width.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

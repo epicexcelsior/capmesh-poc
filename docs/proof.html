@@ -15,6 +15,7 @@
 <div class="label">Recorded hardware evidence · Solana Devnet</div>
 <h1>One receipt.<br>Try to break it.</h1>
 <p class="lead">Verify a real device signature in your browser. Change the contact state, change the challenge, or try another identity.</p>
+<p>This inspector uses recorded evidence. To exercise a new simulated purchase, follow the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a>.</p>
 <div class="workspace">
 <section class="receipt" aria-label="Recorded receipt"><div class="label">Recorded purchase / demo-gate</div><h2>Is the gate open?</h2>
 <dl><div><dt>Contact state</dt><dd id="state">—</dd></div><div><dt>Price paid</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd>ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">—</dd></div></dl>
@@ -31,6 +32,14 @@
 </section>
 </div>
 <p class="notice">The public key comes from this installed repository's buyer configuration. A provider cannot select its own trusted key. The private key resides in unencrypted NVS. This proves the signing key's claim, not physical truth.</p>
+<section aria-label="Independent payment check">
+<h2>Check the payment on Solana.</h2>
+<p>Query the recorded transaction through Solana's public Devnet RPC. Check the USDC mint, transfer instruction, payer, merchant, and exact balance changes.</p>
+<button id="chain-query" disabled>Verify recorded payment</button>
+<strong id="chain-status" role="status" aria-live="polite">NOT QUERIED</strong>
+<pre id="chain-result">No network query yet.</pre>
+<p class="note">This check reads chain data. It never sends funds or refreshes the observation. It trusts the selected RPC. Payment does not establish physical truth or successful delivery.</p>
+</section>
 <details><summary>Inspect the receipt and buyer challenge</summary><pre id="payload">Loading.</pre></details>
 <details><summary>Inspect the public identity pin</summary><p class="note">The operator read this key over trusted USB and verified it after reset. The browser reads the public pin from the installed demo. Use the independent CLI buyer for a new paid observation.</p><pre id="pin">Loading.</pre></details>
 </main>

@@ -4,13 +4,14 @@
 FieldProof purchases a fresh contact observation, checks its challenge and age, and returns DISPATCH or WAIT.
 The ESP32-C6 BOOT button represents a gate contact. The product does not control a vehicle.
 
-Verified on October 1, 2026:
+Current verified evidence:
 
 - A public x402 facilitator settled 0.001 Devnet USDC before the real BLE observation.
 - Independent RPC checks confirmed the exact mint, merchant, amount, and successful transaction.
-- Human-held BOOT produced CLOSED/WAIT. Released BOOT produced OPEN/DISPATCH. Both states returned five matching samples.
-- All 40 hardware-enabled Python tests and all 20 gateway tests passed.
-- A 2:30 browser walkthrough includes a public quote, real BLE evidence, expiry, and executed attack checks.
+- October 2 human-held BOOT produced signed CLOSED/WAIT. Released BOOT produced signed OPEN/DISPATCH. Both returned five matching samples.
+- The hardware suite, expanded software suites, browser inspector, and static export passed. Exact results live in [verification](VERIFICATION.md).
+- The current 2:30 walkthrough inspects recorded public payment and device evidence and executes browser attack checks.
+- A read-only peaq Agung check verified registry peers, activation flags, the proposed observer ID, and the full tier-0 bond.
 
 The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Registration, public video links, founder presentation, and submission remain owner tasks. Follow the [bounty execution plan](BOUNTY_PLAN.md).
 
@@ -19,8 +20,9 @@ The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Regi
 - [Interactive dispatch desk](overview.html).
 - [Complete how-it-works and setup guide](HOW_IT_WORKS.html). Protocol, payment states, failure paths, test suites, and every run command.
 - [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm). Recorded public payment evidence and interactive receipt attacks. Captioned, no audio.
-- [Verified Devnet purchase](evidence/devnet-purchase.json).
-- [Verified physical contact states](evidence/contact-states.json).
+- [Paid device-signed receipt](evidence/device-signed-purchase.json).
+- [Device-signed physical contact states](evidence/device-signed-contact-states.json).
+- [peaq readiness and integration decision](PEAQ_INTEGRATION.md).
 - [Quick start](../README.md) and [demo runbook](DEMO.md).
 - [Verification record](VERIFICATION.md), [product review](STRATEGY.md#product-risks-and-decisions), and [submission draft](SUBMISSION.md).
 
@@ -72,6 +74,7 @@ The project follows Carlo's Germany MVP and peaq machine-economy direction.
 The [submission draft](SUBMISSION.md) records verified deadlines and required fields.
 No peaq transaction exists. Native activation is not an explicit mandatory listing requirement.
 Official documentation reports paused Solana onboarding and a mainnet-only activation flow.
+Native Agung registry readiness is a separate verified read-only path. Activation remains pending.
 
 ## Owner and later tasks
 
