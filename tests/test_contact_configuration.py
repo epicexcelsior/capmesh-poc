@@ -56,6 +56,26 @@ def test_external_receipt_requires_the_exact_selected_sensor_and_device_pin():
                 receipt, wrong_request, contract, now=request.timestamp)
 
 
+def test_explicit_gpio9_contract_preserves_the_real_recorded_paid_receipt():
+    path = Path(__file__).resolve().parents[1] / "docs/evidence/device-signed-purchase.json"
+    purchase = json.loads(path.read_text())["purchase"]
+    receipt = InvocationReceipt.from_dict(purchase["receipt"])
+    challenge = purchase["challenge"]
+    contract = ObservationContract(sensor="gpio9-contact")
+    request = observation_request(receipt.provider, contract, request_id=challenge["id"],
+                                  nonce=challenge["nonce"], now=challenge["created_at"])
+    accepted_at = receipt.completed_at + purchase["evidence_age_seconds"]
+    pins = provisioned_observation_keys()
+    result = ObservationVerifier(pins).verify(receipt, request, contract, now=accepted_at)
+    assert result["decision"] == purchase["decision"]
+    assert result["age_seconds"] == 7
+    assert result["receipt_identity"] == "pinned-device-p256"
+    with pytest.raises(EvidenceError, match="STALE_EVIDENCE"):
+        ObservationVerifier(pins).verify(receipt, request, contract, now=receipt.completed_at + 11)
+    with pytest.raises(EvidenceError, match="INVALID_MEASUREMENT"):
+        ObservationVerifier(pins).verify(receipt, request, ObservationContract(sensor="gpio18-contact"), now=accepted_at)
+
+
 @pytest.mark.parametrize("sensor", ["gpio4-contact", "gpio8-contact", "gpio10-contact", "gpio12-contact",
                                     "gpio15-contact", "gpio24-contact", "GPIO18", [], 18])
 def test_contact_contract_rejects_unsupported_inputs(sensor):

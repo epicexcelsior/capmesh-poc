@@ -9,6 +9,7 @@ import { generateKeyPairSigner, getTransactionDecoder, getBase64Encoder, getAddr
 import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { encodePaymentResponseHeader } from '@x402/core/http';
 import { DEFAULT_CONTACT } from '../contact.js';
+import { readFileSync } from 'node:fs';
 
 const testPin = generateKeyPairSync('ec', { namedCurve: 'prime256v1' }).publicKey
   .export({ format: 'der', type: 'spki' }).subarray(-65).toString('hex');
@@ -42,6 +43,18 @@ test('buyer derives the decision from authenticated fresh contact evidence', () 
     assert.throws(() => checkEvidence({ receipt: { ...r, receipt_signature } }, purchase, 100, publicKey), /authentication/);
   }
   assert.throws(() => checkEvidence({ receipt: r }, purchase, 100, ''), /provisioned/);
+});
+
+test('configured buyer preserves the real recorded receipt and never refreshes it', () => {
+  const p = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url), 'utf8')).purchase;
+  const acceptedAt = p.receipt.completed_at + p.evidence_age_seconds;
+  const historical = checkEvidence(p, p.challenge, acceptedAt);
+  assert.equal(historical.decision, p.decision);
+  assert.equal(historical.evidence_age_seconds, 7);
+  assert.equal(historical.receipt_identity, 'pinned-device-p256');
+  assert.throws(() => checkEvidence(p, p.challenge, p.receipt.completed_at + 11), /freshness/);
+  assert.throws(() => checkEvidence(p, p.challenge, acceptedAt, undefined,
+    { ...DEFAULT_CONTACT, sensor: 'gpio18-contact' }), /contact contract/);
 });
 
 test('buyer retains the purchase ID when the connection fails during payment', async t => {

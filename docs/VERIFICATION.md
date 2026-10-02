@@ -4,6 +4,24 @@ Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 3 recorded-purchase compatibility
+
+Starting source: `d019109`, pushed and confirmed against the remote branch.
+Two new regression tests use the actual committed device-signed paid receipt.
+They exercise the current Node buyer and explicit GPIO9 Python contract with the installed public pin.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q` | 98 passed, 10 hardware tests skipped in 1.87 seconds |
+| `npm --prefix gateway test` | 41 passed, 0 failed in 937.23 milliseconds |
+| Historical acceptance time | Both runtimes reproduced the recorded DISPATCH at seven seconds of age. |
+| Eleven-second age and configured GPIO18 mismatch | Both runtimes rejected the original receipt. A valid signature did not override either contract. |
+| Separate current-time check | Both runtimes rejected the authentic recorded receipt as expired. No new observation or payment occurred. |
+
+The tests use an explicit historical time only to verify compatibility with the recorded result.
+Current user-facing inspection remains expired WAIT. The tests neither refresh the timestamp nor create new physical evidence.
+The full simulator, overnight source isolation, and pending physical extension gates remain unchanged.
+
 ## October 2–3 configured contact and quote boundaries
 
 Starting source: `c21c4d9`. The attached firmware, signing pin, and fixed-source overnight diagnostic remain unchanged.
