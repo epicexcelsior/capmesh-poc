@@ -1,0 +1,200 @@
+{
+  "captured_date": "2026-10-02",
+  "api_base": "https://copilot.colosseum.com/api/v2",
+  "skill_version": "2.0.1",
+  "private_account_payload_excluded": true,
+  "raw_outputs": "Private research continuation directory. Not tracked.",
+  "files": [
+    {
+      "file": "accelerator-physical.json",
+      "sha256": "86af7b01f4f57f5870f6cc7a7aebb4300973dc893eed34c1f0368366df9938a6"
+    },
+    {
+      "file": "accelerator-physical.request.json",
+      "sha256": "7d042c4a3f72d1de0d49497ac7d7771f0c652110683bc58ebfaa2e675cdc86a5"
+    },
+    {
+      "file": "archive-contract.json",
+      "sha256": "b15b1c41613ad3cf000e3101028e3163ae7ed456e5308d7fe40b89f494cac78a"
+    },
+    {
+      "file": "archive-contract.request.json",
+      "sha256": "e3a21783e0dccfd45f6b7423106e63ef6857c01e093569ff8677a1ac47bbd25a"
+    },
+    {
+      "file": "archive-verification.json",
+      "sha256": "859174459dee546cc604187036d80c820b0b060a8662703017568139cc5693cb"
+    },
+    {
+      "file": "archive-verification.request.json",
+      "sha256": "72476912cf40952066c0af1934cf21662cca1ea883a2f5c0e1b379cfaf02265d"
+    },
+    {
+      "file": "build-solutions-advancing-the-machine-economy-with-peaq.json",
+      "sha256": "d4d209f119271c355caac2a9ba6e2805ee3207bef3c26b7123621245bda7afdd"
+    },
+    {
+      "file": "categories.json",
+      "sha256": "61d6f4d11e374626f527d93865131db3a831efe68f607eca0c7ce6576607bc34"
+    },
+    {
+      "file": "details/auxin-automata.json",
+      "sha256": "c7f1499fcb6c1d7d8c50c549391bd97c450b548e201d2164fd0269ff655df7e3"
+    },
+    {
+      "file": "details/crowdbrain.json",
+      "sha256": "2589dd53deb4ad6925b75dc93136cd88c6be16578e57101dbf1dfeaf39098036"
+    },
+    {
+      "file": "details/depin-data-exchang.json",
+      "sha256": "6f9194fbe13bc68c92adf282972e315a4a6862c32e0dbed7a54aea569d302454"
+    },
+    {
+      "file": "details/flovia.json",
+      "sha256": "2b5a868d8773c72844dee54861c35411bfc1b6f9ad9037311f3400f39eb78be5"
+    },
+    {
+      "file": "details/mcpay.json",
+      "sha256": "8bdcb11f6a699f2281e0efa33fd80819afa4d9124fa2058f409c71f19a9fc534"
+    },
+    {
+      "file": "details/predatapool.json",
+      "sha256": "4842c07abb4654daba099a08aa95660fd611294258d4077733b6510528939d7a"
+    },
+    {
+      "file": "details/qumyrsqacore.json",
+      "sha256": "df52b9b4c1d3355e6e618e838f9c7ac13ba34b3f634f1803c8af346411657c8b"
+    },
+    {
+      "file": "freshness-contract.json",
+      "sha256": "59a917b6a88336a6552b7079b6a1701a811a9cd8da8ac9b601c018bc6d1e22ca"
+    },
+    {
+      "file": "freshness-contract.request.json",
+      "sha256": "05c8358ecc7697a4fdacfe80aecfebbcd1c106cf89e022e4e668e47b26c343c1"
+    },
+    {
+      "file": "grid.json",
+      "sha256": "94db9c0c69fdad4b28363327e5381b8eab9dccf05b1314d2ed6c94a228f25efb"
+    },
+    {
+      "file": "grid.request.json",
+      "sha256": "93acb3e1bab7c3bf8f05f1841c0449175f2d62b8e506f96ac931e66e44b12b66"
+    },
+    {
+      "file": "operator-alternative.json",
+      "sha256": "8246066473747581b63fdb4618f0699278126e81d2219fecfe5cc92a057b6687"
+    },
+    {
+      "file": "operator-alternative.request.json",
+      "sha256": "a13681115961dcf5de786856cc7ae7e519daeb1f6f2e2d2bc2fbaacf9ace9d00"
+    },
+    {
+      "file": "resources.json",
+      "sha256": "b4c4fb59b3690d6cbadd6118f24b6438364ff2feb0e324d9c3360ba4b06701e1"
+    },
+    {
+      "file": "road-to-colosseum-hackathon-build-your-mvp.json",
+      "sha256": "a5e424c7414d8e904aae6b1179305afbfed112bf97d94818044c5bd60da31b06"
+    },
+    {
+      "file": "winner-physical.json",
+      "sha256": "fe6c5f7619c43a73280f1db9f41e620d8e3c4af703b991e133c11710b198f5d8"
+    },
+    {
+      "file": "winner-physical.request.json",
+      "sha256": "76f8e53965edc6e9213ff424a3378beff42c886dbcb9b1a977d6567e466cfe63"
+    }
+  ],
+  "requests": [
+    {
+      "name": "winner-physical",
+      "method": "POST",
+      "endpoint": "/search/projects",
+      "body": {
+        "query": "autonomous agent buys fresh physical sensor observation before acting",
+        "filters": {
+          "winnersOnly": true
+        },
+        "limit": 10,
+        "diversify": true
+      }
+    },
+    {
+      "name": "accelerator-physical",
+      "method": "POST",
+      "endpoint": "/search/projects",
+      "body": {
+        "query": "physical sensor data verification autonomous agent payment",
+        "filters": {
+          "acceleratorOnly": true
+        },
+        "limit": 10
+      }
+    },
+    {
+      "name": "freshness-contract",
+      "method": "POST",
+      "endpoint": "/search/projects",
+      "body": {
+        "query": "freshness bounded signed sensor request unmet demand ledger",
+        "limit": 15
+      }
+    },
+    {
+      "name": "operator-alternative",
+      "method": "POST",
+      "endpoint": "/search/projects",
+      "body": {
+        "query": "robot fleet facility access live operational state API",
+        "limit": 15
+      }
+    },
+    {
+      "name": "archive-verification",
+      "method": "POST",
+      "endpoint": "/search/archives",
+      "body": {
+        "query": "physical data verification manipulated signals",
+        "limit": 5,
+        "maxChunksPerDoc": 1
+      }
+    },
+    {
+      "name": "archive-contract",
+      "method": "POST",
+      "endpoint": "/search/archives",
+      "body": {
+        "query": "demand driven physical task markets",
+        "limit": 5,
+        "maxChunksPerDoc": 1
+      }
+    }
+  ],
+  "public_pages": {
+    "mvp": "https://superteam.fun/earn/listing/road-to-colosseum-hackathon-build-your-mvp",
+    "peaq": "https://superteam.fun/earn/listing/build-solutions-advancing-the-machine-economy-with-peaq",
+    "rules": "https://colosseum.com/legal/Crypto%20World%27s%20Fair%20Hackathon%20Rules.pdf",
+    "prismax": "https://www.prismax.ai/",
+    "bitrobot": "https://bitrobot.ai/whitepaper",
+    "premise": "https://premise.com/how-premise-works/",
+    "reborn": "https://reborn-agi.gitbook.io/reborn-network/products/unified-data-platform",
+    "multicoin": "https://multicoin.capital/2026/03/10/internet-labor-markets/",
+    "verification": "https://a16zcrypto.com/posts/article/manipulated-signals-in-depin-protocols",
+    "peaq_onboarding": "https://docs.peaq.xyz/peaqos/guides/onboard-on-solana",
+    "adapters": "https://www.robotic.sh/"
+  },
+  "calculations": {
+    "legacy_prize_winners": "293 - 141 = 152",
+    "v2_prize_winners": "152 + 28 = 180",
+    "v2_projects": "5428 + 2858 = 8286",
+    "library_quota_averages": {
+      "discover": "9 / 100 = 0.09 USD/episode at full quota",
+      "researcher": "89 / 1500 = 0.059333333333333335 USD/episode at full quota"
+    },
+    "illustrative_break_even": {
+      "low_contribution": "30 / 0.0002 = 150000 observations/month",
+      "higher_contribution": "30 / 0.01 = 3000 observations/month"
+    }
+  }
+}

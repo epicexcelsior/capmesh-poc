@@ -4,6 +4,32 @@ Date: October 1, 2026, Europe/Berlin.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 2 research continuation and judge rehearsal
+
+Current source before documentation changes: `1ef57de`.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q` | 47 passed, 10 hardware tests skipped |
+| `npm test` in `gateway` | 22 passed, 0 failed |
+| Fresh checkout: `uv sync --project host` | Installed successfully without local device state |
+| Fresh checkout: `npm ci` in `gateway` | Installed successfully. Audit reported zero vulnerabilities at this check. |
+| Fresh checkout: both simulated CLI observation commands | OPEN/DISPATCH and CLOSED/WAIT, stale-provider rejection, all reported attacks passed |
+| Fresh-checkout browser simulation | Quote, simulated purchase, DISPATCH, expired WAIT, and video HTTP 206 byte range passed. No page errors. |
+| `node scripts/check_receipt_ui.cjs <installed-playwright> <local-origin>` | Original signature, expiry, altered state, another challenge, wrong key, restored receipt, and phone width passed |
+| `ffmpeg -v error -i docs/assets/fieldproof-signed-receipt.webm -f null -` | Full decode passed |
+| `ffprobe` on current signed-receipt video | 149.76 seconds |
+
+The current video SHA256 is `616055dba5d09aac805bd114f79d5808918975f9031a8ad990b0b31ec85da6e3`.
+A paid-result video frame and current browser screenshots were visually inspected.
+The rehearsal uses simulated payment and simulated hardware. It moves no funds.
+No hardware, mainnet, new public payment, deployment, or external judge session ran on October 2.
+The fresh checkout came from the committed source, not private local configuration.
+Browser tooling uses an existing Playwright installation. It is not an MVP runtime dependency.
+
+The [research decision](research/2026-10-02-fieldproof.md) supersedes the inherited novelty and winner-causality claims.
+The [bounty execution plan](BOUNTY_PLAN.md) records owner actions and the research stop rule.
+
 ## Automated checks
 
 | Command | Observed result |

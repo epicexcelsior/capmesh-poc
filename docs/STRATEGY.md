@@ -116,8 +116,9 @@ Validate renewal and the full cost of service before funding new installations f
 
 ## Deferred execution tasks
 
-The owner handles GitHub visibility, pushing, video upload, Colosseum registration, and submission contact.
+The [October 2 decision](research/2026-10-02-fieldproof.md) and [bounty execution plan](BOUNTY_PLAN.md) govern current priorities.
+The owner handles pushing, video upload, Colosseum registration, and submission contact.
 The [signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) contains the verified payment and browser attack checks.
-A smaller documentation task can link it from the submission draft, README, and project guide.
+The README, overview, demo runbook, and submission checklist now link the current technical walkthrough.
 The human contact-state evidence remains historical, with its original HMAC signatures.
 The [submission draft](SUBMISSION.md) contains publication steps. The [acceptance tracker](../TODO.md) separates these tasks from completed integration.

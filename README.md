@@ -6,8 +6,8 @@ FieldProof asks whether a demo gate is open, buys a contact observation, checks 
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Watch the [2:30 live walkthrough](docs/assets/fieldproof-submission.webm). It includes a real BLE observation with simulated payment. Start with the [overview](docs/OVERVIEW.md), the [complete how-it-works and setup guide](docs/HOW_IT_WORKS.html), the [interactive dispatch desk](docs/overview.html), and the [MVP plan](docs/MVP_PLAN.md).
-The [submission draft](docs/SUBMISSION.md) records actual track deadlines and remaining required fields.
+Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [overview](docs/OVERVIEW.md), the [complete how-it-works and setup guide](docs/HOW_IT_WORKS.html), the [interactive dispatch desk](docs/overview.html), and the [MVP plan](docs/MVP_PLAN.md).
+The [submission checklist](docs/SUBMISSION.md) records track deadlines and remaining required fields. Follow the [bounty execution plan](docs/BOUNTY_PLAN.md) and [October 2 research decision](docs/research/2026-10-02-fieldproof.md).
 
 ## Run without hardware
 
@@ -106,7 +106,7 @@ The [verification record](docs/VERIFICATION.md) lists executed checks and remain
 - [Architecture](docs/ARCHITECTURE.md): device, buyer, gateway, ledgers, and payment boundaries.
 - [Overview](docs/OVERVIEW.md): pivot, verified results, strategy, and unfinished acceptance gates.
 
-The host and firmware use a public demo HMAC key. It does not establish identity against a hostile operator.
+Command authorization uses a public demo HMAC key. Physical observation receipts use a persistent P-256 key pinned by the buyer. Unencrypted flash storage does not protect that key against physical access.
 Discovery cannot certify its own provider. Buyer configuration pins demo identities.
 Five matching samples do not establish calibrated confidence or independent corroboration.
 The board retains up to 64 unexpired request nonces. It refuses new requests when that table is full.

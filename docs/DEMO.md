@@ -5,6 +5,10 @@ Run commands from the repository root unless a step changes directories.
 
 ## Recorded demonstration
 
+Use the [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for the current technical demonstration.
+It inspects a recorded public Devnet purchase and executes browser verification and attacks. It has captions and no audio.
+The older recordings below preserve historical simulator and HMAC demonstrations.
+
 [Watch the 69-second screen recording](assets/fieldproof-demo.webm). It shows simulated payment and simulated contact evidence.
 The final scene includes results from the executed CLI adversarial loop. The recording has no audio.
 

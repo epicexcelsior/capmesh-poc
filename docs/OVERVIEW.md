@@ -12,13 +12,13 @@ Verified on October 1, 2026:
 - All 40 hardware-enabled Python tests and all 20 gateway tests passed.
 - A 2:30 browser walkthrough includes a public quote, real BLE evidence, expiry, and executed attack checks.
 
-The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Submission, video upload, and caption updates remain owner tasks.
+The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Registration, public video links, founder presentation, and submission remain owner tasks. Follow the [bounty execution plan](BOUNTY_PLAN.md).
 
 ## Open the result
 
 - [Interactive dispatch desk](overview.html).
 - [Complete how-it-works and setup guide](HOW_IT_WORKS.html). Protocol, payment states, failure paths, test suites, and every run command.
-- [2:30 live walkthrough](assets/fieldproof-submission.webm). Payment is simulated in its hardware scene. It predates the successful paid purchase.
+- [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm). Recorded public payment evidence and interactive receipt attacks. Captioned, no audio.
 - [Verified Devnet purchase](evidence/devnet-purchase.json).
 - [Verified physical contact states](evidence/contact-states.json).
 - [Quick start](../README.md) and [demo runbook](DEMO.md).
@@ -50,7 +50,7 @@ Confirmation alone does not establish a transaction's recipient, mint, amount, o
 
 ## Trust and operational limits
 
-The shared public HMAC key demonstrates field binding. A repository reader can forge it.
+Command authorization uses a public demo HMAC key. Physical receipts use a persistent buyer-pinned P-256 key. Unencrypted flash storage remains vulnerable to physical key extraction.
 The location is a provisioned label. No location attestation or independent observer exists.
 Five matching samples establish sample agreement, not calibrated confidence.
 Time derives from an authenticated host request. Reboot clears the time anchor and replay table.
@@ -63,7 +63,7 @@ Cached evidence retains its original time and becomes WAIT after expiry.
 
 ## Product direction
 
-The most useful next test is one fleet dispatcher buying advance availability from a site operator at another facility.
+The next test is one robot already near an external access point buying a permitted fact from its operator. A ten-second contact observation cannot predict advance availability.
 This is a buyer hypothesis. No recurring demand, avoided-cost result, sustainable price, or provider income is established.
 The [product review](STRATEGY.md#product-risks-and-decisions) examines access rights, truth, remote delivery, economics, and demand quality.
 Earn one recurring buyer-provider workflow before building an open sensor marketplace.
@@ -75,7 +75,7 @@ Official documentation reports paused Solana onboarding and a mainnet-only activ
 
 ## Owner and later tasks
 
-1. Refresh the walkthrough with the verified paid result and physical state checks, then upload it.
+1. Record the founder presentation and provide public viewing links for both presentation and current technical walkthrough.
 2. Provide the presentation, test access, Colosseum project, and contact in the submission form.
 3. Validate one recurring buyer decision and the site's permission to sell its operational state.
 

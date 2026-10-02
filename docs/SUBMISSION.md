@@ -2,11 +2,14 @@
 
 Status: public repository, draft submission. The project is not ready to submit.
 Public paid settlement and both human-controlled contact states pass. The repository is public. Presentation, Colosseum, and contact details remain incomplete.
-A local 2:30 walkthrough includes real BLE evidence with simulated payment. Refresh its earlier pending-payment captions before submission.
+The current [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) includes recorded verified payment evidence and browser attacks.
+It has captions and no audio. The founder presentation and public viewing links remain incomplete.
+Follow the [bounty execution plan](BOUNTY_PLAN.md) and [research decision](research/2026-10-02-fieldproof.md).
 
 ## Verified requirements and deadlines
 
-Requirements were read from each listing's rendered details and public `__NEXT_DATA__` fields on October 1, 2026.
+Requirements and deadlines were checked again from both complete public `__NEXT_DATA__` listing payloads on October 2, 2026.
+Both listings specify Germany regional eligibility and `agentAccess: HUMAN_ONLY`. The founder must complete human submission.
 The earlier text-only retrieval omitted these details. This record supersedes that gap.
 
 | Track | Deadline in UTC | Deadline in Europe/Berlin |
@@ -90,29 +93,21 @@ This supports a path toward demand-directed sensor installations and existing ma
 No peaq identity or revenue event is activated.
 The current [Solana onboarding guide](https://docs.peaq.xyz/peaqos/guides/onboard-on-solana) reports paused onboarding and a mainnet-only flow.
 The next useful peaq step is an observer identity and an honest activity history after onboarding resumes or a funded peaq path is authorized.
-The public demo HMAC key is not protected hardware identity.
+The public command HMAC key does not provide private authorization. Physical receipts use buyer-pinned P-256 identity with unencrypted device storage.
 Simulated payments and Devnet tokens do not establish real revenue.
 
 ## Judging walkthrough
 
-[Watch the 2:30 live walkthrough](assets/fieldproof-submission.webm). It shows an actual public quote, real BLE evidence, and executed attack checks.
-Its payment and closed-contact scenes are simulated. It has no audio.
-The verified public payment and human contact-state checks occurred afterward. Add those results and refresh the pending-payment captions before upload.
-The separate [composed presentation](assets/fieldproof-walkthrough.webm) contains older simulator footage and explanatory cards. Its scene plan follows.
+Use the [current signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for technical review.
+Its recorded paid scene does not execute another payment. Its browser scenes verify the real receipt and reject attacks.
+A 149.76-second duration and full decode passed on October 2. A separate founder presentation remains incomplete.
+The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.
+The final Colosseum presentation requires the buyer and business explanation alongside the technical demonstration.
+Prepare that presentation after the MVP package.
 
-| Time | Scene | Evidence to show |
-|---|---|---|
-| 0:00–0:12 | Buyer problem | One fresh physical fact changes a dispatch decision |
-| 0:12–0:29 | Buyer contract | Location, metric, ten-second freshness, price, and decision |
-| 0:29–1:39 | Recorded working simulator | Quote, DISPATCH, expired WAIT, closed contact, and attack checks |
-| 1:39–1:57 | Evidence policy | Challenge binding, replay rejection, sample agreement, and demo identity limits |
-| 1:57–2:15 | Payment ordering | Settlement before measurement, preserved receipt, and public-payment gap |
-| 2:15–2:30 | Economic mechanism | Priced evidence, local demand, buyer hypothesis, and next validation |
-
-The original [69-second recording](assets/fieldproof-demo.webm) remains unchanged.
-Both longer videos satisfy the requested video length. The real Solana integration now passes. Public review links remain incomplete.
-The extended live recorder passed its browser run. The current script caption distinguishes a quote from an executed payment.
-Do not describe a simulated payment as an on-chain result.
+The [older live walkthrough](assets/fieldproof-submission.webm), [composed presentation](assets/fieldproof-walkthrough.webm), and [69-second simulation](assets/fieldproof-demo.webm) remain historical artifacts.
+Their earlier pending-payment captions do not describe the current integration.
+Do not use them as current status evidence or relabel simulated scenes as real settlement.
 
 ## Required fields that remain incomplete
 
@@ -120,7 +115,7 @@ Do not describe a simulated payment as an on-chain result.
 |---|---|---|
 | Public repository | Public at `https://github.com/epicexcelsior/capmesh-poc` | Paste the link into the submission form |
 | Test access | Public repository with full setup instructions in `README.md` | Confirm the judge can follow the no-hardware path, or provide a reachable demo |
-| Presentation link | Reviewed local 2:30 walkthrough, with earlier pending-payment captions | Refresh captions, add verified results, upload, and provide its public link |
+| Presentation link | Current captioned technical walkthrough ready locally. Founder presentation incomplete. | Record the founder presentation and provide public viewing links |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |
 | Team contact | No submission contact selected | Supply the contact directly in the submission form |
@@ -137,8 +132,8 @@ The origin is `https://github.com/epicexcelsior/capmesh-poc.git`. `main` is push
 2. Run `git push -u origin main` after every accepted change.
 3. Confirm the repository visibility stays Public.
 4. Check the public README, simulator setup, verification record, and `docs/evidence/` files.
-5. Refresh the video captions and add the verified paid purchase and human input checks.
-6. Upload the final 2–3 minute video and copy its public viewing link.
+5. Review the current signed-receipt walkthrough and record the founder presentation.
+6. Upload both videos and check their public viewing links.
 7. Paste the presentation, test-access, Colosseum project, and contact values into the submission form.
 
 Keep `.local/`, keypair files, databases, environment files, and build outputs excluded.

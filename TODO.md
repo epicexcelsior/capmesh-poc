@@ -23,7 +23,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Record a 60–90 second demo artifact.
 - [x] Verify full submission requirements and the native peaq integration requirement.
 - [x] Produce and inspect a 2:30 presentation from the verified simulator recording and explanatory title cards.
-- [ ] Smaller follow-up: add verified paid-chain and human input-change evidence to the video. Refresh its earlier pending-payment captions.
+- [x] Promote the newer signed-receipt walkthrough with recorded verified payment and browser attacks. Preserve older recordings as history.
 - [x] Prepare local submission text against verified track requirements.
 - [x] Push the repository and make it public: https://github.com/epicexcelsior/capmesh-poc
 - [ ] Provide test access, presentation link, Colosseum project details, and submission contact.
@@ -43,3 +43,8 @@ Publication, repository rename, and submission require explicit authorization.
 - [ ] Choose protected asymmetric receipt signing and separate command authorization for a real pilot.
 
 The [product review](docs/STRATEGY.md#product-risks-and-decisions) explains these priorities.
+
+## October 2 bounty priority
+
+Follow [the execution plan](docs/BOUNTY_PLAN.md). Broad research stops at [the current decision](docs/research/2026-10-02-fieldproof.md).
+The signed-receipt technical video is ready locally. Registration, founder presentation, public links, buyer validation, and human submissions remain open.
