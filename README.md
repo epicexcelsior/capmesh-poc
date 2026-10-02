@@ -13,19 +13,19 @@ For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/H
 ## Run without hardware
 
 Prerequisites: Python 3.10+, `uv`, and Node.js 22.13+ with `node:sqlite`.
+Start each command block at the repository root. Stop a running gateway with Ctrl+C before changing modes.
 
 ```bash
 uv sync --project host
 uv run --project host capmesh observe-demo --simulated
 uv run --project host capmesh observe-demo --simulated --closed
-cd gateway
-npm ci
-npm run demo
+npm --prefix gateway ci
+npm --prefix gateway run demo
 ```
 
 Open `http://127.0.0.1:4022`. Select **Get payment quote**, then **Run simulation**.
 The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.
-Run `npm run demo -- --closed` to rehearse the closed-contact decision.
+Run `npm --prefix gateway run demo -- --closed` to rehearse the closed-contact decision.
 
 The CLI adversarial loop rejects a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request.
 It records served and unmet demand in a local SQLite ledger.
@@ -53,15 +53,18 @@ Publication remains an owner action. Serve the exported directory on HTTPS for b
 
 ## Run with the ESP32
 
-Build and flash with ESP-IDF 6.1. The current board uses `/dev/ttyACM0`.
-Set `IDF_PATH` to your installed ESP-IDF directory before these commands.
+The attached board already runs the verified firmware. Run the observation command directly to rehearse it.
+For another board, follow [trusted identity provisioning](docs/RECEIPT_IDENTITY.md#provision-a-new-board) before live verification.
+A newly generated key cannot match the checked-in demonstration pin.
+
+Build with ESP-IDF 6.1. The current board uses `/dev/ttyACM0`.
+Activate the environment created by your ESP-IDF installer first.
+With Espressif Installation Manager, source its generated `activate_idf_v6.1.sh`.
+With the standard installer, set `IDF_PATH` and source `"$IDF_PATH/export.sh"`.
+The two installers use different tool and Python environment paths.
 
 ```bash
-source "$IDF_PATH/export.sh"
-cd firmware/esp32
-idf.py build
-idf.py -p /dev/ttyACM0 flash
-cd ../..
+(cd firmware/esp32 && idf.py build)
 uv run --project host capmesh observe-demo
 ```
 
@@ -73,8 +76,7 @@ The new observation path and replay rejection are verified over physical Wi-Fi.
 For the browser with real hardware and simulated payment:
 
 ```bash
-cd gateway
-npm run demo -- --physical
+npm --prefix gateway run demo -- --physical
 ```
 
 Hold BOOT while the observation runs to represent a closed contact. Release BOOT to represent an open contact.
@@ -84,8 +86,7 @@ Human press/release verification passed: held BOOT produced CLOSED/WAIT, and rel
 ## Run the Devnet payment gateway
 
 ```bash
-cd gateway
-npm start
+npm --prefix gateway start
 ```
 
 The gateway binds to `127.0.0.1:4021`. It offers x402 V2 `exact` payment for 1,000 base units of Devnet USDC.
@@ -98,7 +99,7 @@ Request its `observe_url` with a compatible x402 client.
 The included client requires a disposable Solana CLI keypair with Devnet USDC:
 
 ```bash
-node buyer.js /path/to/disposable.keypair.json
+node gateway/buyer.js /path/to/disposable.keypair.json
 ```
 
 The client rejects other networks, assets, recipients, and amounts above 0.001 USDC.
@@ -114,8 +115,7 @@ Unknown settlement and paid delivery failure require manual review. See the [dem
 ```bash
 uv run --project host pytest -q
 uv run --project host pytest -q --hardware
-cd gateway
-npm test
+npm --prefix gateway test
 ```
 
 The default Python run skips hardware tests explicitly. `--hardware` requires the board and fails if it is unavailable.

@@ -25,8 +25,9 @@ Sources, counterexamples, calculations, and uncertainties: [October 2 research d
 
 ## What works and what remains open
 
-The October 2 continuation passed the full 57-test hardware suite and separate held/released P-256 input checks.
-The expanded default suite passed 51 tests and skipped ten hardware cases. The gateway suite passed 26 tests.
+The October 2 continuation passed both held/released P-256 input checks and the full hardware suite.
+The review corrected setup, provisioning, documentation, and public-point validation defects.
+Current test counts and the intermittent legacy discovery miss live in [verification](VERIFICATION.md#october-2-review-before-push).
 The browser inspector now checks the recorded Solana transfer independently. No new payment ran in this continuation.
 The public inspector export passed local review. Publication and human registration remain pending owner actions.
 The [current 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) plays and passes full decoding.

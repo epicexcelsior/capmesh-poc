@@ -4,6 +4,39 @@ Current continuation: October 2, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 2 review before push
+
+Review scope: all five unpublished commits from `origin/main` at `fa9eecf` through `4b0e02e`, plus the fixes below.
+Independent passes covered identity/security, tests, API/demo contracts, and adversarial failure paths.
+A separate read-only CLI review found no concrete new P1/P2 defect in its scope.
+The review found and corrected these defects:
+
+- The peaq diagnostic accepted an off-curve P-256 point. A new regression failed before curve validation and passed afterward.
+- Setup commands changed directories before later commands assumed the repository root. Commands now preserve the starting directory.
+- Live setup omitted trusted pin provisioning for another board. The guide now states that prerequisite explicitly.
+- The guide labeled an older firmware hash as current and duplicated stale test counts. It now links the canonical results.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q`, after fixes | 54 passed, 10 hardware tests skipped in 1.17 seconds |
+| `npm --prefix gateway test` | 26 passed, 0 failed in 646.49 milliseconds |
+| Full `--hardware` suite, before three new software-only pin rejection cases | 61 passed in 126.04 seconds |
+| Focused legacy policy hardware test | Passed in 34.03 seconds after the first full run missed the board |
+| ESP-IDF dependency check and firmware build | Requirements satisfied. Build completed. No flash occurred. |
+| Revised peaq diagnostic, isolated SDK 0.10.0 | Public Agung reads completed after public-point validation. No writes occurred. |
+| Browser inspector regression | Original, attacks, expiry, payment fixtures, 429 recovery, and phone width passed |
+| Revised setup guide | Relative links, HTML/Markdown anchors, desktop/mobile layout, and zero page errors passed |
+
+The first full hardware run had 60 passes and one legacy policy discovery failure.
+The focused rerun and next full run passed. The intermittent discovery miss remains a rehearsal reliability limit.
+No blind retry or simulated substitution entered the physical path.
+
+The standard ESP-IDF activation failed because this machine uses Espressif Installation Manager's tool layout.
+The installer's generated activation script selected its tool, constraint, and Python paths.
+The explicit dependency check and subsequent build passed. No dependency check was disabled.
+The rebuilt binary was not flashed. The device firmware evidence below still identifies the earlier flashed artifact.
+No new payment, peaq activation, deployment, registration, or submission occurred during this review.
+
 ## October 2 device, inspector, and peaq continuation
 
 Starting source: `844fdc6`. No firmware or payment-path behavior changed in this continuation.

@@ -9,6 +9,7 @@ from importlib.metadata import version
 import json
 from pathlib import Path
 import sys
+from cryptography.hazmat.primitives.asymmetric import ec
 
 ROOT = Path(__file__).resolve().parents[1]
 RPC_URL = "https://peaq-agung.api.onfinality.io/public"
@@ -25,9 +26,10 @@ def guarded_request(send, method, params):
 
 def observer_subject(pins):
     key = pins.get("providers", {}).get("esp32-c6-96a2", "")
-    if pins.get("algorithm") != "ecdsa-p256-sha256" or len(key) != 130 or not key.startswith("04"):
+    if (pins.get("algorithm") != "ecdsa-p256-sha256" or not isinstance(key, str)
+            or len(key) != 130 or not key.startswith("04")):
         raise ValueError("The observer has no provisioned P-256 public key.")
-    bytes.fromhex(key)
+    ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(), bytes.fromhex(key))
     # These proposed identity bytes are explicit. They do not certify a location or operator permission.
     return json.dumps({"schema": "fieldproof-observer-v1", "provider": "esp32-c6-96a2",
                        "public_key_sec1_hex": key.lower()}, sort_keys=True, separators=(",", ":")).encode()

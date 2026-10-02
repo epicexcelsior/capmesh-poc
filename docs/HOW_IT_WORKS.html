@@ -162,37 +162,40 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <p class="note">Run one mode at a time for your rehearsal. The current signed-receipt walkthrough inspects recorded payment evidence and executes browser verification.</p>
 
 <h3>Step by step — no hardware</h3>
+<p>Start at the repository root. Use a second terminal for tests while a gateway runs. Stop it with Ctrl+C before changing modes.</p>
 <ol class="steps">
 <li><b>Install the Python environment</b><code>uv sync --project host</code></li>
 <li><b>Run the adversarial CLI loop</b><code>uv run --project host capmesh observe-demo --simulated</code>
 <div class="branch">Watch it reject a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request. It also records served and unmet demand.</div></li>
-<li><b>Install the gateway</b><code>cd gateway &amp;&amp; npm ci</code></li>
-<li><b>Start the browser simulator</b><code>npm run demo</code></li>
+<li><b>Install the gateway</b><code>npm --prefix gateway ci</code></li>
+<li><b>Start the browser simulator</b><code>npm --prefix gateway run demo</code></li>
 <li><b>Open the dispatch desk</b><code>http://127.0.0.1:4022</code>
 <div class="branch">Select <b>Get payment quote</b> to see the 402 response. Then select <b>Run simulation</b>. Wait eleven seconds to watch <code>WAIT</code> appear when evidence expires.</div></li>
-<li><b>Rehearse the closed state</b><code>npm run demo -- --closed</code></li>
-<li><b>Run every test</b><code>uv run --project host pytest -q</code> then <code>cd gateway &amp;&amp; npm test</code></li>
+<li><b>Rehearse the closed state</b>Stop the open simulator first.<code>npm --prefix gateway run demo -- --closed</code></li>
+<li><b>Run every software test</b><code>uv run --project host pytest -q</code><code>npm --prefix gateway test</code></li>
 </ol>
 
 <h3>Step by step — with the ESP32</h3>
+<p>Start at the repository root. The attached board already runs the verified firmware. Rehearsal needs no flash.</p>
+<p>For another board or a replaced key, complete <a href="RECEIPT_IDENTITY.md#provision-a-new-board">trusted identity provisioning</a> first. The checked-in pin identifies our demonstration board.</p>
 <ol class="steps">
 <li><b>Close other BLE scans</b>Live mode fails when the board is busy. It never substitutes simulated hardware.</li>
-<li><b>Build and flash</b><code>source "$IDF_PATH/export.sh"</code><code>cd firmware/esp32 &amp;&amp; idf.py build &amp;&amp; idf.py -p /dev/ttyACM0 flash</code>
-<div class="branch">Do not hold BOOT during reset or flashing. GPIO9 is a boot strap pin.</div></li>
+<li><b>Build only when firmware changes</b>Activate the environment created by your ESP-IDF installer.<code>(cd firmware/esp32 &amp;&amp; idf.py build)</code>
+<div class="branch">Espressif Installation Manager creates <code>activate_idf_v6.1.sh</code>. The standard installer uses <code>"$IDF_PATH/export.sh"</code>. Follow the provisioning runbook for flashing. Keep BOOT released during reset or flashing.</div></li>
 <li><b>Confirm the observation path</b><code>uv run --project host capmesh observe-demo</code>
 <div class="branch">Check <code>evidence_mode: physical-contact-demo</code> and <code>sample_agreement: 5/5</code>.</div></li>
-<li><b>Browser with real contact</b><code>cd gateway &amp;&amp; npm run demo -- --physical</code></li>
+<li><b>Browser with real contact</b><code>npm --prefix gateway run demo -- --physical</code></li>
 <li><b>Prove both states</b>Hold BOOT while you run the observation. Check <code>CLOSED</code> and <code>WAIT</code>. Release BOOT, create a new quote, run another observation, and check <code>OPEN</code> and <code>DISPATCH</code>.</li>
 <li><b>Run the hardware suite</b><code>uv run --project host pytest -q --hardware</code></li>
 </ol>
 <p class="note">Alternative transport: connect to the board's <code>CAPMESH_96A2</code> access point and pass <code>--http-url http://192.168.4.1</code>. On Linux with overlapping VPN routes, add <code>--http-interface</code> with your Wi-Fi interface name.</p>
 
 <h3>Step by step — real Devnet payment</h3>
+<p>Start at the repository root. Keep the gateway in one terminal and run the buyer in another.</p>
 <ol class="steps">
-<li><b>Start the public gateway</b><code>cd gateway &amp;&amp; npm start</code><div class="branch">Binds to <code>127.0.0.1:4021</code>. Offers x402 V2 <code>exact</code> payment for 1,000 base units of Devnet USDC.</div></li>
+<li><b>Start the Devnet gateway</b><code>npm --prefix gateway start</code><div class="branch">Binds to <code>127.0.0.1:4021</code>. Offers x402 V2 <code>exact</code> payment for 1,000 base units of Devnet USDC.</div></li>
 <li><b>Fund a disposable buyer</b>Use a throwaway Solana CLI keypair and the Devnet faucet. Never use a funded mainnet keypair.</li>
-<li><b>Create a purchase</b><code>curl -X POST http://127.0.0.1:4021/requests -H 'Content-Type: application/json' -d '{"nonce":123456}'</code></li>
-<li><b>Pay and verify</b><code>node buyer.js /path/to/disposable.keypair.json</code>
+<li><b>Pay and verify</b><code>node gateway/buyer.js /path/to/disposable.keypair.json</code>
 <div class="branch">The client rejects other networks, other assets, other recipients, and any amount above 0.001 USDC. It prints no key material.</div></li>
 <li><b>Check the chain yourself</b>Search the printed transaction signature on Devnet before you claim an on-chain result.</li>
 </ol>
@@ -436,7 +439,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <dt>Access point</dt><dd><code>CAPMESH_96A2</code> for HTTP transport</dd>
 <dt>Sensor</dt><dd>GPIO9 input, the onboard BOOT button</dd>
 <dt>Toolchain</dt><dd>ESP-IDF 6.1.0, esptool 5.4.0</dd>
-<dt>Flashed SHA256</dt><dd><code>c56ca246115d4cab742916bfff09aa90afa0bfbbcebe7570fe7359ff06e4211a</code></dd>
+<dt>Flashed firmware evidence</dt><dd><a href="VERIFICATION.md#versions-and-limits">Firmware identity and historical hashes</a></dd>
 </dl>
 </div>
 <div>
@@ -514,7 +517,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>hardware_replay_capacity.py</code></td><td>The 64-entry nonce table under real BLE.</td></tr>
 </table></div>
 <h3>Node — <code>cd gateway &amp;&amp; npm test</code></h3>
-<p class="note">20 tests, 0 failures.</p>
+<p class="note">Current counts and executed results live in <a href="VERIFICATION.md">the verification record</a>.</p>
 <div class="table-scroll"><table>
 <tr><th>Group</th><th>Proves</th></tr>
 <tr><td>Buyer policy</td><td>Rejects the wrong chain. Derives the decision from authenticated fresh contact evidence. Refuses a gateway that widens the freshness limit before payment. Refuses a non-loopback gateway.</td></tr>
