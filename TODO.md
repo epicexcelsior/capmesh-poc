@@ -30,6 +30,8 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Preserve the buyer purchase ID after a lost payment connection or truncated delivery.
 - [x] Run the gateway suite. Current executed results live in the verification record.
 - [x] Preserve purchase identity, buyer policy, metadata, recovery, recordings, evidence, and current documentation in local commits.
+- [x] Verify both recorded P-256 input states in the browser without purchasing or measuring hardware.
+- [x] Add the founder rehearsal and six explanation questions.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.
 Publication, repository rename, and submission require explicit authorization.
@@ -48,3 +50,18 @@ The [product review](docs/STRATEGY.md#product-risks-and-decisions) explains thes
 
 Follow [the execution plan](docs/BOUNTY_PLAN.md). Broad research stops at [the current decision](docs/research/2026-10-02-fieldproof.md).
 The signed-receipt technical video is ready locally. Registration, founder presentation, public links, buyer validation, and human submissions remain open.
+
+## Bounded physical extension
+
+Use [the parts and acceptance plan](docs/HARDWARE_NEXT.md). Preserve the existing contact question and recorded fallback.
+
+- [ ] Identify the exact board and external contact before assigning a GPIO.
+- [ ] Borrow the priority-one parts and assemble a hinged fixture.
+- [ ] Configure and verify an external input without changing receipt authentication or buyer freshness rules.
+- [ ] Provision a second board through trusted USB and test distinct device/key binding.
+- [ ] Test explicit contradictory, stale, and missing-observer behavior before claiming corroboration.
+- [ ] Record actual buyer need, existing alternative, permission, useful lifetime, and budget.
+- [ ] Test the public judge package on the optional Android phone.
+
+The phone wallet adapter remains unimplemented. It is separate from phone layout testing.
+The current simple contact cannot identify a broken wire. No deployed-gate or safe-motion claim exists.

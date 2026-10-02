@@ -51,4 +51,10 @@ The [bounty execution plan](BOUNTY_PLAN.md) owns deadlines, acceptance gates, an
 The [product risks](STRATEGY.md#product-risks-and-decisions) govern pilot limits.
 
 **Stop rule:** reopen research only for an unresolved submission requirement, a failed acceptance gate, or a concrete buyer objection.
-Freeze the contact MVP scope until the Germany submission. Keep broader opportunities in the evidence archive.
+Keep the contact question, receipt format, and payment rail stable through the Germany submission.
+Keep broader opportunities in the evidence archive.
+
+The founder authorized a bounded hardware extension on October 2.
+Keep the same contact question, receipt format, payment rail, and recorded fallback.
+The [parts and acceptance plan](HARDWARE_NEXT.md) prioritizes an external contact, then distinct device identities.
+Do not replace the verified entry with an extension that misses its gates.

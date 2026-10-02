@@ -9,6 +9,7 @@ The product pivots from the original CapMesh LED marketplace. The `capmesh` Pyth
 Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [condensed decision and next actions](docs/FOCUS.md). The [bounty execution plan](docs/BOUNTY_PLAN.md) owns deadlines and acceptance gates.
 For a plain-language explanation, start with [Understand the product](docs/HOW_IT_WORKS.html#understand).
 Practice with the [short demonstration and six explanation questions](docs/REHEARSAL.md).
+Prepare borrowed parts with the [three-day hardware plan and acceptance gates](docs/HARDWARE_NEXT.md).
 For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware

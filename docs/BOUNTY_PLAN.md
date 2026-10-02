@@ -12,6 +12,8 @@ Keep the simulator for reviewers without hardware. Label it clearly.
 
 No training-data pivot, new token, multi-chain settlement, custom Solana program, open marketplace, or new hardware fleet before October 5.
 Build only to remove a failed acceptance gate or serve an identified buyer workflow.
+The founder authorized the [bounded contact-fixture extension](HARDWARE_NEXT.md) on October 2.
+It keeps this question, receipt format, payment rail, and recorded fallback. Unverified hardware must not replace the working entry.
 
 ## Finish the package
 
@@ -84,7 +86,8 @@ The exported inspector is ready for owner review. These steps are instructions, 
 
 Do not upload the ZIP as the website itself. GitHub Pages needs its extracted files.
 The inspector contains recorded evidence. Include the repository README link for the full simulated purchase rehearsal.
-The reviewed source through `6b9d284` is pushed to the public repository. The remote branch hash was checked after the push.
+The reviewed inspector and rehearsal source at `a7cba3d` is pushed. The remote branch hash was checked after the push.
+Later source checkpoints belong in the [verification record](VERIFICATION.md).
 Registration and contest terms remain human actions. Do not mark them complete from a technical rehearsal.
 The upload and Pages settings match [GitHub's upload instructions](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository) and [publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
