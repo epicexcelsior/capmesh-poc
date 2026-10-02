@@ -4,6 +4,29 @@ Current continuation: October 2, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 2 input-pair inspector and founder rehearsal
+
+Starting source: `6b9d284`, pushed and confirmed against the remote branch.
+The inspector now verifies both recorded physical input states with the same provisioned P-256 key.
+It displays neither state unless the complete pair passes. Both expired observations remain WAIT.
+The [rehearsal guide](REHEARSAL.md) separates simulation, actual test payment, unpaid input checks, and peaq readiness.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q` | 54 passed, 10 hardware tests skipped in 1.19 seconds |
+| `npm --prefix gateway test` | 26 passed, 0 failed in 648.11 milliseconds |
+| Browser regression against gateway and final static export | Original receipt, attacks, both input states, three damaged input archives, payment fixtures, 429 recovery, and phone width passed |
+| Complete browser simulation | Quote, simulated purchase, DISPATCH, then expired WAIT passed. No funds or hardware. |
+| Current browser public Devnet query | Exact recorded transfer verified. The expired receipt remained WAIT. No funds moved. |
+| Both simulated CLI contact states, in-memory ledger | OPEN/DISPATCH and CLOSED/WAIT passed. Stale provider rejected. All reported attacks passed. |
+| Export manifest and ZIP | Eight public asset hashes and all nine ZIP members matched. Archive integrity passed. |
+
+The final export has 7,911,926 bytes and SHA256 `180106a7b8e2f35c7ec078222f03b00145ac8f9cf951a0bff5187d22ce3f2d47`.
+The paid-result video remains unchanged. It does not contain the new input-pair scene.
+The RPC fixtures test browser recovery. The separate current chain query establishes the live read result.
+The first simulation harness used a nonexistent selector. The corrected harness used the actual `observe` control and passed.
+No new payment, physical measurement, peaq write, deployment, registration, or submission occurred in this change.
+
 ## October 2 review before push
 
 Review scope: all five unpublished commits from `origin/main` at `fa9eecf` through `4b0e02e`, plus the fixes below.
@@ -260,5 +283,6 @@ The [product review](STRATEGY.md#product-risks-and-decisions) identifies the dec
 
 Git, sockets, USB, and BLE access are restored. No current access restriction blocks the completed local integration.
 Historical source and evidence checkpoint: `dd1ebdc`. That earlier source and evidence were pushed in `ed8d539`.
-This continuation's changes remain local. No push or publication occurred.
+That historical continuation's changes remained local at the time of this record.
+The October 2 review above records the later requested source push.
 Video upload, account registration, contact selection, and submission remain owner tasks.

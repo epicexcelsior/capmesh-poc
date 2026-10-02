@@ -62,13 +62,18 @@ test('known assets serve inside a hidden checkout without exposing private paths
   const dir = mkdtempSync(join(tmpdir(), '.fieldproof-assets-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   mkdirSync(join(dir, 'docs'));
+  mkdirSync(join(dir, 'docs/evidence'));
   mkdirSync(join(dir, '.local'));
   writeFileSync(join(dir, 'docs/proof.html'), '<h1>Receipt inspection</h1>');
+  writeFileSync(join(dir, 'docs/evidence/device-signed-contact-states.json'), '{"public":"contact fixture"}');
   writeFileSync(join(dir, '.local/private.json'), '{"private":"fixture only"}');
   const f = await fixture(t, { assetsRoot: dir });
   const page = await fetch(`${f.url}/proof`);
   assert.equal(page.status, 200);
   assert.equal(await page.text(), '<h1>Receipt inspection</h1>');
+  const contacts = await fetch(`${f.url}/evidence/device-signed-contact-states.json`);
+  assert.equal(contacts.status, 200);
+  assert.deepEqual(await contacts.json(), { public: 'contact fixture' });
   for (const path of ['/.local/private.json', '/gateway/buyer.js', '/.git/config', '/receipt-keys.json/../.local/private.json']) {
     assert.equal((await fetch(f.url + path)).status, 404);
   }

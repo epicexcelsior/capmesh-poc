@@ -14,6 +14,7 @@ ASSETS = {
     "settlement.mjs": "docs/settlement.mjs",
     "receipt-keys.json": "host/capmesh/protocol/receipt_keys.json",
     "evidence/device-signed-purchase.json": "docs/evidence/device-signed-purchase.json",
+    "evidence/device-signed-contact-states.json": "docs/evidence/device-signed-contact-states.json",
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
 }
 
@@ -43,7 +44,8 @@ def export(output):
             "2. Open http://127.0.0.1:8787.\n"
             "3. Verify the original receipt, then alter its state, challenge, or public key.\n"
             "4. Select Verify recorded payment for a read-only Solana Devnet RPC query.\n"
-            "5. Watch assets/fieldproof-signed-receipt.webm.\n\n"
+            "5. Inspect the separately signed BOOT held/released input pair. Those checks moved no funds.\n"
+            "6. Watch assets/fieldproof-signed-receipt.webm.\n\n"
             "This package contains recorded evidence, public verification keys, and browser code.\n"
             "It contains no wallet, backend, private key, physical gateway, or payment endpoint.\n"
             "It never charges funds or measures hardware. Authentic expired evidence remains WAIT.\n"

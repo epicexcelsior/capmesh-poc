@@ -40,6 +40,13 @@
 <pre id="chain-result">No network query yet.</pre>
 <p class="note">This check reads chain data. It never sends funds or refreshes the observation. It trusts the selected RPC. Payment does not establish physical truth or successful delivery.</p>
 </section>
+<section aria-label="Recorded physical input checks">
+<h2>One device. Two physical states.</h2>
+<p>The operator held and released BOOT in separate October 2 input checks. Your browser verifies both recorded receipts against the same device pin.</p>
+<p class="note">These two checks moved no funds. BOOT represents a contact. Both observations are expired and remain WAIT today.</p>
+<p id="contact-status" role="status" aria-live="polite">Checking recorded input evidence.</p>
+<ul id="contact-results"></ul>
+</section>
 <details><summary>Inspect the receipt and buyer challenge</summary><pre id="payload">Loading.</pre></details>
 <details><summary>Inspect the public identity pin</summary><p class="note">The operator read this key over trusted USB and verified it after reset. The browser reads the public pin from the installed demo. Use the independent CLI buyer for a new paid observation.</p><pre id="pin">Loading.</pre></details>
 </main>

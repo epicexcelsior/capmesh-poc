@@ -85,6 +85,10 @@ Its chain check independently reads `getTransaction` from the fixed Solana Devne
 It requires successful execution, the expected signature, USDC mint, token program, payer, merchant, exact balance changes, and a matching transfer instruction.
 This read trusts the selected RPC. It neither purchases evidence nor establishes payment-delivery atomicity.
 The recorded receipt retains its original time and remains expired.
+The input-pair section verifies two separately recorded BOOT readings against the same pin.
+It checks both challenges, signatures, sample counts, and expired timestamps before displaying either row.
+Damaged input evidence leaves that section unverified and preserves the separate paid-receipt inspector.
+These input checks moved no funds. They do not establish an external gate installation.
 
 The static export contains only public assets. It cannot access wallets, device authorization, purchase ledgers, or the physical bridge.
 It works under a URL prefix. A remote host must serve it through HTTPS for browser cryptography.

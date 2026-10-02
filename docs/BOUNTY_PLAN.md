@@ -84,7 +84,7 @@ The exported inspector is ready for owner review. These steps are instructions, 
 
 Do not upload the ZIP as the website itself. GitHub Pages needs its extracted files.
 The inspector contains recorded evidence. Include the repository README link for the full simulated purchase rehearsal.
-The local source commits also need an owner-controlled push before reviewers can inspect the latest source.
+The reviewed source through `6b9d284` is pushed to the public repository. The remote branch hash was checked after the push.
 Registration and contest terms remain human actions. Do not mark them complete from a technical rehearsal.
 The upload and Pages settings match [GitHub's upload instructions](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository) and [publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
@@ -113,5 +113,5 @@ The initial checked repository commit dates to September 24, inside the Septembe
 The original concept and other relevant work can predate that commit. A commit date alone cannot establish when all development began.
 The founder must disclose earlier concept/code history accurately and distinguish it from work inside the event window.
 
-Registration, acceptance of contest terms, public uploads, external outreach, spending, pushing, and final submission remain separate owner actions.
-Local research, documentation, verification, and commits are authorized in this task.
+Registration, acceptance of contest terms, public uploads, external outreach, spending, and final submission remain separate owner actions.
+Local work, documentation, verification, commits, and the requested repository push are authorized in this task.

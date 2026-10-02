@@ -2,6 +2,7 @@
 
 Use the local simulator for reviewers without hardware. Use BLE when the ESP32 is attached.
 Run commands from the repository root unless a step changes directories.
+Start with the [short rehearsal and explanation questions](REHEARSAL.md).
 
 ## Recorded demonstration
 
@@ -55,10 +56,12 @@ For closed-contact rehearsal, restart the simulator with `npm run demo -- --clos
 7. Select **Verify recorded payment**.
 8. Check the confirmed slot, expected mint, payer −1000, and merchant +1000 base units.
 9. Check that the evidence remains expired WAIT.
+10. Check VERIFIED INPUT PAIR and both recorded BOOT states below the payment section.
 
 The signature tests run locally in Web Crypto. The payment check needs internet access to the public Devnet RPC.
 An unavailable or rate-limited RPC produces NOT VERIFIED. The button permits a manual retry and leaves receipt verification intact.
 The inspector never sends funds or measures hardware.
+The input pair contains two separate unpaid checks. Its signed CLOSED and OPEN observations are both expired.
 The [README export steps](../README.md#inspect-the-recorded-physical-purchase) create a static package for judge review.
 The [founder explanation](HOW_IT_WORKS.html#understand) connects the demonstration to the buyer workflow and its limits.
 
