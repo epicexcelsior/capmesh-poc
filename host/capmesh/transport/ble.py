@@ -3,6 +3,7 @@ import json
 import logging
 from typing import List, Optional, Dict
 from bleak import BleakScanner, BleakClient
+from bleak.backends.device import BLEDevice
 from .base import TransportAdapter
 from ..protocol.models import Manifest, InvocationRequest, InvocationReceipt
 
@@ -18,6 +19,7 @@ class BLETransportAdapter(TransportAdapter):
 
     def __init__(self):
         self._address_cache: Dict[str, str] = {}
+        self._device_cache: Dict[str, tuple[asyncio.AbstractEventLoop, BLEDevice]] = {}
 
     @property
     def transport_name(self) -> str:
@@ -43,7 +45,7 @@ class BLETransportAdapter(TransportAdapter):
 
             try:
                 # Read manifest from peripheral
-                async with BleakClient(device.address, timeout=6.0) as client:
+                async with BleakClient(device, timeout=6.0) as client:
                     raw_data = await client.read_gatt_char(MANIFEST_UUID)
                     manifest_json = json.loads(raw_data.decode("utf-8"))
                     manifest = Manifest.from_dict(
@@ -53,6 +55,7 @@ class BLETransportAdapter(TransportAdapter):
                     )
                     self._address_cache[manifest.device_id] = device.address
                     self._address_cache[device.address.upper()] = device.address
+                    self._device_cache[device.address.upper()] = (asyncio.get_running_loop(), device)
                     discovered.append(manifest)
             except Exception as e:
                 logger.warning(f"Failed to read manifest from {device.address} ({name}): {e}")
@@ -80,7 +83,11 @@ class BLETransportAdapter(TransportAdapter):
         """Invoke a capability over BLE and wait for receipt."""
         address = await self.resolve_address(target)
 
-        async with BleakClient(address, timeout=8.0) as client:
+        # CoreBluetooth handles belong to discovery's event loop. Other loops use
+        # the address fallback, while the same loop avoids Bleak's implicit scan.
+        cached = self._device_cache.get(address.upper())
+        device = cached[1] if cached and cached[0] is asyncio.get_running_loop() else address
+        async with BleakClient(device, timeout=8.0) as client:
             receipt_received = asyncio.Event()
             receipt_raw_bytes = bytearray()
 

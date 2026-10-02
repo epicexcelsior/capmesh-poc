@@ -4,6 +4,31 @@ Use the local simulator for reviewers without hardware. Use BLE when the ESP32 i
 Run commands from the repository root unless a step changes directories.
 Start with the [short rehearsal and explanation questions](REHEARSAL.md).
 
+## Record scheduled input checks
+
+Use this diagnostic to measure delivery reliability. It reads BOOT and verifies each device signature, challenge, sample count, and age.
+It never invokes payment, resets the board, or drives a GPIO output.
+
+Prerequisites: host setup, POSIX process groups, the attached provisioned board, and no other active BLE tests or scans.
+Keep the current firmware and pin configuration unchanged during the run.
+
+```bash
+uv run --project host python scripts/soak_observations.py --count 120 --interval 120 --output .local/soak/oct02-overnight.jsonl
+```
+
+Each scheduled sample uses a new challenge. A failure remains a failure in the log.
+The runner stops after three consecutive failures. It does not retry or replace a failed observation.
+The worker has a 45-second output deadline. Termination gets two seconds for SIGTERM and two seconds for SIGKILL.
+The runner stops immediately if the worker cannot be reaped. It never starts another sample beside that worker.
+Press Ctrl+C to stop the run and record an interruption.
+
+The interval starts after each completed sample. The command runs for approximately four hours with normal delivery times.
+Raw JSONL logs contain public receipts and local diagnostic errors. They remain inside ignored `.local` state.
+An existing log causes refusal. Select a new filename for another run.
+The start record stores the source revision, dirty-state flag, file hashes, and interpreter/dependency versions.
+Use the final summary and actual completed count. An interrupted run does not establish an overnight pass.
+These checks establish neither external-gate accuracy nor a service-level guarantee.
+
 ## Recorded demonstration
 
 Use the [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for the current technical demonstration.

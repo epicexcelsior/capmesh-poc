@@ -4,6 +4,46 @@ Current continuation: October 2, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 2 BLE delivery and unattended diagnostic
+
+Starting source: `a7cba3d`. The board firmware and public pin remain unchanged.
+The adapter passed address strings to Bleak after it already discovered the device.
+Bleak then scanned implicitly for both manifest and invocation connections.
+The revised adapter uses the discovered handle within the same event loop.
+Other loops retain the address fallback because CoreBluetooth handles belong to their discovery loop.
+[Official Bleak client behavior](https://bleak.readthedocs.io/en/latest/api/client.html)
+
+Two transport regressions failed before handle reuse. Both passed after the change.
+Review caught a cross-loop compatibility defect before commit. Its regression failed before loop binding and passed afterward.
+Linux hardware verification passed. No actual macOS hardware test occurred.
+
+| Check | Observed result |
+|---|---|
+| `uv run --project host pytest -q`, final candidate | 74 passed, 10 hardware tests skipped in 1.82 seconds |
+| Full `--hardware` suite after loop binding, before 16 new diagnostic software cases | 68 passed in 106.65 seconds |
+| Instrumented earlier observation | 15.349 seconds total, two implicit scans totaling 1.961 seconds, five-second accepted evidence age |
+| Revised direct diagnostic | 12.256 seconds total, zero implicit scans, P-256 signature accepted, five-second evidence age |
+| `soak_observations.py --count 3 --interval 3`, real board | Three passes, zero failures. Worker durations: 14.484, 12.989, and 12.040 seconds. Each accepted age: five seconds. |
+| Independent pilot-log re-verification | All three signatures, challenges, sample counts, historical decisions, and freshness checks passed. Zero implicit scans. |
+| Focused unattended-runner tests | 16 passed. Bounds, uncooperative workers, pipe failures, cleanup failure, log refusal, and failure preservation passed. |
+
+The measurements demonstrate scan removal. They do not establish a latency distribution or service-level guarantee.
+Connection setup and disconnect cleanup remain material costs. The intermittent discovery miss remains a separate reliability limit.
+The short pilot reads only the current BOOT state. It does not replace the earlier held/released checks.
+
+Review reproduced two defects in the candidate diagnostic before any radio pilot:
+
+- An async timeout waited indefinitely for cancellation cleanup. Each observation now runs in an isolated worker with bounded termination.
+- A pipe error left the worker alive before another sample. The runner now verifies reaping independently and cleans up every post-spawn exception.
+
+The runner preserves failures and stops after three consecutive failures.
+Unreapable cleanup stops the run immediately. A scheduled sample uses a new challenge, not a retry of a failed observation.
+The pilot log records candidate-source hashes and its dirty-state flag. Raw logs remain ignored local state.
+The [diagnostic runbook](DEMO.md#record-scheduled-input-checks) owns commands, interruption, and log interpretation.
+No overnight completion is claimed from this three-sample pilot.
+No payment, firmware flash, board reset, GPIO output, peaq write, deployment, registration, or submission occurred during the pilot.
+The full legacy hardware suite includes GPIO8 actuator tests. It issued no GPIO20 operation.
+
 ## October 2 input-pair inspector and founder rehearsal
 
 Starting source: `6b9d284`, pushed and confirmed against the remote branch.
