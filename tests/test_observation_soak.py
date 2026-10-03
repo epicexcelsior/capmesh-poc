@@ -53,6 +53,51 @@ async def test_three_failed_deadlines_terminate_uncooperative_workers_and_stop()
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(os.name != "posix", reason="The local BLE runner uses POSIX worker process groups")
+@pytest.mark.parametrize("cancel_again", [False, True])
+async def test_cancellation_during_termination_reaps_worker_before_return(monkeypatch, cancel_again):
+    create, killpg = asyncio.create_subprocess_exec, os.killpg
+    workers, signals = [], []
+    terminated = asyncio.Event()
+
+    async def spawn(*args, **kwargs):
+        worker = await create(*args, **kwargs)
+        workers.append(worker)
+        assert await worker.stdout.readline() == b"ready\n"
+        return worker
+
+    def record_signal(pid, sig):
+        signals.append(sig)
+        killpg(pid, sig)
+        if sig == signal.SIGTERM:
+            terminated.set()
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", spawn)
+    monkeypatch.setattr(os, "killpg", record_signal)
+    command = [sys.executable, "-c",
+               "import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); print('ready', flush=True); time.sleep(60)"]
+    task = asyncio.create_task(soak.run_sample(0.01, command=command, cleanup_seconds=0.05))
+    repeat = None
+    try:
+        await asyncio.wait_for(terminated.wait(), timeout=2)
+        task.cancel()
+        if cancel_again:
+            repeat = asyncio.get_running_loop().call_later(0.01, task.cancel)
+        with pytest.raises(asyncio.CancelledError):
+            await asyncio.wait_for(task, timeout=1)
+        assert workers[0].returncode is not None
+        assert signals == [signal.SIGTERM, signal.SIGKILL]
+    finally:
+        if repeat is not None:
+            repeat.cancel()
+        # Preserve the host even when the regression fails before the fix.
+        for worker in workers:
+            if worker.returncode is None:
+                killpg(worker.pid, signal.SIGKILL)
+            await worker.wait()
+
+
+@pytest.mark.asyncio
 async def test_failed_worker_cleanup_stops_before_another_sample():
     records = []
 
@@ -131,6 +176,59 @@ async def test_unreapable_worker_stops_after_one_bounded_cleanup_attempt(monkeyp
     assert summary["stop_reason"] == "worker_cleanup_failed"
     assert summary["completed"] == 1
     assert signals == [(123456789, signal.SIGTERM), (123456789, signal.SIGKILL)]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("wait_failure", ["exception", "missing_exit_status"])
+async def test_completed_wait_without_confirmed_exit_reports_cleanup_failure(monkeypatch, wait_failure):
+    class Worker:
+        pid = 123456789
+        returncode = None
+
+        async def communicate(self):
+            return b"{}", b""
+
+        async def wait(self):
+            if wait_failure == "exception":
+                raise OSError("Injected wait failure")
+            return None
+
+    async def spawn(*args, **kwargs):
+        return Worker()
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", spawn)
+    with pytest.raises(soak.WorkerCleanupError) as error:
+        await soak.run_sample(0.1, cleanup_seconds=0.01)
+    assert error.value.worker_pid == Worker.pid
+
+
+@pytest.mark.asyncio
+async def test_signal_error_with_confirmed_exit_preserves_the_deadline_failure(monkeypatch):
+    finished = asyncio.Event()
+
+    class Worker:
+        pid = 123456789
+        returncode = None
+
+        async def communicate(self):
+            await asyncio.Event().wait()
+
+        async def wait(self):
+            await finished.wait()
+            self.returncode = 0
+            return 0
+
+    async def spawn(*args, **kwargs):
+        return Worker()
+
+    def signal_after_exit(*args):
+        finished.set()
+        raise PermissionError("Injected signal race")
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", spawn)
+    monkeypatch.setattr(os, "killpg", signal_after_exit)
+    with pytest.raises(TimeoutError):
+        await soak.run_sample(0.01, cleanup_seconds=0.1)
 
 
 @pytest.mark.asyncio

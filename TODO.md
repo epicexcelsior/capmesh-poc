@@ -38,6 +38,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Test distinct software provider keys, swapped pins, wrong sensors, and changed configuration.
 - [x] Add a browser purchase check that refuses real payment and physical evidence.
 - [x] Verify a bounded two-observer policy with signed fixtures, expiry, disagreement, missing evidence, replay, and concurrent consumption.
+- [x] Prepare a bounded unpaid BLE pair runner with one scan, concurrent invocation, fixed challenges, and explicit cleanup failure.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.
 Publication, repository rename, and submission require explicit authorization.

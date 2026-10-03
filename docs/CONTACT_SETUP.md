@@ -73,7 +73,8 @@ Each pin contains a lowercase, uncompressed P-256 point. Invalid curve points fa
 Never put a private key in this file.
 Two configured public keys passed software verification. No second physical board was tested.
 The [pair policy and signed-fixture rehearsal](CORROBORATION.md) require both configured OPEN answers and reject conflicting or missing evidence.
-Its physical collection and payment gates remain open.
+The [unpaid BLE pair runner](CORROBORATION.md#collect-two-provisioned-ble-contacts-once) is ready after these prerequisites pass.
+Its two-board physical verification and payment gates remain open.
 
 ## Select the physical profile
 

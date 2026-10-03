@@ -19,6 +19,10 @@ ROOT = Path(__file__).resolve().parents[1]
 class WorkerCleanupError(RuntimeError):
     """Stop the run when the previous worker cannot be reaped."""
 
+    def __init__(self, message="", *, worker_pid=None):
+        super().__init__(message)
+        self.worker_pid = worker_pid if type(worker_pid) is int and worker_pid > 0 else None
+
 
 async def run_sample(timeout, *, command=None, cleanup_seconds=2):
     # Separate processes permit termination even when BLE cancellation cleanup hangs.
@@ -27,40 +31,77 @@ async def run_sample(timeout, *, command=None, cleanup_seconds=2):
         cwd=ROOT, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, start_new_session=True)
     communication = asyncio.create_task(worker.communicate())
     reaping = asyncio.create_task(worker.wait())
-    cleanup_attempted = False
+    cleanup_task = None
+
+    def confirm_reaping():
+        try:
+            reaping.result()
+        except (Exception, asyncio.CancelledError) as error:
+            raise WorkerCleanupError("The worker wait failed. Stop BLE work and inspect the process.",
+                                     worker_pid=worker.pid) from error
+        if worker.returncode is None:
+            raise WorkerCleanupError("The worker wait returned without an exit status. Stop BLE work and inspect the process.",
+                                     worker_pid=worker.pid)
 
     async def stop_worker():
-        nonlocal cleanup_attempted
-        cleanup_attempted = True
         for sig in (signal.SIGTERM, signal.SIGKILL):
             try:
                 os.killpg(worker.pid, sig)
             except ProcessLookupError:
                 pass
+            except OSError as error:
+                done, _ = await asyncio.wait({reaping}, timeout=cleanup_seconds)
+                if done:
+                    confirm_reaping()
+                    return
+                raise WorkerCleanupError("The worker signal failed before cleanup was confirmed. Stop BLE work and inspect the process.",
+                                         worker_pid=worker.pid) from error
             done, _ = await asyncio.wait({reaping}, timeout=cleanup_seconds)
             if done:
-                reaping.result()
+                confirm_reaping()
                 return
-        raise WorkerCleanupError(f"The observation worker PID {worker.pid} did not finish after termination. Stop all BLE tests and inspect the process.")
+        raise WorkerCleanupError(f"The observation worker PID {worker.pid} did not finish after termination. Stop all BLE tests and inspect the process.",
+                                 worker_pid=worker.pid)
+
+    async def finish_cleanup():
+        nonlocal cleanup_task
+        if cleanup_task is None:
+            cleanup_task = asyncio.create_task(stop_worker())
+        cancellation = None
+        while True:
+            try:
+                await asyncio.shield(cleanup_task)
+                break
+            except asyncio.CancelledError as error:
+                if cleanup_task.cancelled():
+                    raise WorkerCleanupError("Worker cleanup was canceled before confirmation. Stop BLE work and inspect the process.",
+                                             worker_pid=worker.pid) from error
+                # Repeated caller cancellation cannot interrupt bounded TERM/KILL and reaping.
+                cancellation = error
+        if cancellation is not None:
+            raise cancellation
 
     try:
         done, _ = await asyncio.wait({communication}, timeout=timeout)
         if not done:
-            await stop_worker()
+            await finish_cleanup()
             raise TimeoutError("The observation deadline expired. The isolated worker was terminated.")
         output, error = communication.result()
         done, _ = await asyncio.wait({reaping}, timeout=cleanup_seconds)
         if not done:
-            raise WorkerCleanupError("The observation output completed before worker cleanup. Stop the run and inspect the process.")
-        reaping.result()
+            raise WorkerCleanupError("The observation output completed before worker cleanup. Stop the run and inspect the process.",
+                                     worker_pid=worker.pid)
+        confirm_reaping()
         if worker.returncode != 0:
             raise RuntimeError(error.decode(errors="replace")[-4096:] or "The real observation worker failed")
         if len(output) > 65536:
             raise ValueError("The observation worker returned an oversized result")
         return json.loads(output)
     except BaseException:
-        if not reaping.done() and not cleanup_attempted:
-            await stop_worker()
+        if not reaping.done() and cleanup_task is None:
+            await finish_cleanup()
+        elif reaping.done():
+            confirm_reaping()
         raise
     finally:
         if not reaping.done():

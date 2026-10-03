@@ -63,5 +63,6 @@ The software rejects mixed simulation terms and mismatched buyer/gateway keys be
 External-fixture and second-board physical tests remain open. The existing board still reads GPIO9.
 The [two-observer software policy](CORROBORATION.md) now rejects conflicting, missing, stale, invalid, skewed, and replayed pairs.
 Both configured receipts must report fresh, stable OPEN before DISPATCH. Signed fixtures establish software behavior only.
-Physical paired collection, paired payments, independent sensing, and customer need remain open.
+The unpaid BLE pair runner now discovers once, invokes concurrently, and keeps both original challenges and public pins fixed.
+Software fixtures passed. Actual two-board timing, physical disagreement, paired payments, independent sensing, and customer need remain open.
 Do not replace the verified entry with an extension that misses its gates.

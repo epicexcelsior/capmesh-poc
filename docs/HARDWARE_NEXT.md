@@ -87,6 +87,7 @@ Two boards on one switch share its wiring and physical faults.
 Two separately installed sensors still require checked placement, permissions, and a failure model.
 Never turn sample agreement or observer count into a calibrated probability.
 The [pair policy](CORROBORATION.md) passed signed-fixture tests. Physical paired collection remains open.
+The same guide now provides a bounded unpaid concurrent BLE runner. Run it after separate USB provisioning and wiring checks.
 The measured single-board BLE round trip also requires a collection-time check before two observations can support one immediate decision.
 
 ## Use the next three days

@@ -12,6 +12,7 @@ Practice with the [short demonstration and six explanation questions](docs/REHEA
 Prepare borrowed parts with the [three-day hardware plan and acceptance gates](docs/HARDWARE_NEXT.md).
 Configure an external input or second observer with [the contact setup guide](docs/CONTACT_SETUP.md).
 Rehearse the tested two-observer policy with [signed fixtures and explicit physical gates](docs/CORROBORATION.md).
+With two provisioned boards, use the [bounded unpaid BLE pair diagnostic](docs/CORROBORATION.md#collect-two-provisioned-ble-contacts-once).
 For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
 
 ## Run without hardware

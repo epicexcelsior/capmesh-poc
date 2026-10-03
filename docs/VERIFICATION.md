@@ -4,6 +4,60 @@ Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 3 completed overnight baseline
+
+The fixed-source lane completed all 120 scheduled samples. It returned exit code one because one sample failed.
+Source: clean `1624b15df8f5e51afcc8ec11ab71a147b73f03f3`.
+The run started October 2 at 21:09:44 UTC. The final sample started October 3 at 01:34:12 UTC.
+
+| Check | Observed result |
+|---|---|
+| Scheduled real BLE observations | 119 passed, one failed. No terminal retry or simulated replacement occurred. |
+| Accepted evidence age | Five or six seconds under the unchanged ten-second limit. |
+| Accepted worker duration | Minimum 12.551 seconds, median 12.925 seconds, maximum 17.899 seconds. |
+| Failure | Sample 80 failed after 4.304 seconds because discovery returned no manifest for the selected ESP32. |
+| Recovery | The next scheduled sample passed. Every remaining sample passed. |
+| Runtime | Python 3.13.13, Bleak 3.0.2, cryptography 50.0.1. |
+| Preservation | The complete raw log and summary remain in ignored local storage. The clean detached worktree was removed after preservation. |
+
+Raw-log SHA256: `1a6ad2f7abb7d77f94c30ecc7c67332659a8133e55846034e40575e8597b3775`.
+The log has no lower-level radio or operating-system evidence for the discovery miss. Its underlying cause remains unverified.
+This run establishes observed behavior under these conditions. It does not establish uninterrupted availability or production reliability.
+The run performed no payment, output GPIO operation, or firmware change.
+Its source excludes the newer main-branch worker cleanup fixes and unpaid pair collector.
+
+## October 3 unpaid concurrent BLE pair runner
+
+Starting source: `fdc0c1c`, pushed and confirmed against the remote branch.
+The diagnostic snapshots the selected public pins, discovers once, and invokes two selected BLE providers concurrently.
+It retains the buyer's original challenges and evaluates both responses after collection.
+A bounded parent process reports unmet policy as JSON and exposes unconfirmed cleanup separately from WAIT.
+
+| Check | Observed result |
+|---|---|
+| Reproduced defects before fixes | Five regression cases failed: reflected command tokens, three nonfinite JSON values, and falsely confirmed cleanup after a signal error. |
+| `uv run --project host pytest -q tests/test_pair_collection.py tests/test_observation_soak.py`, before four additional cases | 40 passed in 0.68 seconds after fixes. |
+| `uv run --project host pytest -q tests/test_pair_collection.py tests/test_observation_soak.py`, final focused suite | 46 passed in 0.78 seconds. |
+| `uv run --project host pytest -q`, final suite | 176 passed, 10 hardware tests skipped in 1.51 seconds. |
+| Actual BLE adapter with SDK fixtures | One scanner call, two cached BLE handles, overlapping invocations, and two independently signed fixture responses produced DISPATCH. No physical radio access occurred. |
+| Collection failure and mutation | Missing, duplicate, or incapable providers stopped both invocations. A failed member preserved the peer. Adapter mutation did not replace original challenges. |
+| Final-time freshness | Both fixture responses became stale at the final evaluation time and produced WAIT. |
+| Public diagnostic output | Reflected tokens in nested values, keys, unsigned fields, and an invalid signature were redacted. Nonfinite envelopes produced strict JSON WAIT. |
+| Worker recovery | Unconfirmed termination, failed signaling, failed wait, or missing exit status exposed cleanup failure and a worker PID. Confirmed exit preserved the deadline failure. |
+| Cancellation regression | Two real software-child cases failed before the fix. Single or repeated cancellation during TERM cleanup now completed KILL and reaping before returning cancellation. |
+| Read-only specialist review | No concrete P1/P2 issue remained in token redaction or worker cleanup after follow-up. |
+| `uv run --project host python -m scripts.check_contact_pair --help` | Exit zero. The public flags and prerequisite description displayed. |
+| Unprovisioned-provider CLI check | Exit two before worker or BLE access. The error required each selected provider's independently provisioned public pin. |
+
+The fixtures used temporary signing keys in memory. No device access, output GPIO, payment, firmware flash, or peaq write occurred.
+The [pair guide](CORROBORATION.md#collect-two-provisioned-ble-contacts-once) owns commands, output semantics, deadlines, and recovery.
+The gateway still sells one provider per purchase. Actual two-board timing, physical disagreement, and paired payments remain open.
+The unchanged Node suite's latest executed result remains 41 passing tests in the compatibility section below.
+
+The separate fixed-source overnight lane reached 56 observed passes and zero failures at this checkpoint.
+No terminal summary was observed. Its running source excludes the newer main-branch cleanup fix.
+This checkpoint does not claim a completed soak or validation of that fix on hardware.
+
 ## October 3 peaq ownership boundary
 
 Starting source: `ad31124`, pushed and confirmed against the remote branch.
@@ -49,7 +103,7 @@ The default completion-time difference is at most two seconds. Only two acceptab
 | Explanation page | Desktop and 390-pixel browser checks passed. Both screenshots were inspected. No page error or horizontal overflow occurred. |
 
 Fixture signing keys remained in memory. No hardware, network request, wallet access, payment, firmware flash, or peaq write occurred in this feature's checks.
-The gateway and paid buyer still serve one provider per purchase. No paired payment or collector exists.
+At this checkpoint, the gateway and paid buyer served one provider per purchase. No paired payment or collector existed.
 The [pair guide](CORROBORATION.md) owns the rule and physical gates. Distinct keys do not establish independent physical sensing or calibrated confidence.
 The unchanged Node suite's latest executed result remains 41 passing tests in the compatibility section below.
 

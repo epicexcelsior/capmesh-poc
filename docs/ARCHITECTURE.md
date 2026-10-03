@@ -26,6 +26,7 @@ flowchart LR
 | BLE / HTTP | Carry the same request and receipt | `host/capmesh/transport/`, `firmware/esp32/main/transport/` |
 | Observation contract | Pin metric, location, sensor, budget, and freshness | `host/capmesh/observations.py` |
 | Contact pair policy | Require both configured, timely OPEN receipts under distinct pinned keys | `host/capmesh/corroboration.py` |
+| BLE pair diagnostic | Snapshot public pins, discover once, collect concurrently, and bound worker cleanup | `host/capmesh/pair_collection.py`, `scripts/check_contact_pair.py` |
 | Rehearsal market | Try candidates by price, reject stale evidence, record demand | `host/capmesh/market.py` |
 | Gateway | Enforce x402 verification and settlement before measurement | `gateway/server.js` |
 | Purchase ledger | Prevent duplicate settlement and preserve failure states | `gateway/store.js` |
@@ -50,7 +51,8 @@ The device timestamp derives from an authenticated host request and uptime. It i
 The receipt establishes what this firmware reports about its GPIO samples. It does not establish external physical truth.
 The five samples come from one observer. Independent sensing and calibrated confidence remain future work.
 The optional [pair policy](CORROBORATION.md) verifies two receipts at one time and rejects disagreement or excessive completion skew.
-It retains replay state within one process. It adds no paired payment or physical collection path.
+It retains replay state within one process. The unpaid BLE diagnostic collects concurrent responses under a bounded parent worker.
+It adds no paired payment. Actual two-board timing and physical disagreement remain unverified.
 Its signed-fixture rehearsal proves software behavior only. Two-board physical verification remains open.
 
 ## Durable state and recovery
@@ -81,6 +83,7 @@ The current gateway does not issue refunds.
 |---|---|---|
 | `capmesh observe-demo --simulated` | Mock budget, no funds | Simulated contact and stale provider |
 | `capmesh corroborate-demo --scenario all` | None | Eight explicitly simulated two-key policy scenarios |
+| `python -m scripts.check_contact_pair` with two provisioned observers | None | One bounded concurrent BLE collection. Two-board physical verification remains open. |
 | `capmesh observe-demo` | Mock budget, no funds | Real ESP32 contact plus stale software provider |
 | `npm run demo` | Simulated facilitator through x402 SDK | Simulated contact |
 | `npm run demo -- --physical` | Simulated facilitator through x402 SDK | Real ESP32 contact |
