@@ -63,6 +63,8 @@ def registration_state(read_owner, machine_id, sdk_error_type):
 def observer_subject(pins, provider="esp32-c6-96a2"):
     if not isinstance(provider, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,31}", provider):
         raise ValueError("Select a valid observer provider ID.")
+    if not isinstance(pins, dict) or not isinstance(pins.get("providers"), dict):
+        raise ValueError("The public pin file must contain an object with a providers object.")
     key = pins.get("providers", {}).get(provider, "")
     if (pins.get("algorithm") != "ecdsa-p256-sha256" or not isinstance(key, str)
             or len(key) != 130 or not key.startswith("04")):

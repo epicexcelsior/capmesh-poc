@@ -1,6 +1,6 @@
 # peaq integration decision
 
-**October 3, 2026: Agung readiness passed. The proposed ID was absent at the recorded block. No peaq transaction occurred.**
+**October 4, 2026: Agung readiness passed. Offline key/service input preparation exists. No peaq transaction occurred.**
 Keep the Solana contact MVP frozen through the October 5 Germany submission.
 The next peaq flow connects the observer's identity to its public signing key and permitted observation service.
 This document owns peaq interfaces, readiness, and activation gates.
@@ -63,6 +63,50 @@ An owner lookup does not establish key possession or the intended operator's rig
 Before activation, define the operator, controller, manufacturer field, verification method, and service endpoint.
 Use the approved SDK activation flow with explicit spending bounds and receipt reconciliation.
 The current full client also requires legacy contract constructor arguments. Do not fill them with invented addresses to make initialization pass.
+
+## Prepare public key and service inputs offline
+
+[`prepare_peaq_identity.py`](../scripts/prepare_peaq_identity.py) prepares a public input draft without a wallet, client, or network connection.
+Run from the repository root:
+
+```bash
+uv run --project host python -m scripts.prepare_peaq_identity
+```
+
+The draft preserves the exact credential-subject bytes used by the readiness diagnostic.
+It compresses the pinned P-256 public point and encodes a `Multikey` verification method.
+The encoding uses the `p256-pub` multicodec prefix and base58btc multibase.
+[W3C ECDSA public-key encoding](https://www.w3.org/TR/vc-di-ecdsa/#multikey).
+
+The service URI is `urn:fieldproof:ble-contact:esp32-c6-96a2:gpio9-contact:state.observe`.
+This URI labels a local BLE observation capability. It is not an Internet gateway endpoint or an implemented registry-discovery path.
+Add `--provider`, `--sensor`, and `--pins` to select another public configuration.
+Selecting GPIO18 does not verify its wiring or installation.
+The sensor belongs to the service description, not the immutable identity subject.
+
+The default draft leaves controller, manufacturer, and spending bound unset.
+It reports `sdk_validation: not_run` and `activated: false`.
+No owner wallet exists in the draft. The eventual signer owns the identity and pays the bond.
+
+For local SDK validation, supply all three explicit inputs:
+
+- `--controller`: the selected public EVM controller address.
+- `--manufacturer`: the recorded public manufacturer address. The registry does not verify this claim.
+- `--max-net-base-units`: the reviewed maximum net bond. This excludes gas and does not authorize spending.
+
+Use the isolated SDK command below with these arguments and `--sdk-validate`:
+
+```bash
+DO_NOT_TRACK=1 PEAQOS_TELEMETRY=0 uv run --no-project --with peaq-os-sdk==0.10.0 python -m scripts.prepare_peaq_identity --help
+```
+
+The optional validation uses the published SDK's local input validator and DID struct encoder.
+It creates no SDK client, account, signing request, transaction, or full activation preview.
+The struct's empty `id` follows the SDK. The registry derives the DID from the permanent token ID when it reads the record.
+The remaining gates include owner selection, current ownership, full preflight, funding, explicit bond/gas approval, activation, and readback.
+An encoded draft does not establish device key possession, physical truth, service availability, or site permission.
+
+## Complete the integration after the write gates
 
 The intended completed flow is:
 

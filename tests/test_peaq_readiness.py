@@ -118,3 +118,9 @@ def test_identity_proposal_rejects_an_invalid_public_point(key):
     with pytest.raises(ValueError):
         module.observer_subject({"algorithm": "ecdsa-p256-sha256",
                                 "providers": {"esp32-c6-96a2": key}})
+
+
+@pytest.mark.parametrize("pins", [None, [], {"providers": []}, {"providers": None}])
+def test_identity_proposal_rejects_malformed_pin_containers(pins):
+    with pytest.raises(ValueError, match="public pin"):
+        load_checker().observer_subject(pins)
