@@ -65,7 +65,11 @@ Cached evidence retains its original time and becomes WAIT after expiry.
 
 ## Product direction
 
-The next test is one robot already near an external access point buying a permitted fact from its operator. A ten-second contact observation cannot predict advance availability.
+The company hypothesis is autonomous machines buying and verifying physical services from infrastructure another operator owns.
+The current prototype purchases one fresh contact observation. It grants no access, reserves no service, and controls no robot.
+The first buyer hypothesis is a fleet software operator with repeated interactions at independent facilities.
+Start with one buyer and one authorized operator. A second facility tests whether the buyer can reuse its integration.
+A ten-second contact observation cannot predict advance availability.
 This is a buyer hypothesis. No recurring demand, avoided-cost result, sustainable price, or provider income is established.
 The [product review](STRATEGY.md#product-risks-and-decisions) examines access rights, truth, remote delivery, economics, and demand quality.
 Earn one recurring buyer-provider workflow before building an open sensor marketplace.

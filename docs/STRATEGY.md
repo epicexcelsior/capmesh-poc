@@ -1,18 +1,110 @@
 # FieldProof product strategy
 
-**Build one useful buyer workflow before an open marketplace.**
+**Company hypothesis: machines buy and verify physical services from infrastructure another operator owns.**
+The implemented first step buys a fresh contact observation. The next commercial test connects one buyer to one authorized provider.
 The [starting page](FOCUS.md) condenses the current decision. The [bounty plan](BOUNTY_PLAN.md) owns execution priorities.
 The [dated research](research/2026-10-02-fieldproof.md) owns sources, precedents, economics, and unresolved commercial claims.
+The [October 4 source check](research/2026-10-04-physical-services.md) evaluates the physical-service framing and existing infrastructure solutions.
 
-## First buyer hypothesis
+## The story to explain
 
-A robot already near another operator's access point needs a permitted fact for an immediate decision.
-The current contact demonstration establishes the purchase-and-check loop. It does not establish a customer or safe passage.
-Use existing operator data when it answers the buyer's question. Add a sensor when it supplies otherwise unavailable evidence.
+**Company target: one integration for machines to transact with another operator's physical infrastructure.**
 
-Test one actual incident, the current alternative, the useful-time window, operator permission, and a concrete paid-pilot budget.
-Measure purchase-to-decision latency and installation, support, delivery, and recovery costs.
-Then test repeated use and renewal. Compliments and demo transactions do not establish demand.
+A fleet operates a robot. Another company operates the facility the robot needs to use.
+Their software needs agreed service terms, permission, payment, and evidence before it can rely on the interaction.
+FieldProof tests a common transaction layer across that operator boundary.
+
+The first buyer hypothesis is a fleet software operator that needs repeated interactions at independent facilities.
+The buyer benefit to test is reusable service integration across those facilities.
+The provider benefit to test is controlled access to its existing services and accountable delivery to approved buyers.
+No customer confirms either benefit yet.
+
+The demonstration answers one small question in that larger workflow: what does the gate-contact observer report now?
+It purchases that answer on Solana Devnet, authenticates the pinned device receipt, and checks its freshness.
+It grants no access, opens no gate, reserves no dock, and moves no robot.
+
+| Responsibility | Implemented today | Next integration |
+|---|---|---|
+| Payment | Solana Devnet test USDC through x402 | Commercial terms and a recovery policy with a pilot operator |
+| Evidence | Pinned device signature, original challenge, stable samples, and freshness | Evidence for a permitted service precondition or result |
+| Operator and service identity | Trusted USB public pin. peaq Agung registry reads only. | Activated peaq operator/key/service claims, compared with the buyer's trusted pin |
+| Permission and control | Outside the MVP | Facility authorization and the robot controller's own safety checks |
+
+The receipt signs an observation challenge. The gateway ledger associates that challenge with the purchase.
+Payment and measurement remain separate side effects. A paid observation does not establish completed access or service delivery.
+The current buyer pays for the observation before measurement.
+A future access-service purchase needs separate terms for readiness, reservation, use, completion, and recovery.
+A readiness answer cannot reserve a resource or prevent its state from changing before use.
+The operator must define any commitment window. The controller must check the conditions that govern actual use.
+
+## Why this boundary is worth testing
+
+VDA 5050 focuses on robot-to-fleet-control communication and excludes infrastructure and external IT interfaces.
+This identifies a boundary, not a vacant market. [VDA 5050, section 2](https://www.vda.de/dam/jcr%3A09f03b91-13e2-4db3-bf30-4f221710071b/VDA5050-V3.0.0-2025-03.pdf).
+Open-RMF already integrates fleets, doors, elevators, and building systems. [Open-RMF](https://www.open-rmf.org/).
+
+Use existing adapters where their semantics fit.
+Test whether independent operators still need common commercial terms, evidence checks, and recovery around those adapters.
+An existing API, camera, integrator, or Open-RMF deployment remains a valid alternative.
+If it solves the buyer's problem adequately, record that result before adding another layer.
+
+## Start with a service relationship
+
+1. Find one fleet decision that depends on infrastructure another operator controls.
+2. Establish the operator's permission and the buyer's right to use the service.
+3. Connect an existing API or checked contact to the same observation contract.
+4. Measure repeated use, end-to-end delay, failures, recovery cost, and willingness to pay.
+5. Connect a second independent facility and measure how much integration work the buyer reuses.
+
+The second facility tests the central hypothesis. More sensors at one site do not establish cross-operator value.
+The first commercial product can charge for integration and service operation.
+A transaction fee becomes meaningful only when real service value and recurring paid use exist.
+Enterprise fees, transaction fees, and service-level commitments remain pricing options to test.
+The 0.001 test-USDC observation price sets no commercial service price.
+
+## Earn revenue before network scale
+
+The early business hypothesis is paid enterprise integration and support for one fleet-provider relationship.
+It does not require an open marketplace or substantial transaction volume to test.
+The buyer must confirm a budget and renewal value before this becomes a business model.
+
+| Stage | Revenue hypothesis | Evidence required before expansion |
+|---|---|---|
+| First relationship | Integration, deployment, and support fees | An authorized buyer funds a pilot. Total delivery and support costs remain viable. |
+| Repeat deployments | Recurring software fees per fleet, facility, or endpoint | Buyers renew. The second facility reuses substantial integration work. |
+| Paid service volume | A fee on machine-service transactions | Real service spend exists. Failed delivery and dispute costs remain controlled. |
+| Useful network | Discovery, trust history, and demand routing | Independent providers and buyers repeatedly use shared interfaces and history. |
+
+A proposed low-four-figure monthly fee remains an untested pricing hypothesis.
+Quoted service prices, provider income, and revenue projections require actual buyer evidence.
+Do not turn unsupported requests into a claim that a monthly revenue opportunity exists.
+
+Buyer interviews start alongside the MVP, rather than after several more endpoint builds.
+The founder owns outreach and customer commitments. The existing application and robot safety controls remain outside this prototype.
+
+## Expand after the first workflow works
+
+[View the commercial-path graphic](assets/fieldproof-service-expansion.svg). Every expansion and revenue stage remains a hypothesis.
+
+Access readiness is the first candidate. Dock use, charging, elevators, handoffs, and equipment use are later candidates.
+Each needs its own permission, controller adapter, evidence contract, failure policy, and economics.
+An OPEN contact cannot establish dock clearance, charger availability, reservation, or successful handoff.
+
+Potential network effects require measured reuse: more authorized endpoints make the existing buyer integration useful in more places.
+Service history must separate observed latency, failed delivery, disputes, and independently established outcomes.
+A signed answer or successful test transfer alone cannot create a reliability score.
+Unsupported requests can guide interviews. Committed demand and actual delivery economics must precede new hardware investment.
+
+## Evidence required for a pilot
+
+The fleet operator must identify an actual incident, its existing alternative, and the cost of missing the required fact.
+The facility operator must approve the service, eligible buyers, installation, and data exposure.
+Measure useful-time limits, purchase-to-decision delay, installation, support, delivery failures, and recovery costs.
+Test repeated use and renewal. Compliments and demo transactions do not establish demand.
+
+The six-month validation target is one fleet using the same integration at two independent facilities with repeated paid service use.
+This is an acceptance target, not a forecast or customer commitment.
+If integration remains bespoke at every site, test an enterprise adapter product before investing in a network.
 
 ## Durable advantage to test
 

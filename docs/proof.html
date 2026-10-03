@@ -15,6 +15,8 @@
 <div class="label">Recorded hardware evidence · Solana Devnet</div>
 <h1>One receipt.<br>Try to break it.</h1>
 <p class="lead">Verify a real device signature in your browser. Change the contact state, change the challenge, or try another identity.</p>
+<p>FieldProof tests how machines can buy and verify services from infrastructure another operator owns. This prototype purchases one contact observation.</p>
+<p>The recorded transfer confirms payment. The signature authenticates the device's answer. Freshness determines whether that answer remains useful for this decision.</p>
 <p>This inspector uses recorded evidence. To exercise a new simulated purchase, follow the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a>.</p>
 <div class="workspace">
 <section class="receipt" aria-label="Recorded receipt"><div class="label">Recorded purchase / demo-gate</div><h2>Is the gate open?</h2>
@@ -46,6 +48,14 @@
 <p class="note">These two checks moved no funds. BOOT represents a contact. Both observations are expired and remain WAIT today.</p>
 <p id="contact-status" role="status" aria-live="polite">Checking recorded input evidence.</p>
 <ul id="contact-results"></ul>
+</section>
+<section aria-label="Physical-service direction">
+<h2>One observation starts a larger service relationship.</h2>
+<p>The first buyer hypothesis is a fleet software operator that needs repeated interactions with independent facilities.</p>
+<p>Start with one buyer and one authorized operator. A second facility tests whether the buyer can reuse its integration.</p>
+<p>Dock use, charging, and elevators are later service candidates. Access permission, control, and completed-service verification remain future work.</p>
+<p class="note">peaq Agung registry reads establish deployment readiness today. No observer identity is activated. Registration alone cannot establish installation or physical truth.</p>
+<p><a href="assets/fieldproof-service-boundaries.svg">View the implemented flow and planned service boundaries.</a></p>
 </section>
 <details><summary>Inspect the receipt and buyer challenge</summary><pre id="payload">Loading.</pre></details>
 <details><summary>Inspect the public identity pin</summary><p class="note">The operator read this key over trusted USB and verified it after reset. The browser reads the public pin from the installed demo. Use the independent CLI buyer for a new paid observation.</p><pre id="pin">Loading.</pre></details>

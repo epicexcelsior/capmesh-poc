@@ -44,9 +44,9 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <main>
 
 <section>
-<div class="label">Physical evidence before an autonomous agent acts</div>
-<h1>Ask the gate.<br>Pay for the answer.<br>Check it before you move.</h1>
-<p class="lead">A robot near someone else's gate needs a current answer before its next decision. FieldProof demonstrates the purchase and verification of that answer.</p>
+<div class="label">Physical services across operator boundaries</div>
+<h1>Pay for an answer.<br>Verify it before<br>you rely on it.</h1>
+<p class="lead">FieldProof tests how machines can buy and verify services from infrastructure another operator owns. The current prototype purchases one fresh contact observation.</p>
 <p>Start with the explanation below. Then run the demonstration and inspect its evidence. The <a href="FOCUS.md">current focus</a> owns the product decision. The <a href="VERIFICATION.md">verification record</a> owns executed checks.</p>
 <ul class="toc">
 <li><a href="#understand">Understand the product</a></li>
@@ -71,6 +71,14 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <section class="section" id="understand">
 <div class="label">Start here · Founder explanation</div>
 <h2>Understand the product</h2>
+<h3>The company hypothesis</h3>
+<p>A fleet operates a robot. A separate company operates the gate, dock, or charger it needs. Their software needs agreed terms, permission, payment, and evidence.</p>
+<p>The buyer hypothesis is one reusable service integration across independent facilities. The provider hypothesis is controlled service access and accountable delivery to approved buyers.</p>
+<p>The current MVP purchases an observation. Access permission, gate control, reservations, and completed-service verification remain future work.</p>
+<p>This buyer pays for the observation before measurement. A future access purchase needs separate readiness, reservation, delivery, and recovery terms.</p>
+<p>Start with one fleet and one authorized facility. A second independent facility tests whether the buyer can reuse its integration.</p>
+<p>The <a href="STRATEGY.md">product strategy</a> owns this story, pricing options, alternatives, and the pilot acceptance target.</p>
+<figure style="margin:24px 0"><a href="assets/fieldproof-service-boundaries.svg"><img src="assets/fieldproof-service-boundaries.svg" width="1200" height="660" style="width:100%;height:auto" alt="Implemented observation purchase and the planned peaq identity, permission, and physical-service integrations."></a><figcaption class="note">Open the graphic at full size. Solid boxes show the current observation purchase. Dashed boxes show planned service integrations.</figcaption></figure>
 <h3>One buyer, one operator, one immediate decision</h3>
 <p>Example: a delivery robot reaches an access point operated by another company. Its controller needs the current gate-contact state.</p>
 <p>The operator permits sale of that observation. The buyer pays for one answer. Its controller decides whether that answer helps the next action.</p>
@@ -92,7 +100,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <p>The x402 protocol adds machine-readable payment terms. A compatible buyer checks those terms, signs a constrained transaction, and retries the request.</p>
 <p>The facilitator verifies and submits the payment. The gateway reads the sensor only after successful settlement.</p>
 <p>Our paid buyer permits Solana Devnet USDC, one merchant, and a maximum payment of 0.001 USDC. It needs no checkout form.</p>
-<p>An ordinary authenticated API remains an alternative. x402 helps when separate operators need per-request payment without a shared billing account.</p>
+<p>An ordinary authenticated API remains an alternative. x402 supplies per-request payment terms for compatible buyers. A pilot must establish whether that helps these operators.</p>
 <h3>Why sign the answer?</h3>
 <p>The device keeps a private signing key. The buyer stores its matching public key, called an identity pin.</p>
 <p>A valid signature ties the reported fields to that private key. The gateway cannot change the contact state without invalidating the signature.</p>
@@ -124,7 +132,9 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <p>An activated identity can later connect an operator, verification method, and service endpoint. Registration alone cannot certify sensor truth or installation.</p>
 <p>See the <a href="PEAQ_INTEGRATION.md">peaq integration decision</a> for measured readiness, remaining inputs, and the documented Solana-onboarding limitation.</p>
 <h3>What creates a durable business?</h3>
-<p>The unvalidated opportunity is a recurring buyer workflow across operator boundaries. Payment and freshness mechanisms already have predecessors.</p>
+<p>The unvalidated opportunity is repeated physical-service use across operator boundaries. The first observation tests only the evidence-purchase step.</p>
+<p>Existing infrastructure solutions matter. Open-RMF already connects robot fleets, doors, elevators, and building systems.</p>
+<p>FieldProof must establish an additional commercial problem around terms, payment, permitted evidence, and failure recovery. <a href="https://www.open-rmf.org/">Open-RMF</a></p>
 <p>Start with one buyer incident. Identify the missing fact, current alternative, useful-time window, operator permission, and cost of a wrong decision.</p>
 <p>Then test repeated delivery and a real budget. Query counts and a test-token transfer do not justify installing a sensor fleet.</p>
 <p>Future advantages depend on authorized supply, useful coverage, reliable delivery, and repeat customers. The MVP establishes none of those commercial results.</p>

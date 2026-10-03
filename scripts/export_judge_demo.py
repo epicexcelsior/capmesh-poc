@@ -16,6 +16,7 @@ ASSETS = {
     "evidence/device-signed-purchase.json": "docs/evidence/device-signed-purchase.json",
     "evidence/device-signed-contact-states.json": "docs/evidence/device-signed-contact-states.json",
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
+    "assets/fieldproof-service-boundaries.svg": "docs/assets/fieldproof-service-boundaries.svg",
 }
 
 

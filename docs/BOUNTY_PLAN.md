@@ -2,6 +2,8 @@
 
 **Decision date: October 2, 2026.** Complete the Germany MVP package first.
 The [adversarial research](research/2026-10-02-fieldproof.md) supports this bounded build and records commercial uncertainty.
+The October 4 [product story](STRATEGY.md#the-story-to-explain) connects this observation purchase to cross-operator physical services.
+Keep the implemented purchase scope explicit. Access, reservations, actuation, and completed-service verification remain future work.
 
 ## Fixed scope
 
@@ -24,14 +26,37 @@ It keeps this question, receipt format, payment rail, and recorded fallback. Unv
 | 3 | Current technical walkthrough | 2–3 minutes, playable, states what is recorded and what is simulated | Signed-receipt video is 149.76 seconds and decodes. Captioned, no audio. |
 | 4 | Review links | Judges can open test instructions, repository, presentation, and technical evidence without private credentials | Whitelisted inspector ZIP, public-key verification, live chain query, and video pass locally. Public links require owner publication. |
 | 5 | Human MVP submission | Every required field is complete and receipt retained before October 5, 23:59:59 CEST | Not submitted. |
-| 6 | Buyer test | One real decision, current alternative, useful-time window, operator permission, and price/budget evidence | Not completed. Run in parallel with packaging, not as a reason to delay MVP. |
+| 6 | Buyer test | One real decision, current alternative, useful-time window, operator permission, and price/budget evidence | Not completed. Start alongside packaging before adding endpoint types. |
 | 7 | Final hackathon presentation | Founder explains buyer, alternatives, evidence, hypothesis, and next test in 2–3 minutes | Prepare after the MVP package. It does not block using the technical walkthrough for Germany MVP. |
-| 8 | peaq integration decision | One useful adapter flow or an explicit activation limitation | Read-only Agung registry readiness passed. Observer ID and bond are recorded. Activation, service binding, and activity events remain unimplemented. |
+| 8 | peaq integration decision | One useful adapter flow or an explicit activation limitation | Read-only Agung registry readiness passed. Prepare exact identity/key/service inputs in isolation. Activation and activity events remain unimplemented. |
 | 9 | Human final submissions | peaq and Colosseum submissions complete before October 13, 08:59 CEST | Not submitted. |
 
 Aim to finish the MVP package by October 4 at 18:00 CEST.
 Use October 5 for link checks and submission recovery. This is an internal buffer, not an organizer deadline.
 Aim to finish final Colosseum and peaq materials by October 11 at 18:00 CEST.
+
+Bound the next peaq preparation session to 60 minutes of engineering work.
+Keep the MVP gateway, firmware, payment rail, and buyer trust root stable during that session.
+Record a concrete blocker instead of extending the attempt indefinitely.
+Permanent activation needs reviewed public inputs, an operator wallet, and explicit bond and gas authorization.
+Keep this gate outside the October 5 critical path.
+
+## Match each competition to its evidence
+
+Germany MVP needs a working, understandable product with meaningful Solana integration and accessible review links.
+The existing Devnet payment and signed contact observation provide the technical seed.
+The October 4 listing check confirmed these requirements. A custom Solana program remains optional.
+[Germany MVP criteria](https://superteam.fun/earn/listing/road-to-colosseum-hackathon-build-your-mvp).
+
+The peaq entry must explain a machine-economy mechanism, rather than a logo addition or disconnected features.
+Operator/key/service registration is the intended peaq contribution. Read-only readiness alone does not complete that flow.
+The listing accepts promising prototypes and identifies machine-to-machine commerce as relevant.
+[peaq scope and criteria](https://superteam.fun/earn/listing/build-solutions-advancing-the-machine-economy-with-peaq).
+
+Colosseum also assesses the startup: demand validation, distribution, founder insight, viability, and traction.
+The founder must explain the actual learning and next buyer test alongside the technical demo.
+No customer or revenue exists today. More code cannot supply those facts.
+[Colosseum submission and judging guidance](https://colosseum.com/hackathon?year=fall2026).
 
 ## Judge rehearsal
 

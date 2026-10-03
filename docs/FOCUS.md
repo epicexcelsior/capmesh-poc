@@ -1,16 +1,20 @@
 # FieldProof: start here
 
 **Decision: finish the existing MVP and submit the Germany bounty first.**
-As of October 3, 2026. This page condenses the decision. The linked records preserve its evidence.
+As of October 4, 2026. This page condenses the decision. The linked records preserve its evidence.
 
 ## The thesis to keep
 
-A robot near an external access point buys a permitted, fresh observation from a separate operator before an immediate decision.
-FieldProof demonstrates that loop with a contact stand-in, Solana Devnet payment, and an independently checked device receipt.
+FieldProof tests whether autonomous machines can buy and verify physical services from infrastructure another operator owns.
+The first implemented step buys a fresh contact observation before an immediate decision.
+The demo uses a contact stand-in, Solana Devnet payment, and an independently checked device receipt.
 The buyer checks provenance and age. Its controller retains permission and motion-safety checks.
 
 The business hypothesis is a useful cross-organization workflow with repeat buyers and authorized suppliers.
 Signatures, request objects, and a local demand ledger are supporting mechanisms. They do not establish a moat.
+The [strategy](STRATEGY.md#the-story-to-explain) owns the company story, first relationship, alternatives, and expansion conditions.
+The [October 4 source check](research/2026-10-04-physical-services.md) corrects the claim that infrastructure interoperability lacks existing solutions.
+The MVP sells an observation. Access, reservation, actuation, and proof of completed service remain future work.
 
 ## The findings that change our choices
 

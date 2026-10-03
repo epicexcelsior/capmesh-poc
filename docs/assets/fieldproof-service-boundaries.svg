@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+  <title id="title">FieldProof: observation purchase today, physical-service relationship next</title>
+  <desc id="desc">The current buyer selects a question and trusted public key. The gateway settles test USDC on Solana Devnet. The ESP32 samples a contact and signs the original challenge. The buyer checks the signature and age. peaq identity and service registration, facility permission, and service use remain planned.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#146b8d"/></marker></defs>
+  <rect width="1200" height="660" fill="#eef4f8"/>
+  <g font-family="system-ui,sans-serif" fill="#183146">
+    <text x="36" y="48" font-size="18" font-weight="700" fill="#146b8d">FIELDPROOF / TRANSACTION BOUNDARIES</text>
+    <text x="36" y="94" font-size="36" font-weight="800">Pay for an answer. Verify it before you rely on it.</text>
+    <text x="36" y="129" font-size="20">Current prototype: one observation purchase. Company hypothesis: cross-operator physical services.</text>
+    <text x="36" y="181" font-size="17" font-weight="700" fill="#067b65">IMPLEMENTED / SOLANA DEVNET + REAL CONTACT STAND-IN</text>
+    <g fill="#fff" stroke="#146b8d" stroke-width="2">
+      <rect x="36" y="207" width="252" height="148" rx="6"/>
+      <rect x="326" y="207" width="252" height="148" rx="6"/>
+      <rect x="616" y="207" width="252" height="148" rx="6"/>
+      <rect x="906" y="207" width="258" height="148" rx="6"/>
+    </g>
+    <g stroke="#146b8d" stroke-width="3" marker-end="url(#arrow)"><path d="M288 281H316"/><path d="M578 281H606"/><path d="M868 281H896"/></g>
+    <g font-size="22" font-weight="700"><text x="54" y="245">Buyer program</text><text x="344" y="245">Gateway + Solana</text><text x="634" y="245">ESP32 observer</text><text x="924" y="245">Buyer verifier</text></g>
+    <g font-size="18">
+      <text x="54" y="279">Question + new challenge</text><text x="54" y="307">Trusted pin + age limit</text><text x="54" y="335">Budget: test USDC</text>
+      <text x="344" y="279">x402 payment terms</text><text x="344" y="307">Settle, then request input</text><text x="344" y="335">Purchase association</text>
+      <text x="634" y="279">BOOT represents contact</text><text x="634" y="307">Five GPIO9 samples</text><text x="634" y="335">Sign challenge + answer</text>
+      <text x="924" y="279">Key + challenge + contract</text><text x="924" y="307">Samples + evidence age</text><text x="924" y="335">Demo DISPATCH or WAIT</text>
+    </g>
+    <text x="36" y="392" font-size="19">Payment confirms a transfer. The signature authenticates the device's claim. Freshness limits its usefulness.</text>
+    <text x="36" y="445" font-size="17" font-weight="700" fill="#a35a10">NEXT INTEGRATION / PLANNED, UNVALIDATED</text>
+    <g fill="#fff8e9" stroke="#a35a10" stroke-width="2" stroke-dasharray="8 5">
+      <rect x="36" y="465" width="352" height="119" rx="6"/><rect x="424" y="465" width="352" height="119" rx="6"/><rect x="812" y="465" width="352" height="119" rx="6"/>
+    </g>
+    <g font-size="21" font-weight="700"><text x="54" y="502">peaq identity + service</text><text x="442" y="502">Facility authorization</text><text x="830" y="502">Physical service + result</text></g>
+    <g font-size="18"><text x="54" y="533">Registry readiness reads work.</text><text x="54" y="563">No identity is activated today.</text><text x="442" y="533">Approved buyer + permitted use</text><text x="442" y="563">Controller retains safety checks.</text><text x="830" y="533">Access, reservation, or actuation</text><text x="830" y="563">Define delivery and recovery.</text></g>
+    <text x="36" y="628" font-size="18">No robot control or completed service exists in this MVP. Payment and measurement are separate side effects.</text>
+  </g>
+</svg>

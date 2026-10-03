@@ -5,6 +5,11 @@ The [complete explanation](HOW_IT_WORKS.html#understand) covers each component. 
 
 ## Learn the loop
 
+The company hypothesis is machines buying and verifying physical services from infrastructure another operator owns.
+The first buyer hypothesis is a fleet software operator with repeated interactions at independent facilities.
+The current prototype purchases a contact observation. It grants no access, reserves no service, and moves no robot.
+The [product story](STRATEGY.md#the-story-to-explain) explains the buyer, provider, existing alternatives, and commercial acceptance target.
+
 The **buyer** asks one question and sets a price and freshness limit.
 The **gateway** quotes the observation and checks payment through x402, a machine-readable HTTP payment protocol.
 After settlement, the **ESP32** reads its input and signs an answer.
@@ -73,7 +78,7 @@ Use these cues in your own words. They are demonstration prompts, not submission
 
 | Time | Action | Point to explain |
 |---|---|---|
-| 0:00–0:20 | Describe one buyer near another operator's access point | Target workflow: buy a permitted fact for an immediate decision. No customer exists yet. |
+| 0:00–0:20 | Describe a fleet and a facility that belong to separate operators | Target workflow: buy and verify a physical service. The implemented first step purchases an observation. No customer exists yet. |
 | 0:20–0:55 | Get the quote. Run simulation. Wait eleven seconds. | Machine-readable terms, simulated purchase, DISPATCH, then expired WAIT. |
 | 0:55–1:20 | Switch to the prepared receipt tab | Actual recorded test payment and real device signature. Payment verification cannot refresh evidence. |
 | 1:20–1:55 | Flip state. Change challenge. Use another key. Restore original. | Changed state fails its signature. Another nonce fails binding. Another key fails authentication. |
@@ -128,6 +133,7 @@ The intended next integration binds operator identity, the public key, and a ser
 That remains the commercial hypothesis. Test a buyer who lacks a useful fact from infrastructure another operator controls.
 If its camera or existing API supplies the fact reliably, record that result and revise the workflow.
 The potential business depends on useful authorized supply, repeat buyers, and delivery economics.
+Open-RMF already connects fleets and infrastructure. FieldProof must establish an additional commercial problem around terms, payment, evidence, and recovery.
 
 </details>
 

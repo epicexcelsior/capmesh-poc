@@ -1,8 +1,49 @@
 # FieldProof verification record
 
-Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates to October 1.
+Current continuation: October 4, 2026, Europe/Berlin. Public paid evidence dates to October 1.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 4 physical-service story and offline peaq inputs
+
+Starting source: clean `c6195e68ef329571ed5677e5e197aa48d40eabee`, confirmed against the remote branch.
+The [strategy](STRATEGY.md) now owns the cross-operator physical-service hypothesis and enterprise-first commercial test.
+The [source check](research/2026-10-04-physical-services.md) records the VDA scope boundary and Open-RMF infrastructure integrations.
+The current product remains one observation purchase. Access, reservation, actuation, and completed-service evidence remain future work.
+
+The new offline peaq preparer preserves the exact observer identity subject and binds its public key to a named BLE service.
+It creates no SDK client, account, connection, preview, or transaction.
+SDK validation requires explicit public controller and manufacturer claims plus a net-bond bound.
+The remaining write gates stay in the [peaq guide](PEAQ_INTEGRATION.md#decision-required-before-a-write).
+
+| Check | Observed result |
+|---|---|
+| Focused input and export checks, first run | Collection failed because the new test imported the repository scripts outside pytest's path. The scoped test loader now supplies the repository path. |
+| `uv run --project host pytest -q tests/test_peaq_identity_inputs.py tests/test_judge_export.py` | 13 passed in 0.04 seconds after the loader correction. |
+| Malformed pin-container regressions before the fix | Four cases failed with `AttributeError`. Shared subject validation now requires both JSON containers to be objects. |
+| `uv run --project host pytest -q tests/test_peaq_readiness.py tests/test_peaq_identity_inputs.py tests/test_judge_export.py` | 29 passed in 0.07 seconds after the boundary fix. |
+| `uv run --project host pytest -q`, final candidate | 191 passed, 10 hardware tests skipped in 2.03 seconds. |
+| Public key format | Independent decoding recovered the exact pinned P-256 point. The W3C published Multikey example re-encoded exactly. |
+| Isolated `peaq-os-sdk==0.10.0` validation | Explicit fixture addresses and bond bound passed the actual SDK input validator and DID struct encoder with socket connections blocked. No operator was selected. |
+| Default preparer CLI | Exit zero. Public draft leaves controller, manufacturer, and spending bound unset. `sdk_validation: not_run`, `activated: false`. |
+| Read-only specialist review | The malformed-container finding was reproduced and fixed. Follow-up found no remaining concrete issue. All four malformed CLI files exited 1 without draft output. |
+| Simulated browser purchase | Configured quote, simulated DISPATCH, expired WAIT, desktop/mobile widths, and no page errors passed. The script checked simulator mode before purchase. |
+| Prefixed static-export browser checks | Authentic recorded receipt, expiry, altered state/challenge/key, both input states, damaged input archives, RPC fixtures, HTTP 429 recovery, and unchanged WAIT passed. |
+| Final static-export integrity | Nine manifest assets and ten ZIP members. Every file digest matched. The packaged diagram matched its reviewed source. |
+| Native SVG and explainer checks | Desktop and 390-pixel layouts passed. Visual inspection found crowded diagram labels. Shorter labels passed a card-bound check and repeat rendering. |
+| Local founder handout | Current/future flow controls and all eight fixture choices passed. No horizontal overflow or page errors occurred. This remains local preparation material. |
+| Python compilation and diff whitespace | Passed for changed scripts. No formatter or type checker is declared. |
+
+The SDK fixture uses a synthetic controller and an explicitly supplied zero manufacturer field. It is not an operator identity or an activation preview.
+The service URI labels a local BLE capability. No public gateway endpoint or automatic registry discovery exists.
+The buyer's independently provisioned key remains the trust root. Registration cannot establish installation or physical truth.
+
+Both complete public bounty listing payloads were checked again on October 4.
+Deadlines and human submission requirements remain in [submission preparation](SUBMISSION.md#verified-requirements-and-deadlines).
+Competition status does not establish winning odds, demand, or customer traction.
+
+No new physical measurement, payment, output GPIO operation, firmware change, peaq write, deployment, registration, or submission occurred in this change.
+The unchanged Node suite's latest executed result remains 41 passing tests. This entry adds browser checks for revised prose and package assets.
 
 ## October 3 post-review single-board check
 

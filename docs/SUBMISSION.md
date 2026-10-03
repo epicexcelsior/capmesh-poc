@@ -1,4 +1,4 @@
-# FieldProof submission draft
+# FieldProof submission preparation
 
 Status: public repository, draft submission. The project is not ready to submit.
 Public paid settlement and both human-controlled contact states pass. The repository is public. Presentation, Colosseum, and contact details remain incomplete.
@@ -8,7 +8,7 @@ Follow the [bounty execution plan](BOUNTY_PLAN.md) and [research decision](resea
 
 ## Verified requirements and deadlines
 
-Requirements and deadlines were checked again from both complete public `__NEXT_DATA__` listing payloads on October 2, 2026.
+Requirements and deadlines were checked again from both complete public `__NEXT_DATA__` listing payloads on October 4, 2026.
 Both listings specify Germany regional eligibility and `agentAccess: HUMAN_ONLY`. The founder must complete human submission.
 The earlier text-only retrieval omitted these details. This record supersedes that gap.
 
@@ -34,21 +34,20 @@ Verify both deadlines again before submission. Eligibility and acceptance remain
 
 ## Project name and tagline
 
-**FieldProof — Fresh physical evidence before an autonomous agent acts.**
+**FieldProof — Fresh device evidence for physical services machines rely on.**
 
 ## One-line description
 
-FieldProof lets an autonomous logistics agent buy fresh gate-contact evidence, reject stale or altered answers, and decide whether to dispatch.
+The prototype buys a fresh contact observation on Solana Devnet and independently checks the device's signed answer before DISPATCH or WAIT.
+The [company hypothesis](STRATEGY.md#the-story-to-explain) is machines buying and verifying physical services from infrastructure another operator owns.
 
 ## Problem and buyer
 
-A logistics agent can plan a route without knowing whether a gate at another facility is open now.
-An old answer can produce the wrong dispatch decision.
-The buyer needs a local observation with an explicit age limit and budget.
-
-Our first buyer hypothesis is robotics and mobile logistics.
-We focus on operational state at places where buyers cannot directly measure the fact they need.
-Customer demand and avoided costs remain unvalidated.
+The first buyer hypothesis is a fleet software operator that needs repeated interactions with independent facilities.
+It needs permitted service terms, payment, and useful evidence before it relies on the interaction.
+The implemented first step purchases a current contact observation with an explicit age limit and budget.
+Access rights, actuation, reservations, and completed-service verification remain future work.
+Existing facility APIs and Open-RMF integrations remain alternatives. Customer demand and avoided costs remain unvalidated.
 
 ## Working product
 
@@ -86,10 +85,11 @@ There is no custom on-chain program in this MVP.
 
 ## Machine-economy contribution
 
-The observer offers a priced physical fact. The buyer controls spending and evidence age.
-The purchased evidence changes the buyer's action.
-The demand ledger records facts that buyers request but providers cannot supply.
-This supports a path toward demand-directed sensor installations and existing machines becoming observation providers.
+The observer offers a priced observation. The buyer controls spending and evidence age before it derives a demo recommendation.
+The longer-term hypothesis connects approved buyers to physical services from separate operators.
+Start with paid enterprise integration and support. Test recurring software fees before relying on machine-service transaction volume.
+A second independent facility tests integration reuse. Pricing, income, demand, and network effects remain unvalidated.
+The local demand ledger includes test requests. It establishes no monthly revenue opportunity or case for new hardware investment.
 
 No peaq identity or revenue event is activated.
 The current [Solana onboarding guide](https://docs.peaq.xyz/peaqos/guides/onboard-on-solana) reports paused onboarding and a mainnet-only flow.
@@ -107,6 +107,8 @@ A 149.76-second duration and full decode passed on October 2. A separate founder
 The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.
 The final Colosseum presentation requires the buyer and business explanation alongside the technical demonstration.
 Prepare that presentation after the MVP package.
+Use the [rehearsal](REHEARSAL.md) for technical explanation and the [strategy](STRATEGY.md) for the company hypothesis.
+Write final application answers and record the founder presentation in your own words.
 
 The [older live walkthrough](assets/fieldproof-submission.webm), [composed presentation](assets/fieldproof-walkthrough.webm), and [69-second simulation](assets/fieldproof-demo.webm) remain historical artifacts.
 Their earlier pending-payment captions do not describe the current integration.
