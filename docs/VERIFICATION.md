@@ -4,6 +4,20 @@ Current continuation: October 3, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 3 post-review single-board check
+
+The reviewed source `75cde7e668eef10032a0ff5c7ee3a55232d52a43` passed three scheduled real BLE observations after the overnight lane ended.
+The source was clean. The new shared worker helper ran against the attached board.
+The diagnostic returned exit code zero with three passes and zero failures.
+All receipts reported `gpio9-contact` at five seconds of age under the unchanged ten-second limit.
+Worker durations were 12.135, 11.959, and 12.003 seconds.
+No payment, output GPIO, firmware change, or second-board collection occurred.
+
+The complete log remains in ignored local storage.
+Raw-log SHA256: `f7e8adfc7d3e64edbcfa1dbcdb9c976dd858b845277857fb6561dd703287e36b`.
+These passes verify normal worker completion on hardware. Software-child regressions verify cancellation and termination failures.
+They do not establish a fix for the overnight discovery miss.
+
 ## October 3 completed overnight baseline
 
 The fixed-source lane completed all 120 scheduled samples. It returned exit code one because one sample failed.
