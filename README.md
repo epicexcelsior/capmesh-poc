@@ -49,6 +49,8 @@ Select **Verify recorded payment** for an independent, read-only Solana Devnet t
 The chain check verifies the mint, payer, merchant, transfer instruction, and exact token balance changes.
 The inspector also verifies both recorded BOOT states against the same device pin. Those separate input checks moved no funds.
 No inspector button purchases evidence or invokes hardware. The authentic recorded receipt is expired and stays WAIT.
+Open `/proof#payment` to see buyer → 0.001 Devnet USDC → merchant. Select **Verify recorded payment** for a read-only current chain query.
+The simulator creates no Solana transaction. A new real transaction requires the configured Devnet gateway and independent paid buyer.
 
 Export a standalone inspector for judge review:
 

@@ -1,4 +1,4 @@
-import { querySettlement } from './settlement.mjs';
+import { querySettlement, recordedPaymentDetails } from './settlement.mjs';
 
 const el = id => document.getElementById(id);
 const controls = ['original', 'tamper', 'challenge', 'identity'];
@@ -134,21 +134,29 @@ async function init() {
   el('pin').textContent = JSON.stringify({ algorithm: pins.algorithm, provider: 'esp32-c6-96a2', sec1_hex: sec1 }, null, 2);
   el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');
   el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(recorded.settlement.transaction) + '?cluster=devnet';
+  const payment = recordedPaymentDetails(recorded);
+  el('payment-payer').textContent = payment.payer;
+  el('payment-merchant').textContent = payment.merchant;
+  el('payment-amount').textContent = payment.amount_usdc.toFixed(3);
+  el('payment-explorer').href = el('transaction').href;
   controls.forEach(id => { el(id).onclick = () => experiment(id); });
   el('chain-query').disabled = false;
   el('chain-query').onclick = async () => {
     el('chain-query').disabled = true;
     status('chain-status', 'CHECKING', 'expired');
+    el('chain-summary').textContent = 'Checking the actual recorded transfer. No funds move.';
     el('chain-result').textContent = 'Querying Solana Devnet. No payment or hardware request occurs.';
     try {
       const result = await querySettlement(recorded);
       status('chain-status', 'VERIFIED TRANSFER', 'pass');
+      el('chain-summary').textContent = `Verified: buyer −0.001 USDC → merchant +0.001 USDC. Confirmed slot ${result.slot}.`;
       el('chain-result').textContent = JSON.stringify(result, null, 2);
     } catch (error) {
       status('chain-status', 'NOT VERIFIED', 'expired');
       el('chain-result').textContent = error.name === 'TimeoutError'
         ? 'The Devnet RPC query timed out after 15 seconds. Try again.'
         : error.message;
+      el('chain-summary').textContent = el('chain-result').textContent;
     } finally { el('chain-query').disabled = false; }
   };
   await experiment();

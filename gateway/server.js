@@ -82,6 +82,7 @@ export async function createGateway({ paymentServer, store, observe = observeHar
     '/evidence/device-signed-contact-states.json': 'docs/evidence/device-signed-contact-states.json',
     '/assets/fieldproof-signed-receipt.webm': 'docs/assets/fieldproof-signed-receipt.webm',
     '/assets/fieldproof-service-boundaries.svg': 'docs/assets/fieldproof-service-boundaries.svg',
+    '/assets/fieldproof-payment-to-observation.svg': 'docs/assets/fieldproof-payment-to-observation.svg',
     '/assets/fieldproof-service-expansion.svg': 'docs/assets/fieldproof-service-expansion.svg',
     '/assets/fieldproof-demo.webm': 'docs/assets/fieldproof-demo.webm',
     '/assets/fieldproof-walkthrough.webm': 'docs/assets/fieldproof-walkthrough.webm',

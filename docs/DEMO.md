@@ -106,6 +106,11 @@ For closed-contact rehearsal, restart the simulator with `npm run demo -- --clos
 
 ## Inspect the recorded signed purchase
 
+Open `/proof#payment` to see buyer → 0.001 Devnet USDC → merchant.
+Select **Verify recorded payment** for a read-only current check. The recorded receipt remains expired WAIT.
+Use [the flow picture](assets/fieldproof-payment-to-observation.svg) as a ten-second visual introduction before the technical scenes.
+It explains the Solana transfer and the separate Bluetooth request and device signature. It executes neither flow.
+
 1. Open `/proof` on the running local gateway.
 2. Check VALID signature, MATCHES challenge, 5/5 AGREE, and expired WAIT.
 3. Select **Flip contact state** and check REJECTED signature.

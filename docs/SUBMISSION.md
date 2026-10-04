@@ -111,6 +111,8 @@ Its recorded paid scene does not execute another payment. Its browser scenes ver
 The October 4 version is 149.88 seconds, 1280 × 900, and passed full decoding and visual inspection.
 It labels the simulated unpaid quote separately from the recorded real Devnet purchase. It has captions and no audio.
 A separate founder presentation remains incomplete.
+The local review kit also contains a 159.88-second visual version: a ten-second flow picture followed by the unchanged technical walkthrough.
+It remains local and includes no audio. Its full decode, browser playback, opening picture, transition, and closing frame passed.
 The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.
 The final Colosseum presentation requires the buyer and business explanation alongside the technical demonstration.
 Prepare that presentation after the MVP package.

@@ -50,8 +50,9 @@ The [short rehearsal](REHEARSAL.md) provides timed recording cues. The HTML guid
 5. Test one actual buyer incident, workaround, operator permission, useful-time limit, and pilot budget alongside packaging.
 
 The [bounty plan](BOUNTY_PLAN.md) owns acceptance gates. [Submission preparation](SUBMISSION.md) owns required fields and owner publication steps.
-The [hardware plan](HARDWARE_NEXT.md#decide-in-one-minute-today) provides the available-board fallback and optional borrowed contact.
-MakerSpace's published Sunday/Monday closure makes a normal workshop trip unsuitable before this deadline. [Current hours](https://www.maker-space.de/oeffnungszeiten/).
+The [hardware plan](HARDWARE_NEXT.md#highest-value-with-almost-no-lab-time) provides the available-board fallback and optional quick pickup.
+The founder now identifies Munich Maker Lab, a different lab, and has little sourcing time. Skip the trip unless parts are ready for pickup.
+MakerSpace's published closure applies only to MakerSpace. [MakerSpace hours](https://www.maker-space.de/oeffnungszeiten/).
 Use the Android phone as a camera or judge screen. Another sensor type requires a separate contract and trust setup.
 
 **Stop rule:** keep the contact question, receipt format, payment rail, and recorded fallback stable through the Germany submission.

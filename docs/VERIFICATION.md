@@ -4,6 +4,44 @@ Current continuation: October 4, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 4 visible Solana payment and visual explanation
+
+Starting source: clean `84a7cfed22d0410fb81e0af22f6b377b516e994f` on `main`.
+The founder needs a short visual demo before the October 5 MVP deadline and identifies Munich Maker Lab as a separate venue.
+The existing physical browser uses simulated settlement. It creates no new chain transaction.
+The [flow picture](assets/fieldproof-payment-to-observation.svg) now shows the actual architecture: payment first, then the separate BLE request and signed answer.
+The `/proof#payment` panel exposes the recorded payer, merchant, amount, Explorer link, and existing read-only chain query.
+The payment panel remains visible in presentation mode. Displayed recorded terms do not claim a successful current query.
+A query failure replaces the prior verified summary. The receipt's freshness and WAIT decision remain independent.
+
+| Check | Observed result |
+|---|---|
+| Actual Node Devnet RPC query | October 4, 20:58:34 UTC: the verifier confirmed slot 506374923, the selected mint, buyer delta −1000, and merchant delta +1000 base units. |
+| Actual browser Devnet RPC query | October 4, 21:05:02 UTC: VERIFIED TRANSFER, buyer −0.001 USDC, merchant +0.001 USDC. No RPC fixture interception occurred. The expired receipt remained WAIT. |
+| `npm test` in `gateway` | 42 passed, zero failed in 842.713 milliseconds. The explicit SVG route and private-path refusal passed. |
+| Focused Python launcher/export tests | 15 passed in 0.28 seconds. No host or firmware behavior changed. The preceding full Python result remains 204 passed and ten hardware skips. |
+| Gateway and prefixed static inspector browser checks | Recorded wallets and amount, Explorer link, visible presentation payment panel, receipt attacks, input archives, expiry, RPC fixtures, failure-summary replacement, recovery, and mobile width passed. |
+| Prefixed founder guide | Six steps, three modes, eight actual fixture outcomes, deep links, unique anchors, desktop/mobile width, and no page errors passed. |
+| Visual inspection | Full-size diagram and actual current-query desktop/mobile screenshots passed. |
+| Static package integrity | Eleven manifest files and twelve ZIP members matched every digest and archived byte. |
+| Local visual video assembly | The first concatenation ran before the introduction encoder finished and rejected the incomplete input. Assembly passed after encoder completion. |
+| Local visual video | A ten-second flow picture precedes the unchanged verified 149.88-second walkthrough. `ffprobe` reported 159.88 seconds, VP8, 1280 × 900, and no audio. Full decoding passed. The picture, transition frame, and closing frame passed visual inspection. |
+| Syntax and links | Changed JavaScript syntax and `git diff --check` passed. Fifty changed Markdown local links resolved before this record update. |
+| Review | The requested extra independent review stopped at the account usage limit. The primary review checked the full diff, read-only payment boundary, failure summary, and explicit public asset list. No concrete remaining issue was found. |
+
+Actual browser query log SHA256: `9c7aeb66a6ac42f81d171e735dbab6337c88c48231a6e88f270a1e48084fa96f`.
+Actual Node query log SHA256: `047f8f532a4a31aa0a1cf5b0c0009b18b1eb24d382d88da090694d7ef7599df7`.
+Payment-visual package ZIP SHA256: `b03fc928308d98e34fcdb383a115f7daec66fa0bc448fcc2f2d1084306e02db8`.
+Local visual walkthrough SHA256: `1d5029be1301a49415d71cc2eff5470ac3dfe7b0a83743c399e711d7aa516784`.
+The alternative video remains in ignored local submission storage. The committed original video and its recorded evidence remain unchanged.
+Its assembly uses a 25-frame-per-second, ten-second PNG introduction encoded with `libvpx`, then `ffmpeg` concatenation with stream copy.
+The source screenshot comes from the new SVG. This assembly creates no payment or hardware request.
+
+No firmware, GPIO output, new physical observation, new payment, peaq activation, public deployment, registration, or submission occurred.
+The existing physical gateway belongs to the founder's active rehearsal. This continuation did not stop it or invoke its observation endpoint.
+New sensors, phone sensing, and Mobile Wallet Adapter remain outside the immediate submission scope.
+The [hardware plan](HARDWARE_NEXT.md#highest-value-with-almost-no-lab-time) now specifies pickup only when parts are ready.
+
 ## October 4 founder guide and self-run rehearsal
 
 Starting source: `38ce96645d270a0895173823e97080066c04136c` on `main`.

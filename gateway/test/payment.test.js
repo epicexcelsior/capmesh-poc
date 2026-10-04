@@ -170,7 +170,7 @@ test('known assets serve inside a hidden checkout without exposing private paths
   writeFileSync(join(dir, 'docs/proof.html'), '<h1>Receipt inspection</h1>');
   writeFileSync(join(dir, 'docs/HOW_IT_WORKS.html'), '<h1>Learn and rehearse</h1>');
   writeFileSync(join(dir, 'docs/evidence/device-signed-contact-states.json'), '{"public":"contact fixture"}');
-  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg']) {
+  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg', 'fieldproof-payment-to-observation.svg']) {
     writeFileSync(join(dir, 'docs/assets', name), '<svg xmlns="http://www.w3.org/2000/svg"><title>Public diagram</title></svg>');
   }
   writeFileSync(join(dir, '.local/private.json'), '{"private":"fixture only"}');
@@ -184,7 +184,7 @@ test('known assets serve inside a hidden checkout without exposing private paths
   const contacts = await fetch(`${f.url}/evidence/device-signed-contact-states.json`);
   assert.equal(contacts.status, 200);
   assert.deepEqual(await contacts.json(), { public: 'contact fixture' });
-  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg']) {
+  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg', 'fieldproof-payment-to-observation.svg']) {
     const diagram = await fetch(`${f.url}/assets/${name}`);
     assert.equal(diagram.status, 200);
     assert.match(diagram.headers.get('content-type'), /image\/svg\+xml/);

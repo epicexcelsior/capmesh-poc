@@ -1,10 +1,28 @@
 # Prepare the next physical demonstration
 
 **Decision: submit the existing signed-contact demonstration. Add a borrowed contact only after its physical checks pass.**
-As of October 4, 2026. This plan uses the founder's reported Munich MakerSpace access.
+As of October 4, 2026. The founder now identifies Munich Maker Lab. Earlier MakerSpace checks remain separate references.
 Parts availability, reservations, and local prices remain unverified. This document authorizes no purchase.
 
-The next result must show a physical fixture that changes the measured state.
+## Highest value with almost no lab time
+
+The founder identified **Munich Maker Lab**, a different lab, on October 4. Do not apply MakerSpace's hours to that lab.
+Its exact location, access, and component stock remain unverified.
+The founder has little time for sourcing, wiring, or another firmware build before the MVP deadline.
+
+**Rehearse and submit the existing board first. Skip the trip unless the parts are ready for a quick pickup.**
+If pickup is available, request one unpowered magnetic door contact with its magnet, jumper wires, and a small breadboard.
+Borrow a multimeter for later wiring verification. Keep the external fixture outside the critical path until its physical checks pass.
+Optional LED parts: 330 Ω and 1 kΩ resistors. They enable a later current-limited indicator after board-pin verification.
+The present bare LED has no verified resistor or GPIO assignment. Keep it disconnected. No GPIO20 output test occurred.
+
+The strongest immediate prop is the existing board beside a hinged cardboard gate labeled **BOOT represents the contact**.
+Use the phone to film BOOT and the laptop in one continuous shot. The cardboard gate does not measure or control anything.
+The [payment-to-observation picture](assets/fieldproof-payment-to-observation.svg) shows where Solana enters the flow.
+The receipt inspector's payment panel shows the real recorded transaction and a read-only current verification.
+A new phone-sensor or Mobile Wallet Adapter integration remains outside this deadline's scope.
+
+After the MVP submission, the next physical upgrade uses a fixture that changes the measured state.
 The [contact setup guide](CONTACT_SETUP.md) now covers configured firmware input, buyer selection, and separate public pins.
 Software checks and both candidate builds passed. Physical fixture and second-board checks remain open.
 A second board then tests distinct device identities. A phone tests reviewer access and an optional wallet workflow.

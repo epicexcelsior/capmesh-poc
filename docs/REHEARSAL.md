@@ -46,6 +46,11 @@ Five matching samples come from one input. They do not represent five observers 
 
 ## Prepare two browser tabs
 
+Open [the payment-to-observation picture](assets/fieldproof-payment-to-observation.svg) before the timed demonstration.
+Point to the USDC path first, then the Bluetooth request and signed answer. The ESP32 submits no Solana transaction.
+Open `/proof#payment` for the actual recorded transfer, both wallets, Explorer link, and read-only current query.
+The simulator's **Run simulation** button creates no chain transaction.
+
 Prerequisites: the [README setup](../README.md#run-without-hardware). Run commands from the repository root.
 
 1. Run `npm --prefix gateway run demo`.

@@ -16,6 +16,13 @@ function validatePurchase(purchase) {
   return settlement;
 }
 
+// Describe expected recorded terms. Only querySettlement verifies them against chain data.
+export function recordedPaymentDetails(purchase) {
+  const settlement = validatePurchase(purchase);
+  return { payer: settlement.payer, merchant: MERCHANT, transaction: settlement.transaction,
+    amount_usdc: Number(AMOUNT) / 1e6, network: 'Solana Devnet' };
+}
+
 export function verifySettlement(result, purchase) {
   const settlement = validatePurchase(purchase);
   if (!result) throw new Error('The RPC cannot find this transaction at confirmed commitment.');
