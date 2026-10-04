@@ -2,7 +2,8 @@
 
 **Decision: submit the verified Germany MVP first.**
 As of October 4, 2026. The deadline is October 5 at 23:59:59 CEST.
-Use [the documentation guide](README.md) for one reading path and the complete reference map.
+Open [the illustrated founder guide](HOW_IT_WORKS.html) first. Learn one transaction and run one rehearsal.
+Use [the documentation map](README.md) only to find a specific reference.
 
 ## The thesis to keep
 
@@ -38,13 +39,13 @@ The [strategy](STRATEGY.md#the-wedge-to-test-first) owns the pilot, alternatives
 | Two-observer software policy and bounded BLE runner | Actual paired hardware timing and independent sensing remain unverified. |
 
 The [verification record](VERIFICATION.md) owns exact tests and discovery reliability limits.
-The [short rehearsal](REHEARSAL.md) explains the working loop. [How it works](HOW_IT_WORKS.html#understand) provides the complete illustrated reference.
+The [short rehearsal](REHEARSAL.md) provides timed recording cues. The HTML guide keeps the detailed reference collapsed.
 
 ## Do next
 
-1. Complete human Germany registration and the FieldProof Colosseum project page.
-2. Publish and verify the prepared test and video links.
-3. Rehearse quote, simulated purchase, expiry, recorded payment, and receipt attacks.
+1. Rehearse quote, simulated purchase, expiry, real BOOT input, and recorded receipt attacks yourself.
+2. Complete human Germany registration and the FieldProof Colosseum project page.
+3. Publish and verify the prepared test and video links.
 4. Complete human submission before October 5 at 23:59:59 CEST.
 5. Test one actual buyer incident, workaround, operator permission, useful-time limit, and pilot budget alongside packaging.
 

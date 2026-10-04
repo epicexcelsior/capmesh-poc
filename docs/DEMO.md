@@ -4,6 +4,26 @@ Use the local simulator for reviewers without hardware. Use BLE when the ESP32 i
 Run commands from the repository root unless a step changes directories.
 Start with the [short rehearsal and explanation questions](REHEARSAL.md).
 
+## Use the rehearsal launcher
+
+Run commands from the repository root. The launcher never pays, flashes firmware, or drives a GPIO output.
+
+| Command | Result | Radio and funds |
+|---|---|---|
+| `python3 scripts/demo.py check` | Check installed Node/SQLite, gateway dependencies, and host CLI | No radio or funds |
+| `python3 scripts/demo.py guide` | Serve the illustrated guide on localhost port 8788 | No radio or funds |
+| `python3 scripts/demo.py sim` | Start the no-hardware purchase rehearsal on port 4022 | Simulated contact and payment |
+| `python3 scripts/demo.py board --expect open` | Record one bounded input from the existing GPIO9 board | Real BLE, no payment |
+| `python3 scripts/demo.py board --expect closed` | Verify held BOOT and fail if the action differs | Real BLE, no payment |
+| `python3 scripts/demo.py physical` | Start the browser's real-input rehearsal on port 4023 | Real BLE, simulated payment |
+| `python3 scripts/demo.py cases` | Execute eight two-observer software scenarios | Signed fixtures, no hardware or payment |
+
+Hold BOOT before the CLOSED check. Keep it held until the result appears. Do not press Reset.
+The board command writes a new ignored JSONL log. It preserves failures and performs no automatic retry.
+The bounded worker's timeout and cleanup remain those of the diagnostic below.
+Stop a server with Ctrl+C in its own terminal. An occupied port causes refusal. Select another `--port` when needed.
+The [HTML guide](HOW_IT_WORKS.html#run) owns the beginner procedure. The commands below remain the advanced paths.
+
 ## Record scheduled input checks
 
 Use this diagnostic to measure delivery reliability. It reads BOOT and verifies each device signature, challenge, sample count, and age.

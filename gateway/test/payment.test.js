@@ -168,6 +168,7 @@ test('known assets serve inside a hidden checkout without exposing private paths
   mkdirSync(join(dir, 'docs/assets'));
   mkdirSync(join(dir, '.local'));
   writeFileSync(join(dir, 'docs/proof.html'), '<h1>Receipt inspection</h1>');
+  writeFileSync(join(dir, 'docs/HOW_IT_WORKS.html'), '<h1>Learn and rehearse</h1>');
   writeFileSync(join(dir, 'docs/evidence/device-signed-contact-states.json'), '{"public":"contact fixture"}');
   for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg']) {
     writeFileSync(join(dir, 'docs/assets', name), '<svg xmlns="http://www.w3.org/2000/svg"><title>Public diagram</title></svg>');
@@ -177,6 +178,9 @@ test('known assets serve inside a hidden checkout without exposing private paths
   const page = await fetch(`${f.url}/proof`);
   assert.equal(page.status, 200);
   assert.equal(await page.text(), '<h1>Receipt inspection</h1>');
+  const guide = await fetch(`${f.url}/learn`);
+  assert.equal(guide.status, 200);
+  assert.match(await guide.text(), /Learn and rehearse/);
   const contacts = await fetch(`${f.url}/evidence/device-signed-contact-states.json`);
   assert.equal(contacts.status, 200);
   assert.deepEqual(await contacts.json(), { public: 'contact fixture' });
@@ -189,6 +193,30 @@ test('known assets serve inside a hidden checkout without exposing private paths
   for (const path of ['/.local/private.json', '/gateway/buyer.js', '/.git/config', '/receipt-keys.json/../.local/private.json']) {
     assert.equal((await fetch(f.url + path)).status, 404);
   }
+  assert.deepEqual(f.events, []);
+});
+
+test('actual founder guide links reach public assets or repository references', async t => {
+  const f = await fixture(t);
+  const response = await fetch(`${f.url}/learn`);
+  assert.equal(response.status, 200);
+  const page = await response.text();
+  let references = 0;
+  for (const match of page.matchAll(/href="([^"]+)"/g)) {
+    const target = match[1];
+    if (target.startsWith('#')) continue;
+    const link = new URL(target, `${f.url}/learn`);
+    if (link.origin !== f.url) {
+      if (link.hostname === 'github.com') {
+        assert.ok(link.pathname.startsWith('/epicexcelsior/capmesh-poc/blob/main/docs/'));
+        references += 1;
+      }
+      continue;
+    }
+    assert.equal((await fetch(link)).status, 200, `Broken guide link: ${target}`);
+  }
+  assert.ok(page.includes('href="/proof?present=1"'));
+  assert.ok(references >= 10, 'The technical references must link to the public repository');
   assert.deepEqual(f.events, []);
 });
 

@@ -21,13 +21,19 @@ def test_judge_package_contains_only_public_assets_and_works_under_a_url_prefix(
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("public fixture")
-    (root / "docs/proof.html").write_text('<main><a href="/">Back to dispatch desk</a></main><script src="/proof.js"></script>')
+    (root / "docs/proof.html").write_text('<main><a href="/">Back to dispatch desk</a><a href="/learn">Learn</a></main><script src="/proof.js"></script>')
+    (root / "docs/HOW_IT_WORKS.html").write_text('<a href="http://127.0.0.1:4022/proof?present=1">Inspect</a>'
+                                              '<a href="PROTOCOL.md#request">Protocol</a>')
     (root / "secret.keypair.json").write_text("PRIVATE FIXTURE")
     monkeypatch.setattr(module, "ROOT", root)
     output = tmp_path / "site"
     archive = module.export(output)
     assert './proof.js' in (output / "index.html").read_text()
     assert 'href="./index.html"' in (output / "index.html").read_text()
+    assert 'href="./guide.html"' in (output / "index.html").read_text()
+    guide = (output / "guide.html").read_text()
+    assert 'href="./index.html?present=1"' in guide
+    assert 'href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/PROTOCOL.md#request"' in guide
     with ZipFile(archive) as bundle:
         assert set(bundle.namelist()) == {*module.ASSETS, "index.html", "README.txt", "manifest.json"}
         assert all(b"PRIVATE FIXTURE" not in bundle.read(name) for name in bundle.namelist())
@@ -46,3 +52,18 @@ def test_existing_archive_preserves_both_paths(tmp_path):
         module.export(output)
     assert not output.exists()
     assert archive.read_bytes() == b"existing package"
+
+
+def test_guide_rejects_private_or_unknown_local_references():
+    module = load_exporter()
+    with pytest.raises(ValueError, match="unsupported local link"):
+        module.guide_links('<a href="../.local/private.keypair.json">Private</a>')
+
+
+def test_current_founder_guide_has_only_supported_export_links():
+    module = load_exporter()
+    source = (module.ROOT / "docs/HOW_IT_WORKS.html").read_text()
+    guide = module.guide_links(source)
+    assert 'href="./index.html?present=1"' in guide
+    assert 'href="HARDWARE_NEXT.md"' not in guide
+    assert 'src="assets/fieldproof-service-boundaries.svg"' in guide

@@ -1,7 +1,7 @@
 # Run the demo and explain the decision
 
-Start here before recording. Your goal: explain what the buyer pays for, what the device signs, and why evidence expires.
-The [complete explanation](HOW_IT_WORKS.html#understand) covers each component. This page owns the short rehearsal.
+Start with [the illustrated founder guide](HOW_IT_WORKS.html). Your goal: explain the payment, radio, signed answer, and acceptance checks.
+Use its launcher stages to rehearse yourself. This page owns timed recording cues and the six explanation questions.
 
 ## Learn the loop
 

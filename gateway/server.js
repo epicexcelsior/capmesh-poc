@@ -4,6 +4,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { HTTPFacilitatorClient, x402ResourceServer } from '@x402/core/server';
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader, encodePaymentResponseHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
@@ -15,6 +16,9 @@ export const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 export const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 export const PAY_TO = 'CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const guideReferences = new Set(['README.md', 'FOCUS.md', 'REHEARSAL.md', 'STRATEGY.md', 'VERIFICATION.md', 'DEMO.md',
+  'SUBMISSION.md', 'BOUNTY_PLAN.md', 'PEAQ_INTEGRATION.md', 'CONTACT_SETUP.md', 'HARDWARE_NEXT.md',
+  'CORROBORATION.md', 'PROTOCOL.md', 'RECEIPT_IDENTITY.md', 'OVERVIEW.md', 'diagnostics.html']);
 
 export async function createPaymentServer(facilitator) {
   const server = new x402ResourceServer(facilitator).register(NETWORK, new ExactSvmScheme());
@@ -57,6 +61,18 @@ export async function createGateway({ paymentServer, store, observe = observeHar
   app.disable('x-powered-by');
   app.use(express.json({ limit: '2kb' }));
   app.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+  app.get('/learn', (_req, res) => {
+    const guide = readFileSync(resolve(assetsRoot, 'docs/HOW_IT_WORKS.html'), 'utf8');
+    // The docs server and standalone export have different roots. Keep this route local and references public.
+    res.type('html').send(guide.replace(/href="([^"]+)"/g, (attribute, target) => {
+      if (target === 'http://127.0.0.1:4022/proof?present=1') return 'href="/proof?present=1"';
+      if (target === 'overview.html') return 'href="/"';
+      if (guideReferences.has(target.split('#')[0])) {
+        return `href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/${target}"`;
+      }
+      return attribute;
+    }));
+  });
   // Check only these relative asset names for dotfiles, not the trusted checkout path.
   for (const [route, file] of Object.entries({
     '/': 'docs/overview.html', '/proof': 'docs/proof.html', '/proof.js': 'docs/proof.js',

@@ -101,6 +101,11 @@ Simulated payments and Devnet tokens do not establish real revenue.
 
 ## Judging walkthrough
 
+Open [the illustrated founder guide](HOW_IT_WORKS.html) to learn and rehearse one transaction.
+The exported package includes this guide beside the actual recorded-receipt verifier. The guide's interactive examples are teaching models.
+Run `python3 scripts/demo.py check`, then follow its simulation, real-board, and recorded-payment stages.
+Those launcher stages move no funds. They do not activate peaq or deploy a public product.
+
 Use the [current signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for technical review.
 Its recorded paid scene does not execute another payment. Its browser scenes verify the real receipt and reject attacks.
 The October 4 version is 149.88 seconds, 1280 × 900, and passed full decoding and visual inspection.

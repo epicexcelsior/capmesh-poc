@@ -1,18 +1,19 @@
 # FieldProof documentation
 
-**Read one short path first. Use the reference files when you need a specific detail.**
+**Open [the illustrated founder guide](HOW_IT_WORKS.html) first.**
+Its short path explains one transaction and leads your own rehearsal. The detailed reference stays collapsed until you need it.
 The current prototype buys and verifies a contact observation. Physical-service commerce is the company hypothesis.
 
-## Learn and demonstrate in ten minutes
+## Learn and demonstrate in one rehearsal
 
-1. Read [the current decision](FOCUS.md). Know the buyer, working result, and next action.
-2. Read [the short rehearsal](REHEARSAL.md). Explain payment, device signature, challenge, and freshness.
-3. Run [the no-hardware quick start](../README.md#run-without-hardware).
-4. Open `/proof`. Select **Focus demo** and run the three receipt experiments.
-5. Read [the submission checklist](SUBMISSION.md#required-fields-that-remain-incomplete).
+1. Open the HTML guide. Explain its six transaction steps.
+2. Run `python3 scripts/demo.py check` from the repository root.
+3. Follow the guide's no-hardware, real-board, and recorded-evidence stages.
+4. Explain the radio links and the eight optional software cases.
+5. Complete [the human submission checklist](SUBMISSION.md#required-fields-that-remain-incomplete).
 
-Use [How it works](HOW_IT_WORKS.html#understand) for the complete illustrated explanation.
-It is a reference. You do not need to read every section before the demonstration.
+Use [the short rehearsal](REHEARSAL.md) for timed recording cues.
+You do not need to read every reference file before the demonstration.
 
 ## Find the document that owns the answer
 
@@ -41,7 +42,7 @@ It is a reference. You do not need to read every section before the demonstratio
 - [Current walkthrough](assets/fieldproof-signed-receipt.webm): captioned recorded evidence and browser checks. No audio.
 
 The gateway serves the interactive pages and a fixed public asset list.
-The exported package provides the recorded inspector without a backend, wallet, or physical device.
+The exported package provides the founder guide and recorded inspector without a backend, wallet, or physical device.
 Opening a source HTML file directly does not create a running gateway.
 
 ## Evidence and history

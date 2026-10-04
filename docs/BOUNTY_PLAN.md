@@ -31,8 +31,8 @@ It keeps this question, receipt format, payment rail, and recorded fallback. Unv
 | 8 | peaq integration decision | One useful adapter flow or an explicit activation limitation | Read-only Agung registry readiness passed. Prepare exact identity/key/service inputs in isolation. Activation and activity events remain unimplemented. |
 | 9 | Human final submissions | peaq and Colosseum submissions complete before October 13, 08:59 CEST | Not submitted. |
 
-Aim to finish the MVP package by October 4 at 18:00 CEST.
-Use October 5 for link checks and submission recovery. This is an internal buffer, not an organizer deadline.
+The October 4 package now includes an illustrated founder guide and a bounded rehearsal launcher.
+Use the remaining time for founder rehearsal, public-link verification, and human submission recovery.
 Aim to finish final Colosseum and peaq materials by October 11 at 18:00 CEST.
 
 Bound the next peaq preparation session to 60 minutes of engineering work.
@@ -85,6 +85,7 @@ A deployed simulator must not expose the physical gateway, private keys, device 
 Publication requires a concrete review and owner authorization.
 
 The [README export instructions](../README.md#inspect-the-recorded-physical-purchase) create a separate static inspector ZIP.
+Its `guide.html` explains the story, radio paths, commands, and current limits. Its `index.html` executes recorded-receipt verification.
 It includes no wallet, backend, private key, device authorization, or local ledger.
 Use the complete simulator rehearsal to demonstrate a purchase. Use the inspector to examine recorded physical and chain evidence.
 

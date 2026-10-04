@@ -8,8 +8,8 @@ This prototype implements the observation purchase. Access permission, gate cont
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Start with [the ten-minute reading and demo path](docs/README.md).
-It routes the story, rehearsal, hardware, submission, and technical reference files.
+Start with [the illustrated founder guide](docs/HOW_IT_WORKS.html). It explains the story, radio links, demo commands, failure cases, and next-day priorities.
+The [documentation map](docs/README.md) routes deeper references.
 Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm) for recorded payment evidence and browser checks. It has captions and no audio.
 The [verification record](docs/VERIFICATION.md) owns executed checks and remaining limits.
 
@@ -17,6 +17,10 @@ The [verification record](docs/VERIFICATION.md) owns executed checks and remaini
 
 Prerequisites: Python 3.10+, `uv`, and Node.js 22.13+ with `node:sqlite`.
 Start each command block at the repository root. Stop a running gateway with Ctrl+C before changing modes.
+
+After setup, run `python3 scripts/demo.py check`, then `python3 scripts/demo.py sim` for the shortest rehearsal.
+The launcher also provides `board`, `physical`, `cases`, and `guide`. It never pays, flashes, or drives a GPIO output.
+Use `python3 scripts/demo.py --help` for modes. The detailed commands below remain supported.
 
 ```bash
 uv sync --project host
@@ -54,7 +58,9 @@ python3 -m http.server 8787 --bind 127.0.0.1 --directory .local/judge-demo
 ```
 
 Open `http://127.0.0.1:8787`. The exporter also creates `.local/judge-demo.zip` and a SHA256 manifest.
-It copies only public evidence, browser code, the public verification pin, and the current technical video.
+It copies a fixed public asset list: guide, evidence, browser code, verification pin, diagram, and current technical video.
+Open `/guide.html` in the exported package for the self-contained story, radio explanation, and rehearsal.
+The guide labels its interactive examples as teaching models. Its receipt link opens the actual browser verifier.
 It refuses to overwrite an existing directory or archive. Select a new output name for another export.
 This package inspects recorded evidence. Use the simulator commands above to exercise a complete purchase without funding.
 Publication remains an owner action. Serve the exported directory on HTTPS for browser cryptography outside localhost.

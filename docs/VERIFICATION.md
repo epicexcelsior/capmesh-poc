@@ -4,6 +4,55 @@ Current continuation: October 4, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 4 founder guide and self-run rehearsal
+
+Starting source: `38ce96645d270a0895173823e97080066c04136c` on `main`.
+The [illustrated guide](HOW_IT_WORKS.html) now leads with one transaction and three rehearsal stages.
+It explains the separate internet/payment and direct BLE paths. Deep technical references stay collapsed.
+Its six-step and eight-case panels are labeled teaching models. The receipt inspector performs actual browser verification.
+The new `scripts/demo.py` launcher provides prerequisite checks, simulation, bounded board input, physical-browser rehearsal, software cases, and the guide.
+It never pays, flashes firmware, drives a GPIO output, retries failed input, or replaces physical failure with simulation.
+The [demo runbook](DEMO.md#use-the-rehearsal-launcher) owns launcher modes and recovery.
+
+| Check | Observed result |
+|---|---|
+| `python3 scripts/demo.py check` | Three prerequisite checks passed. No radio or payment. |
+| `python3 scripts/demo.py cases` | All eight executed signed-fixture scenarios matched the guide. Fresh OPEN produced DISPATCH. The other seven final outcomes produced WAIT. No physical boards participated. |
+| `python3 scripts/demo.py board --expect open` | One bounded real BLE observation passed. GPIO9 reported OPEN, five matching samples, pinned P-256 identity, and five-second age. |
+| Board timing | Discovery and manifest: 8.707 seconds. Invocation and delivery: 3.998 seconds. Total BLE path: 12.705 seconds. Worker: 12.778 seconds. |
+| Launcher restart regression before the fix | A stopped server's TIME_WAIT connection caused false port refusal. The focused test failed with address already in use. |
+| Launcher restart after the fix | The probe enables address reuse. The focused regression passed. Active listeners remain refused. Independent review also checked loopback and wildcard listeners with address reuse. |
+| Actual guide-link regression before the fix | `/learn` returned the source guide, but its `PEAQ_INTEGRATION.md` link returned 404. |
+| Guide links after the fix | Known references link to the public repository. The recorded inspector stays on the current gateway port. Local public assets return 200. Private paths remain 404. |
+| Real guide export regression before the fix | Export rejected the newly linked hardware guide. The actual-source test reproduced the missing allowlist entry. |
+| Guide export after the fix | The explicit hardware reference links to the public repository. Unknown or private local references still fail. No additional directories are copied. |
+| Focused launcher and export tests | 15 passed in 0.20 seconds. Child failures, wrong physical action, invalid identity, malformed state, occupied port, restart, and export boundaries are covered. |
+| `uv run --project host pytest -q` | 204 passed, ten hardware tests skipped in 2.12 seconds. The separate real-input checks above and below supplied this continuation's hardware evidence. |
+| `npm test` in `gateway` | 42 passed, zero failed in 706.577 milliseconds. |
+| Guide browser QA | Source, gateway, and prefixed static export passed six steps, three modes, eight executed fixture outcomes, deep links, unique anchors, desktop/mobile widths, and no page errors. |
+| Simulated browser purchase | Launcher on port 4035 passed configured terms, OPEN/DISPATCH, expired WAIT, desktop/mobile widths, and no page errors. No hardware or funds. |
+| Physical browser rehearsal | Launcher on port 4023 passed a mock-payment purchase with actual GPIO9 OPEN, a v3 device signature, pinned identity, DISPATCH, then expired WAIT. No page errors. |
+| Prefixed recorded inspector | Signature, challenge, expiry, three attacks, both recorded input states, damaged archives, focus controls, RPC fixtures, HTTP 429 recovery, and mobile width passed. This QA does not claim a new live chain query. |
+| Export navigation and integrity | Guide → actual inspector → guide passed under a URL prefix. Ten manifest files and eleven ZIP members matched every digest and archived byte. |
+| Visual inspection | Source desktop, transaction panel, source mobile, exported mobile, and actual physical OPEN screenshots passed inspection. |
+| Independent fix review | Both concrete rehearsal findings were resolved. The reviewer ran all 15 focused Python and 42 gateway tests. No further concrete finding remained. |
+| Final independent adversarial review | No concrete P1/P2 finding remained. The launcher preserves failures and simulated settlement. Gateway and export changes preserve public asset boundaries. |
+| Documentation and syntax | 119 changed-document local links resolved. Changed Python sources parsed. JavaScript syntax and `git diff --check` passed. |
+
+The bounded board log started at October 4, 17:50:55 UTC. It records clean tracked source `38ce966`.
+The new launcher was untracked at that time. Host and firmware file hashes remain in the ignored raw log.
+Raw board-log SHA256: `371dd78cc2458a2c1e66b4050572dafc86c7b5e167de55c0ebb2cf03eb870d4d`.
+The physical-browser result was captured at October 4, 18:13:42 UTC, against `38ce966` with tracked rehearsal changes.
+Physical-browser result SHA256: `b19f75d05fbcae727e1cb3cd95b5e65e8c321b430d894339b0e0458fd8be0a42`.
+Final founder-package ZIP SHA256: `615a24a90ca5c5869a17853b86314c08e384925682b1cf75400eeec060a1211d`.
+The technical video remains unchanged, with SHA256 `42e7ec97daacd0cb04d5af39d50ebae1c9dc127d6e552f47aa9219b49357159b`.
+
+These checks add no external gate, second physical observer, capacity benchmark, phone-sensor adapter, or production authorization.
+They do not explain or fix the earlier overnight discovery miss. The October 2 human-held CLOSED evidence remains the physical closed-state record.
+This continuation performed no actual payment, firmware change, output operation, peaq write, publication, registration, or submission.
+Public links, human registration, and the submission receipt remain separate completion gates.
+Owned test gateways stopped after verification. No background hardware lane remains active. The founder can start the default simulator in its own terminal.
+
 ## October 4 focused demo and current device readiness
 
 Starting source: `cd43b2f4c7019232fe02619062c5e3b29781a987` on `main`.

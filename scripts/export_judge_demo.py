@@ -4,12 +4,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import tempfile
 from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = {
+    "guide.html": "docs/HOW_IT_WORKS.html",
     "proof.js": "docs/proof.js",
     "settlement.mjs": "docs/settlement.mjs",
     "receipt-keys.json": "host/capmesh/protocol/receipt_keys.json",
@@ -18,6 +20,24 @@ ASSETS = {
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
     "assets/fieldproof-service-boundaries.svg": "docs/assets/fieldproof-service-boundaries.svg",
 }
+
+
+def guide_links(page):
+    def rewrite(match):
+        target = match.group(1)
+        if target == "http://127.0.0.1:4022/proof?present=1":
+            return 'href="./index.html?present=1"'
+        if target.startswith(("#", "https://", "http://")) or target.split("#")[0] in ASSETS:
+            return match.group(0)
+        # References stay in the public repository. Copy no linked directories or local state.
+        allowed = {"README.md", "FOCUS.md", "REHEARSAL.md", "STRATEGY.md", "VERIFICATION.md", "DEMO.md",
+                   "SUBMISSION.md", "BOUNTY_PLAN.md", "PEAQ_INTEGRATION.md", "CONTACT_SETUP.md", "HARDWARE_NEXT.md",
+                   "CORROBORATION.md", "PROTOCOL.md", "RECEIPT_IDENTITY.md", "OVERVIEW.md",
+                   "overview.html", "diagnostics.html", "evidence/contact-states.json", "evidence/devnet-purchase.json"}
+        if target.split("#")[0] not in allowed:
+            raise ValueError(f"The guide contains an unsupported local link: {target}")
+        return f'href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/{target}"'
+    return re.sub(r'href="([^"]+)"', rewrite, page)
 
 
 def export(output):
@@ -36,13 +56,16 @@ def export(output):
         page = (ROOT / "docs/proof.html").read_text()
         page = page.replace('src="/proof.js"', 'src="./proof.js"')
         page = page.replace('<a href="/">Back to dispatch desk</a>', '<a href="./index.html">Restart inspection</a>')
+        page = page.replace('href="/learn"', 'href="./guide.html"')
         page = page.replace('</main>', '<p><a href="./assets/fieldproof-signed-receipt.webm">Watch the captioned 2:30 walkthrough</a></p></main>')
         (stage / "index.html").write_text(page)
+        (stage / "guide.html").write_text(guide_links((stage / "guide.html").read_text()))
         (stage / "README.txt").write_text(
             "FieldProof: inspect recorded physical evidence\n\n"
             "1. Serve this directory on localhost or HTTPS.\n"
             "   python3 -m http.server 8787 --bind 127.0.0.1\n"
-            "2. Open http://127.0.0.1:8787.\n"
+            "2. Open http://127.0.0.1:8787/guide.html for the story, radio explanation, and rehearsal.\n"
+            "   Open http://127.0.0.1:8787 for actual recorded-receipt verification.\n"
             "3. Verify the original receipt, then alter its state, challenge, or public key.\n"
             "4. Select Verify recorded payment for a read-only Solana Devnet RPC query.\n"
             "5. Inspect the separately signed BOOT held/released input pair. Those checks moved no funds.\n"
