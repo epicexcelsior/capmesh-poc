@@ -1,8 +1,43 @@
 # FieldProof verification record
 
-Current continuation: October 4, 2026, Europe/Berlin. Public paid evidence dates to October 1.
+Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates to October 1.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 5 visual buyer decision and short proof companion
+
+Starting source: clean `b2c1ce95dea4343a6f5d938551c668c0fda2eabd` on `main`.
+The receipt inspector now illustrates the visiting robot, external operator, receipt claim, and actual buyer decision.
+The scene renders the existing verifier result. It introduces no separate acceptance policy, hardware control, or clock override.
+An altered claim remains visible as a claim. Failed or unavailable verification keeps the illustrated buyer at WAIT.
+Receipt metadata remains available in the full view. The focused view preserves all four acceptance checks and the payment panel.
+The [one-minute proof](REHEARSAL.md#explain-the-recorded-proof-in-one-minute) gives the founder a short explanation path.
+The morning checklist and short video remain in ignored local storage. Public links and human submission remain unverified completion gates.
+
+| Check | Observed result |
+|---|---|
+| Initial presentation layout | The new scene pushed the experiment controls below the 900-pixel viewport. The existing browser assertion failed. |
+| Revised presentation layout | A compact illustration and hidden duplicate metadata restored desktop fit. The default view retains the metadata. Desktop and 390-pixel mobile screenshots passed visual inspection. |
+| Gateway and prefixed static inspector | Original signature, expired WAIT, three attacks, synchronized scene, focus modes, RPC fixtures, HTTP 429 recovery, both input archives, and damaged archives passed. |
+| Scene acceptance branch | A fixed historical browser-clock fixture produced DISPATCH from the unchanged original receipt. Tampering returned WAIT. This is a test fixture, not fresh physical evidence. |
+| Unavailable source archive | HTTP 404 produced NOT VERIFIED, an UNAVAILABLE claim, WAIT, and disabled inspector/payment controls. |
+| `npm test` in `gateway` | 42 passed, zero failed in 747.387 milliseconds. |
+| Focused Python launcher/export tests | 15 passed in 0.21 seconds. No host or firmware behavior changed. The previous full Python result remains 204 passed and ten hardware skips. |
+| Exported guide | Six steps, three modes, eight executed software outcomes, deep references, unique anchors, desktop/mobile, and no page errors passed. |
+| Static package | Eleven manifest entries and twelve ZIP members matched every digest and archived byte. |
+| Local morning page | Three checkboxes, every local link, loaded diagram, desktop/mobile width, and no page errors passed. Final links and Chromium playback metadata also passed. |
+| Actual Devnet query during final recording | Captured October 4, 22:53:44 UTC, or October 5, 00:53:44 CEST. One actual `getTransaction` query confirmed slot 506374923, payer −1000, merchant +1000, and the selected mint. |
+| Short visual companion | The first 76.6-second capture passed decoding. Its final framing hid the peaq note behind the caption. A second capture moved the future section into view. The final video is 75.64 seconds, VP8, 1280 × 900, 25 frames/second, with no audio. Full decoding passed. |
+| Final video inspection | Actual payment, original WAIT, another-key rejection, and final company/peaq-status frames passed visual inspection. |
+| Recorder input boundaries | Invalid protocols, missing directory slash, URL query, and existing output failed before capture. Existing output remained intact. |
+| Review and syntax | Primary source/diff review and changed JavaScript syntax checks passed. No independent review was repeated after the earlier account-limit failure. Forty-eight local Markdown paths resolved before this record update. |
+
+Final video SHA256: `a352600b14525ed0e70b270c5378d5b8207b80e29ab4cc0453ba4f9c5d5d4ffc`.
+Final actual query record SHA256: `53ba267b7958e3b27dee4e16818281b143ac883b023c6337b43751ec74c98e6f`.
+Final inspector ZIP SHA256: `571d8b7f5a9205b915e5d8bf2f16c4e085626f5c167f40b9d86f27c0ef54c4f3`.
+The recorder permits static reads and one Devnet transaction query. Failed verification prevents a completed video.
+Both captures used actual RPC responses. Neither intercepted the RPC with fixtures, changed receipt times, paid, or invoked hardware.
+No firmware, GPIO output, peaq write, public deployment, registration, or submission occurred. The founder's physical gateway remained active.
 
 ## October 4 visible Solana payment and visual explanation
 

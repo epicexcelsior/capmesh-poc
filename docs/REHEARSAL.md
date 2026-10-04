@@ -66,9 +66,26 @@ Use the committed transaction evidence and local signature checks. Do not claim 
 
 The simulator invokes no hardware. This rehearsal requires no wallet and moves no funds.
 Select **Focus demo** on the receipt tab to keep the answer, experiments, and checks together.
-Select **Show full page** to restore payment queries, physical-state evidence, and reference details.
+The robot-and-gate illustration follows the receipt claim and the actual verifier decision. It shows no live gate or robot motion.
+Select **Show full page** to restore receipt metadata, physical-state evidence, and reference details.
+The payment query remains visible in both views.
 The focused view uses the same verifier and current time. It cannot make old evidence fresh.
 For direct presentation access, open `/proof?present=1` through the gateway.
+
+## Explain the recorded proof in one minute
+
+1. Point to the visiting robot and the external operator's gate.
+2. Select **Verify recorded payment** in the payment panel.
+3. State the result you observe. This query moves no funds.
+4. Return to the original receipt. Point to VALID, OPEN, EXPIRED, and WAIT.
+5. Explain that a paid, authentic answer still needs a current useful-time window.
+6. Select **Flip contact state**. Point to the rejected signature and unchanged WAIT.
+7. Restore the original receipt. Explain the separate live BOOT rehearsal.
+
+Use the actual recorded transaction for payment evidence. Use the physical browser for a new input with simulated settlement.
+
+## Add live hardware after the recorded proof
+
 The [physical runbook](DEMO.md#real-hardware) adds live BOOT checks with simulated payment.
 Close other BLE scans first. Keep BOOT released during reset.
 

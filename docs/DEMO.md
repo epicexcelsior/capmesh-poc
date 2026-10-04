@@ -67,6 +67,23 @@ The recorder creates one unpaid quote. It never pays or invokes hardware.
 It labels the gateway mode, verifies each browser experiment, and saves the final file only after every scene passes.
 It refuses an existing final recording. Inspect the video before replacing the submission artifact.
 
+### Record a short visual proof companion
+
+Export the [standalone inspector](../README.md#inspect-the-recorded-physical-purchase), then serve its directory on localhost.
+Use an installed Playwright package and Chromium. Select a new ignored recording directory.
+
+```bash
+node scripts/record_receipt_story.cjs /path/to/installed/playwright .local/receipt-story-new http://127.0.0.1:8787/
+```
+
+The directory URL must end in `/`. The recorder accepts no URL credentials, query, or fragment.
+It records the flow picture, actual read-only Devnet payment check, receipt attacks, recorded input pair, and next buyer test.
+It permits static GET requests and one Devnet `getTransaction` query. It never pays or invokes hardware.
+A failed query or browser error prevents the completed video. The output includes `recording.json` with the observed transfer.
+The final October 5 local capture lasts 75.64 seconds, with captions and no audio.
+Use this short companion to understand the proof. Retain the 2:30 technical walkthrough for a required longer video.
+Review public viewing links and video-length requirements before human submission. The recorder publishes nothing.
+
 The older recordings below preserve historical simulator and HMAC demonstrations.
 
 [Watch the 69-second screen recording](assets/fieldproof-demo.webm). It shows simulated payment and simulated contact evidence.

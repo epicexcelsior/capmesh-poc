@@ -1,7 +1,7 @@
 # FieldProof: start here
 
 **Decision: submit the verified Germany MVP first.**
-As of October 4, 2026. The deadline is October 5 at 23:59:59 CEST.
+As of October 5, 2026. The deadline is October 5 at 23:59:59 CEST.
 Open [the illustrated founder guide](HOW_IT_WORKS.html) first. Learn one transaction and run one rehearsal.
 Use [the documentation map](README.md) only to find a specific reference.
 
@@ -42,6 +42,9 @@ The [verification record](VERIFICATION.md) owns exact tests and discovery reliab
 The [short rehearsal](REHEARSAL.md) provides timed recording cues. The HTML guide keeps the detailed reference collapsed.
 
 ## Do next
+
+One clear transaction is the submission priority. More hardware and device types remain optional.
+Use [the one-minute recorded proof](REHEARSAL.md#explain-the-recorded-proof-in-one-minute) before the live BOOT demonstration.
 
 1. Rehearse quote, simulated purchase, expiry, real BOOT input, and recorded receipt attacks yourself.
 2. Complete human Germany registration and the FieldProof Colosseum project page.

@@ -111,6 +111,9 @@ Its recorded paid scene does not execute another payment. Its browser scenes ver
 The October 4 version is 149.88 seconds, 1280 × 900, and passed full decoding and visual inspection.
 It labels the simulated unpaid quote separately from the recorded real Devnet purchase. It has captions and no audio.
 A separate founder presentation remains incomplete.
+The October 5 local kit adds a 75.64-second visual proof companion with an actual read-only Devnet query.
+It shows the payment, robot-and-gate illustration, receipt attacks, and recorded BOOT states. It includes captions and no audio.
+Use it as a short explanation or additional demo. It does not replace a required 2–3 minute presentation.
 The local review kit also contains a 159.88-second visual version: a ten-second flow picture followed by the unchanged technical walkthrough.
 It remains local and includes no audio. Its full decode, browser playback, opening picture, transition, and closing frame passed.
 The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.

@@ -18,6 +18,14 @@ function status(id, text, kind) {
   el(id).className = kind;
 }
 
+function renderScene(closed, decision) {
+  const claim = typeof closed === 'boolean' ? (closed ? 'CLOSED' : 'OPEN') : 'UNAVAILABLE';
+  el('scene-claim').textContent = `Receipt claim: ${claim}`;
+  el('scene-decision').textContent = decision;
+  el('gate-scene').dataset.claim = claim.toLowerCase();
+  el('gate-scene').dataset.decision = decision.toLowerCase();
+}
+
 function message(r) {
   const s = r.result;
   return ['fieldproof-observation-v1', r.protocol, r.request_id, r.provider, r.capability,
@@ -100,6 +108,7 @@ async function experiment(mode = 'original') {
     status('freshness', fresh ? 'FRESH' : 'EXPIRED', fresh ? 'pass' : 'expired');
     const accepted = authentic && bound && contract && fresh;
     el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
+    renderScene(s.closed, el('decision').textContent);
     el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
       : !bound ? 'This receipt cannot answer a different buyer challenge.'
         : !contract ? 'The contact does not satisfy the buyer contract.'
@@ -110,6 +119,7 @@ async function experiment(mode = 'original') {
   } catch {
     status('signature', 'REJECTED', 'fail');
     el('decision').textContent = 'WAIT';
+    renderScene(undefined, 'WAIT');
     el('reason').textContent = 'Receipt verification failed. Check the evidence and public pin.';
   } finally {
     running = false;
@@ -163,4 +173,8 @@ async function init() {
   await inspectContactStates();
 }
 
-init().catch(error => { el('reason').textContent = error.message; });
+init().catch(error => {
+  renderScene(undefined, 'WAIT');
+  status('signature', 'NOT VERIFIED', 'fail');
+  el('reason').textContent = error.message;
+});
