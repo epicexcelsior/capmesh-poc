@@ -165,9 +165,13 @@ test('known assets serve inside a hidden checkout without exposing private paths
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   mkdirSync(join(dir, 'docs'));
   mkdirSync(join(dir, 'docs/evidence'));
+  mkdirSync(join(dir, 'docs/assets'));
   mkdirSync(join(dir, '.local'));
   writeFileSync(join(dir, 'docs/proof.html'), '<h1>Receipt inspection</h1>');
   writeFileSync(join(dir, 'docs/evidence/device-signed-contact-states.json'), '{"public":"contact fixture"}');
+  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg']) {
+    writeFileSync(join(dir, 'docs/assets', name), '<svg xmlns="http://www.w3.org/2000/svg"><title>Public diagram</title></svg>');
+  }
   writeFileSync(join(dir, '.local/private.json'), '{"private":"fixture only"}');
   const f = await fixture(t, { assetsRoot: dir });
   const page = await fetch(`${f.url}/proof`);
@@ -176,6 +180,12 @@ test('known assets serve inside a hidden checkout without exposing private paths
   const contacts = await fetch(`${f.url}/evidence/device-signed-contact-states.json`);
   assert.equal(contacts.status, 200);
   assert.deepEqual(await contacts.json(), { public: 'contact fixture' });
+  for (const name of ['fieldproof-service-boundaries.svg', 'fieldproof-service-expansion.svg']) {
+    const diagram = await fetch(`${f.url}/assets/${name}`);
+    assert.equal(diagram.status, 200);
+    assert.match(diagram.headers.get('content-type'), /image\/svg\+xml/);
+    assert.match(await diagram.text(), /Public diagram/);
+  }
   for (const path of ['/.local/private.json', '/gateway/buyer.js', '/.git/config', '/receipt-keys.json/../.local/private.json']) {
     assert.equal((await fetch(f.url + path)).status, 404);
   }
