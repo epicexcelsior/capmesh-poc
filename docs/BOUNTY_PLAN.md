@@ -23,7 +23,7 @@ It keeps this question, receipt format, payment rail, and recorded fallback. Unv
 |---|---|---|---|
 | 1 | Human eligibility and registration | Germany selected, World's Fair joined, FieldProof project page available | Owner will handle it. Completion and project URL are not yet verified. |
 | 2 | Judge test path | A fresh checkout runs both CLI contact states and browser simulation without hardware or wallet funding | Fresh checkout passed CLI states, browser simulation, expiry, receipt attacks, and video access. |
-| 3 | Current technical walkthrough | 2–3 minutes, playable, states what is recorded and what is simulated | Signed-receipt video is 149.76 seconds and decodes. Captioned, no audio. |
+| 3 | Current technical walkthrough | 2–3 minutes, playable, states what is recorded and what is simulated | October 4 signed-receipt video is 149.88 seconds. Full decode and visual inspection passed. Captioned, no audio. |
 | 4 | Review links | Judges can open test instructions, repository, presentation, and technical evidence without private credentials | Whitelisted inspector ZIP, public-key verification, live chain query, and video pass locally. Public links require owner publication. |
 | 5 | Human MVP submission | Every required field is complete and receipt retained before October 5, 23:59:59 CEST | Not submitted. |
 | 6 | Buyer test | One real decision, current alternative, useful-time window, operator permission, and price/budget evidence | Not completed. Start alongside packaging before adding endpoint types. |

@@ -1,10 +1,11 @@
 // Record verified evidence and browser experiments. This script never pays or invokes hardware.
 const { chromium } = require(process.argv[2] || 'playwright');
-const { mkdirSync, readFileSync } = require('node:fs');
+const { existsSync, mkdirSync, readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const root = resolve(__dirname, '..');
 const output = resolve(root, process.argv[3] || '.local/identity-recording');
 const origin = process.argv[4] || 'http://127.0.0.1:4021';
+if (existsSync(resolve(output, 'fieldproof-signed-receipt.webm'))) throw new Error('Recording output already exists. Select a new directory.');
 const evidence = JSON.parse(readFileSync(resolve(root, 'docs/evidence/device-signed-purchase.json')));
 const checks = JSON.parse(readFileSync(resolve(root, 'docs/evidence/receipt-identity-checks.json')));
 mkdirSync(output, { recursive: true });
@@ -30,13 +31,26 @@ mkdirSync(output, { recursive: true });
   }
   async function pause(seconds) { await page.waitForTimeout(seconds * 1000); }
   try {
+    const healthResponse = await fetch(new URL('/health', origin), { signal: AbortSignal.timeout(5000) });
+    if (!healthResponse.ok) throw new Error('The local gateway is unavailable.');
+    const health = await healthResponse.json();
+    if (!['simulated settlement; no funds moved', 'Solana Devnet; physical contact demo'].includes(health.mode)) {
+      throw new Error('The gateway has an unsupported recording mode.');
+    }
+    const simulatedQuote = health.mode === 'simulated settlement; no funds moved';
     await page.goto(origin);
     await page.waitForFunction(() => !document.getElementById('quote').disabled);
-    await caption('FieldProof: a buyer purchases fresh contact evidence before an immediate logistics decision. One observer, one location. BOOT represents the contact.');
+    await caption('Company hypothesis: machines use physical infrastructure another operator owns. This prototype buys one contact observation. BOOT represents the contact.');
     await pause(12);
     await page.click('#quote');
     await page.waitForFunction(() => document.getElementById('reason').textContent.includes('402 quote'));
-    await caption('Actual x402 V2 quote: 0.001 Solana Devnet USDC. This recording creates an unpaid quote. The next scene inspects an earlier verified paid purchase.');
+    await page.evaluate(() => {
+      const payload = document.getElementById('receipt');
+      payload.closest('details').open = true;
+      payload.style.maxHeight = '240px';
+      window.scrollTo(0, document.querySelector('.desk').offsetTop - 24);
+    });
+    await caption(`x402 V2 quote: 0.001 Devnet USDC. ${simulatedQuote ? 'This quote uses a simulated facilitator.' : 'This quote uses the Devnet gateway.'} No payment occurs here. Next: an earlier real paid purchase.`);
     await pause(12);
     await page.evaluate(evidence => {
       const section = document.createElement('section'); section.className = 'section';
@@ -52,9 +66,9 @@ mkdirSync(output, { recursive: true });
     }, evidence);
     await caption('Recorded paid test: the independent CLI buyer accepted the device-signed receipt at seven seconds of age. RPC confirmed exactly 1,000 USDC base units transferred.');
     await pause(22);
-    await page.goto(new URL('/proof', origin).href);
+    await page.goto(new URL('/proof?present=1', origin).href);
     await page.waitForFunction(() => document.getElementById('signature').textContent === 'VALID');
-    await page.evaluate(() => window.scrollTo(0, 230));
+    await page.evaluate(() => window.scrollTo(0, 0));
     await caption('Your browser verifies the actual P-256 signature. The original receipt is authentic, but now expired. A signature cannot extend a buyer freshness limit.');
     await pause(18);
     await page.click('#tamper');
@@ -73,7 +87,7 @@ mkdirSync(output, { recursive: true });
     await page.waitForFunction(() => document.getElementById('signature').textContent === 'VALID');
     await page.evaluate(checks => {
       const section = document.createElement('section'); section.className = 'notice';
-      const heading = document.createElement('h2'); heading.textContent = 'Executed hardware checks after reset';
+      const heading = document.createElement('h2'); heading.textContent = 'Recorded hardware checks after reset';
       const pre = document.createElement('pre');
       pre.textContent = JSON.stringify({ key_survived_reset: checks.persistence.key_after_reset_matches_pin,
         new_observation_after_reset: checks.after_reset.decision.receipt_identity,
@@ -84,12 +98,14 @@ mkdirSync(output, { recursive: true });
     await pause(17);
     await page.evaluate(() => {
       const section = document.createElement('section'); section.className = 'notice';
-      const heading = document.createElement('h2'); heading.textContent = 'Earn one useful decision.';
-      const p = document.createElement('p'); p.textContent = 'Next: an authorized operator, an external contact, and a recurring buyer workflow with a matching freshness window. A ten-second observation cannot predict a distant arrival.';
+      const heading = document.createElement('h2'); heading.textContent = 'One fleet. One operator. Then test reuse.';
+      const p = document.createElement('p'); p.textContent = 'Test one visiting robot workflow at an authorized external facility. A second independent facility tests integration reuse. Charge for integration and support before relying on transaction volume.';
       const limit = document.createElement('p'); limit.textContent = 'Current limits: unencrypted device storage, one observer, host-anchored time, no site access control, no customer pilot, no peaq activation.';
-      section.append(heading, p, limit); document.querySelector('main').append(section); section.scrollIntoView();
+      const main = document.querySelector('main');
+      main.style.paddingBottom = '160px';
+      section.append(heading, p, limit); main.append(section); section.scrollIntoView({ block: 'center' });
     });
-    await caption('Machine-economy hypothesis: sell a permitted fact that changes a buyer decision. Measure repeat demand and delivery quality before adding coverage.');
+    await caption('Current result: payment plus a fresh signed observation. Next: validate the buyer, permitted service, and recurring budget. peaq readiness and offline inputs work. No identity is activated.');
     while (Date.now() - start < 150000) await pause(Math.min(10, (150000 - (Date.now() - start)) / 1000));
     if (Date.now() - start > 175000) throw new Error('Recording exceeded the three-minute limit');
     complete = true;

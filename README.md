@@ -8,15 +8,10 @@ This prototype implements the observation purchase. Access permission, gate cont
 The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
 The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
 
-Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm). It inspects a recorded public Devnet purchase and executes browser receipt checks. It has captions and no audio. Start with the [condensed decision and next actions](docs/FOCUS.md). The [bounty execution plan](docs/BOUNTY_PLAN.md) owns deadlines and acceptance gates.
-For a plain-language explanation, start with [Understand the product](docs/HOW_IT_WORKS.html#understand).
-For the buyer, provider, alternatives, and commercial path, read [the product story](docs/STRATEGY.md#the-story-to-explain).
-Practice with the [short demonstration and six explanation questions](docs/REHEARSAL.md).
-Prepare borrowed parts with the [three-day hardware plan and acceptance gates](docs/HARDWARE_NEXT.md).
-Configure an external input or second observer with [the contact setup guide](docs/CONTACT_SETUP.md).
-Rehearse the tested two-observer policy with [signed fixtures and explicit physical gates](docs/CORROBORATION.md).
-With two provisioned boards, use the [bounded unpaid BLE pair diagnostic](docs/CORROBORATION.md#collect-two-provisioned-ble-contacts-once).
-For technical detail, use the [overview](docs/OVERVIEW.md), [setup guide](docs/HOW_IT_WORKS.html#run), and [interactive dispatch desk](docs/overview.html).
+Start with [the ten-minute reading and demo path](docs/README.md).
+It routes the story, rehearsal, hardware, submission, and technical reference files.
+Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm) for recorded payment evidence and browser checks. It has captions and no audio.
+The [verification record](docs/VERIFICATION.md) owns executed checks and remaining limits.
 
 ## Run without hardware
 
@@ -45,6 +40,7 @@ Missing, conflicting, stale, invalid, skewed, or replayed evidence produces WAIT
 
 With a local gateway running, open `http://127.0.0.1:4022/proof`.
 The browser verifies the actual device signature and rejects a changed state, another challenge, and another key.
+Select **Focus demo** for a compact presentation view. The same verifier and current-time freshness checks remain active.
 Select **Verify recorded payment** for an independent, read-only Solana Devnet transaction query.
 The chain check verifies the mint, payer, merchant, transfer instruction, and exact token balance changes.
 The inspector also verifies both recorded BOOT states against the same device pin. Those separate input checks moved no funds.

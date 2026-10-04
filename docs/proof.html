@@ -7,32 +7,38 @@
 :root{--fog:#eef4f8;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9}
 *{box-sizing:border-box}body{margin:0;background:var(--fog);color:var(--ink);font:17px/1.55 system-ui,sans-serif}header,main,footer{max-width:1120px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);gap:16px}.brand{font-size:24px;font-weight:800;letter-spacing:-.03em}a{color:var(--sea)}.label,code{font:13px/1.6 ui-monospace,monospace}.label{text-transform:uppercase;letter-spacing:.08em;color:var(--sea)}h1{font:clamp(40px,6vw,68px)/1.05 Impact,'Arial Narrow',sans-serif;letter-spacing:.01em;margin:18px 0 24px}h2{font-size:24px;margin:12px 0}p{max-width:70ch}.lead{font-size:21px;max-width:750px}.workspace{display:grid;grid-template-columns:1.1fr 1fr;border:2px solid var(--ink);background:white;margin-top:32px}.receipt,.checks{padding:28px}.checks{background:#dfebf1;border-left:2px solid var(--ink)}.receipt dl{display:grid;grid-template-columns:1fr 1fr;margin:24px 0;gap:20px}dt{font-size:13px;color:#39576b}dd{margin:0;font-size:20px;font-weight:700}button{font:700 15px system-ui;padding:12px 16px;background:var(--sea);color:white;border:0;border-radius:4px;cursor:pointer;margin:5px 6px 5px 0}button.secondary{background:white;color:var(--sea);border:1px solid var(--sea)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:4px}.check{padding:14px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px}.pass{color:var(--teal)}.fail{color:var(--danger)}.expired{color:var(--amber)}.decision{font:48px/1.1 Impact,'Arial Narrow',sans-serif;color:var(--amber);margin:22px 0 8px}.note{font-size:14px;color:#39576b}.notice{border-left:4px solid var(--amber);background:#fff8e9;padding:14px 20px;margin-top:28px}pre{background:var(--ink);color:var(--fog);padding:20px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:400px;overflow:auto;font-size:12px}details{margin:24px 0}footer{font-size:13px;border-top:1px solid var(--line)}
 @media(max-width:700px){header,main,footer{padding:18px}.workspace{grid-template-columns:1fr}.receipt,.checks{padding:22px}.checks{border-left:0;border-top:2px solid var(--ink)}header{flex-direction:column}.receipt dl{gap:14px}}
+.header-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.header-actions button{margin:0}.stage-title{display:none}.experiment{font-weight:700;color:var(--sea);min-height:1.55em}button[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--ink)}body.presentation .intro,body.presentation .reference,body.presentation footer{display:none}body.presentation .stage-title{display:block}body.presentation .workspace{margin-top:18px}body.presentation .decision{font-size:64px}body.presentation .stage-title h1{font-size:36px;margin:6px 0}body.presentation .stage-title p{margin:6px 0;font-size:14px}body.presentation .receipt,body.presentation .checks{padding:22px}
 </style>
 </head>
 <body>
-<header><div class="brand">FieldProof <span class="label">/ receipt inspection</span></div><a href="/">Back to dispatch desk</a></header>
+<header><div class="brand">FieldProof <span class="label">/ receipt inspection</span></div><div class="header-actions"><button id="focus" class="secondary" type="button" aria-pressed="false">Focus demo</button><a href="/">Back to dispatch desk</a></div></header>
 <main>
+<div class="intro">
 <div class="label">Recorded hardware evidence · Solana Devnet</div>
 <h1>One receipt.<br>Try to break it.</h1>
 <p class="lead">Verify a real device signature in your browser. Change the contact state, change the challenge, or try another identity.</p>
 <p>FieldProof tests how machines can buy and verify services from infrastructure another operator owns. This prototype purchases one contact observation.</p>
 <p>The recorded transfer confirms payment. The signature authenticates the device's answer. Freshness determines whether that answer remains useful for this decision.</p>
 <p>This inspector uses recorded evidence. To exercise a new simulated purchase, follow the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a>.</p>
+</div>
+<div class="stage-title"><div class="label">Recorded device evidence / actual Devnet test payment</div><h1>One paid answer. Four buyer checks.</h1><p>BOOT represents a contact. This view verifies recorded evidence. It moves no funds and measures no hardware.</p></div>
 <div class="workspace">
 <section class="receipt" aria-label="Recorded receipt"><div class="label">Recorded purchase / demo-gate</div><h2>Is the gate open?</h2>
+<p id="experiment-label" class="experiment">Original recorded answer</p>
 <dl><div><dt>Contact state</dt><dd id="state">—</dd></div><div><dt>Price paid</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd>ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">—</dd></div></dl>
 <p class="note">The BOOT button represents the contact. This purchase used the public x402 facilitator and a real BLE observation.</p>
 <p><a id="transaction" href="#">Inspect the Devnet transaction</a></p>
-<div aria-label="Receipt experiments"><button id="original" disabled>Verify original</button><button id="tamper" class="secondary" disabled>Flip contact state</button><button id="challenge" class="secondary" disabled>Change challenge</button><button id="identity" class="secondary" disabled>Use another key</button></div>
+<div role="group" aria-label="Receipt experiments"><button id="original" aria-pressed="true" disabled>Verify original</button><button id="tamper" class="secondary" aria-pressed="false" disabled>Flip contact state</button><button id="challenge" class="secondary" aria-pressed="false" disabled>Change challenge</button><button id="identity" class="secondary" aria-pressed="false" disabled>Use another key</button></div>
 </section>
 <section class="checks" aria-label="Buyer checks"><div class="label">Buyer acceptance / 10-second freshness</div>
 <div class="check"><span>Device signature</span><strong id="signature">—</strong></div>
 <div class="check"><span>Buyer challenge</span><strong id="binding">—</strong></div>
 <div class="check"><span>Contact contract</span><strong id="contract">—</strong></div>
 <div class="check"><span>Evidence freshness</span><strong id="freshness">—</strong></div>
-<div id="decision" class="decision">WAIT</div><p id="reason" role="status" aria-live="polite">Loading the committed evidence.</p><p class="note">A valid signature never extends the freshness window. Recorded evidence expires. No button charges money or measures hardware.</p>
+<div id="decision" class="decision">WAIT</div><p id="reason" role="status" aria-live="polite">Loading the committed evidence.</p><p class="note">The signature authenticates the device's claim. It never extends freshness or proves safe access. No button charges money or measures hardware.</p>
 </section>
 </div>
+<div class="reference">
 <p class="notice">The public key comes from this installed repository's buyer configuration. A provider cannot select its own trusted key. The private key resides in unencrypted NVS. This proves the signing key's claim, not physical truth.</p>
 <section aria-label="Independent payment check">
 <h2>Check the payment on Solana.</h2>
@@ -59,6 +65,7 @@
 </section>
 <details><summary>Inspect the receipt and buyer challenge</summary><pre id="payload">Loading.</pre></details>
 <details><summary>Inspect the public identity pin</summary><p class="note">The operator read this key over trusted USB and verified it after reset. The browser reads the public pin from the installed demo. Use the independent CLI buyer for a new paid observation.</p><pre id="pin">Loading.</pre></details>
+</div>
 </main>
 <footer>FieldProof · Receipt verification runs with Web Crypto in this browser. The transaction link provides separate chain evidence.</footer>
 <script type="module" src="/proof.js"></script>

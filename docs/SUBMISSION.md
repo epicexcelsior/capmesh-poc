@@ -103,7 +103,9 @@ Simulated payments and Devnet tokens do not establish real revenue.
 
 Use the [current signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for technical review.
 Its recorded paid scene does not execute another payment. Its browser scenes verify the real receipt and reject attacks.
-A 149.76-second duration and full decode passed on October 2. A separate founder presentation remains incomplete.
+The October 4 version is 149.88 seconds, 1280 × 900, and passed full decoding and visual inspection.
+It labels the simulated unpaid quote separately from the recorded real Devnet purchase. It has captions and no audio.
+A separate founder presentation remains incomplete.
 The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.
 The final Colosseum presentation requires the buyer and business explanation alongside the technical demonstration.
 Prepare that presentation after the MVP package.

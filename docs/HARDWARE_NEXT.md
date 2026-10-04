@@ -1,7 +1,7 @@
 # Prepare the next physical demonstration
 
-**Decision: borrow a contact sensor first. Keep the existing signed-contact demonstration as the fallback.**
-As of October 2, 2026. This plan uses the founder's reported Munich MakerSpace access.
+**Decision: submit the existing signed-contact demonstration. Add a borrowed contact only after its physical checks pass.**
+As of October 4, 2026. This plan uses the founder's reported Munich MakerSpace access.
 Parts availability, reservations, and local prices remain unverified. This document authorizes no purchase.
 
 The next result must show a physical fixture that changes the measured state.
@@ -10,7 +10,37 @@ Software checks and both candidate builds passed. Physical fixture and second-bo
 A second board then tests distinct device identities. A phone tests reviewer access and an optional wallet workflow.
 These upgrades do not establish customer demand or safe robot motion.
 
-## Borrow these parts within three days
+## Decide in one minute today
+
+**Keep the existing ESP32 and BOOT demonstration as the submission path.**
+Both MakerSpace locations list Sunday and Monday as closed. October 4 is Sunday. October 5 is Monday.
+The next regular workshop opening follows the Germany deadline. Special access and component stock remain unverified.
+Check an existing special-access arrangement before traveling. [Current MakerSpace hours](https://www.maker-space.de/oeffnungszeiten/).
+
+If a part is readily available, borrow one unpowered reed contact with its magnet or one COM/NO limit switch.
+Also borrow jumper wires, a breadboard, and a multimeter. The sensor must switch a dry contact without supplying voltage.
+Photograph the board and pin labels before wiring. An unknown header position cannot establish the GPIO number.
+Keep the external fixture optional until its open, closed, disconnect, and stale-evidence checks pass.
+
+If no sensor is available, place the board beside a cardboard gate and a clear label: **BOOT represents the contact**.
+Hold BOOT for CLOSED. Release BOOT for OPEN. Record the physical action and laptop result in one continuous camera shot.
+The cardboard does not control the input. Say that explicitly. Never relabel this stand-in as an installed contact sensor.
+
+| Device available today | Useful job for this entry | Additional claim to avoid |
+|---|---|---|
+| Existing ESP32 | Real signed BOOT input and verified receipt | External gate measurement |
+| Laptop | Buyer, local gateway, browser checks, and screen recording | A second independent sensor |
+| Android phone | Camera shot of the board and screen. Test the published inspector in Chrome. | Mobile wallet or protected sensing integration |
+| Borrowed dry contact | A legible hinged-gate fixture after board and circuit verification | Reliable installed access control |
+
+Phone motion or camera sensing requires a new observation contract, permission checks, and independently provisioned signing identity.
+The Generic Sensor API also requires a secure browser context. The current application implements no phone-sensor observer.
+[W3C Generic Sensor API](https://www.w3.org/TR/generic-sensor/).
+Use the phone to clarify the current story before adding another sensor type.
+
+## Borrow these parts for the next physical extension
+
+These parts also serve the later peaq demonstration. Their availability cannot block the October 5 Germany submission.
 
 | Priority | Part | Quantity | Purpose and selection rule |
 |---|---|---|---|
@@ -90,23 +120,23 @@ The [pair policy](CORROBORATION.md) passed signed-fixture tests. Physical paired
 The same guide now provides a bounded unpaid concurrent BLE runner. Run it after separate USB provisioning and wiring checks.
 The measured single-board BLE round trip also requires a collection-time check before two observations can support one immediate decision.
 
-## Use the next three days
+## Use the remaining submission window
 
-### Day 1: protect the working entry
+### October 4: protect and rehearse the working entry
 
 - Complete the human registration and project-page tasks in [the bounty plan](BOUNTY_PLAN.md).
 - Rehearse the existing purchase, expiry, and receipt attacks with [the short guide](REHEARSAL.md).
-- Borrow priority-one parts. Preserve the working board until the new circuit and software pass their gates.
+- Borrow priority-one parts only through an available arrangement. Preserve the working board until the new circuit passes its gates.
 - Record one actual buyer incident and its existing alternative. Leave missing commercial facts unknown.
 
-### Day 2: add physical evidence
+### Optional fixture before recording
 
 - Assemble the hinged fixture with the disconnected sensor.
 - Resolve the board pin and record its circuit before firmware changes.
 - Test open, closed, an unstable transition, disconnect, and stale evidence.
 - Use the original recorded inspector if the new fixture misses its acceptance gates.
 
-### Day 3: submit the verified result
+### October 5: submit the verified result
 
 - Record the technical demonstration with exact simulation and test-payment labels.
 - Record the founder presentation in your own words.

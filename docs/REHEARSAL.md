@@ -60,6 +60,10 @@ If the RPC reports NOT VERIFIED, state that the current chain query failed.
 Use the committed transaction evidence and local signature checks. Do not claim a successful current query.
 
 The simulator invokes no hardware. This rehearsal requires no wallet and moves no funds.
+Select **Focus demo** on the receipt tab to keep the answer, experiments, and checks together.
+Select **Show full page** to restore payment queries, physical-state evidence, and reference details.
+The focused view uses the same verifier and current time. It cannot make old evidence fresh.
+For direct presentation access, open `/proof?present=1` through the gateway.
 The [physical runbook](DEMO.md#real-hardware) adds live BOOT checks with simulated payment.
 Close other BLE scans first. Keep BOOT released during reset.
 

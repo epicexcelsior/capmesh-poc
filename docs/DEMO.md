@@ -33,6 +33,20 @@ These checks establish neither external-gate accuracy nor a service-level guaran
 
 Use the [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for the current technical demonstration.
 It inspects a recorded public Devnet purchase and executes browser verification and attacks. It has captions and no audio.
+The October 4 version separates its simulated unpaid quote from the earlier actual Devnet purchase.
+Its focused receipt scene shows all four buyer checks and the selected experiment. Current-time expiry remains active.
+
+To reproduce the current walkthrough, start the local simulator with `npm --prefix gateway run demo`.
+Use an installed Playwright package and its Chromium browser. Select a new ignored output directory.
+
+```bash
+node scripts/record_identity_demo.cjs /path/to/installed/playwright .local/identity-recording-new http://127.0.0.1:4022
+```
+
+The recorder creates one unpaid quote. It never pays or invokes hardware.
+It labels the gateway mode, verifies each browser experiment, and saves the final file only after every scene passes.
+It refuses an existing final recording. Inspect the video before replacing the submission artifact.
+
 The older recordings below preserve historical simulator and HMAC demonstrations.
 
 [Watch the 69-second screen recording](assets/fieldproof-demo.webm). It shows simulated payment and simulated contact evidence.

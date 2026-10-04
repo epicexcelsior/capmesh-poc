@@ -5,6 +5,14 @@ const controls = ['original', 'tamper', 'challenge', 'identity'];
 let recorded, pin, differentKey;
 let running = false;
 
+function focusDemo(enabled) {
+  document.body.classList.toggle('presentation', enabled);
+  el('focus').setAttribute('aria-pressed', String(enabled));
+  el('focus').textContent = enabled ? 'Show full page' : 'Focus demo';
+}
+el('focus').onclick = () => focusDemo(!document.body.classList.contains('presentation'));
+focusDemo(new URL(location.href).searchParams.get('present') === '1');
+
 function status(id, text, kind) {
   el(id).textContent = text;
   el(id).className = kind;
@@ -65,6 +73,10 @@ async function experiment(mode = 'original') {
   if (running || !recorded) return;
   running = true;
   controls.forEach(id => { el(id).disabled = true; });
+  const labels = { original: 'Original recorded answer', tamper: 'Altered contact state',
+    challenge: 'Another buyer challenge', identity: 'Untrusted verification key' };
+  el('experiment-label').textContent = labels[mode];
+  controls.forEach(id => { el(id).setAttribute('aria-pressed', String(id === mode)); });
   try {
     const r = structuredClone(recorded.receipt);
     const challenge = structuredClone(recorded.challenge);
@@ -120,7 +132,7 @@ async function init() {
   pin = await crypto.subtle.importKey('raw', bytes, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
   differentKey = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify'])).publicKey;
   el('pin').textContent = JSON.stringify({ algorithm: pins.algorithm, provider: 'esp32-c6-96a2', sec1_hex: sec1 }, null, 2);
-  el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().slice(11, 19) + ' UTC';
+  el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');
   el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(recorded.settlement.transaction) + '?cluster=devnet';
   controls.forEach(id => { el(id).onclick = () => experiment(id); });
   el('chain-query').disabled = false;

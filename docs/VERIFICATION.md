@@ -4,6 +4,48 @@ Current continuation: October 4, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 4 focused demo and current device readiness
+
+Starting source: `cd43b2f4c7019232fe02619062c5e3b29781a987` on `main`.
+The [documentation guide](README.md) now provides one short reading path and a canonical reference map.
+The [strategy](STRATEGY.md#the-wedge-to-test-first) specifies the first pilot hypothesis: a visiting robot at another operator's loading gate.
+Existing infrastructure integrations and machine-service markets remain relevant alternatives. No uncrowded-market claim exists.
+The [hardware plan](HARDWARE_NEXT.md#decide-in-one-minute-today) preserves BOOT and identifies optional borrowed contacts and phone uses.
+MakerSpace's published Sunday/Monday closure places its next regular opening after the Germany deadline. Special access remains unverified.
+
+| Check | Observed result |
+|---|---|
+| Missing public diagram regression | The live gateway returned 404. The focused asset test failed with `404 != 200` before the fix. |
+| Explicit public asset routes | Both diagrams now return 200 with SVG content type. Private paths remain 404. The focused regression passed. Fix commit: `c4d44cc`. |
+| `npm test` in `gateway` | 41 passed, zero failed in 664.887 milliseconds. Independent review also ran all 41 tests successfully. |
+| `uv run --project host pytest -q tests/test_judge_export.py` | Two passed in 0.01 seconds. No Python behavior changed in this continuation. |
+| `scripts/check_receipt_ui.cjs`, local gateway and final prefixed export | Original signature, expiry, state/challenge/key attacks, focus toggle/direct link, desktop fit, both signed input states, damaged archives, RPC fixtures, HTTP 429 recovery, and mobile width passed. |
+| Read-only independent review | No concrete P1/P2 issue remained. Its separate browser probe preserved VALID/MATCHES/EXPIRED/WAIT and rejected altered evidence. |
+| Real ESP32 readiness sample | One scheduled sample passed. GPIO9 reported OPEN, five of five matching samples, pinned P-256 identity, and four-second evidence age. |
+| Readiness timing | Discovery and manifest: 8.551 seconds. Invocation and delivery: 3.997 seconds. Total BLE path: 12.548 seconds. Worker: 12.627 seconds. |
+| New technical recording | Every scene assertion passed. The quote is simulated and unpaid. The actual Devnet purchase and reset checks remain recorded evidence. Capture invoked no hardware or payment. |
+| Video inspection | The first candidate had an offscreen quote and clipped closing details. The revised capture fixed both. Eight final frames passed visual inspection. |
+| Final video decode and metadata | Full `ffmpeg` decode passed. `ffprobe` reported 149.88 seconds, VP8, 1280 × 900, and no audio stream. The exported video loaded the same metadata in Chromium. |
+| Final static package | Nine manifest assets and ten ZIP members. Every digest and archived byte matched. Desktop and mobile focus screenshots passed visual inspection. |
+| Documentation and syntax | 109 local link targets had no missing files before the final verification update. Changed JavaScript syntax checks and `git diff --check` passed. |
+
+The readiness command was `uv run --project host python scripts/soak_observations.py --count 1 --interval 1 --output .local/soak/oct04-demo-readiness.jsonl`.
+It started at October 4, 09:33:50 UTC. The log records `cd43b2f` and tracked documentation/web changes.
+Host and firmware sources remained unchanged. The log preserves their exact file hashes and runtime versions.
+Raw-log SHA256: `d051e77f5c2e08bfd0ffac947a99a4d71dd99360754fe99c9084018a73b76005`.
+This single sample does not establish an external gate or fix the earlier overnight discovery miss.
+No background hardware lane remains active.
+
+The focused inspector uses the same verifier and current-time freshness limit. The complete measurement date stays visible.
+It hides reference sections only. **Show full page** restores the payment query, input archive, public pin, and key-storage warning.
+The revised video replaces the current walkthrough. Git history and an ignored local backup preserve the prior version.
+Video SHA256: `42e7ec97daacd0cb04d5af39d50ebae1c9dc127d6e552f47aa9219b49357159b`.
+Final local ZIP SHA256: `821290e26e0f08bb6e68dc353eba150d74d27c5c60c98640b8cf550d77c533df`.
+
+No new payment, firmware change, output GPIO operation, peaq write, public deployment, registration, or submission occurred.
+Public Pages publication awaits explicit approval. Human eligibility, project, contact, and submission fields remain incomplete.
+The latest full Python result remains 191 passed and ten hardware skips from the preceding source checkpoint.
+
 ## October 4 physical-service story and offline peaq inputs
 
 Starting source: clean `c6195e68ef329571ed5677e5e197aa48d40eabee`, confirmed against the remote branch.
@@ -538,7 +580,7 @@ Public-quote and real-contact frames were extracted and visually inspected.
 The composed presentation passed full decode and visual inspection. Its 1,744 source packets remain unchanged.
 
 Both older longer videos predate the successful public payment and human input checks.
-Their pending-payment captions describe the earlier state. Use the current signed-receipt video from the October 2 record above.
+Their pending-payment captions describe the earlier state. Use the current signed-receipt video from the latest October 4 record above.
 The recording script's new quote caption states that its scene executes no payment.
 
 ## Versions and limits

@@ -50,6 +50,24 @@ If it solves the buyer's problem adequately, record that result before adding an
 
 ## Start with a service relationship
 
+### The wedge to test first
+
+A visiting delivery robot reaches another operator's loading gate and needs a current contact answer for its next decision.
+The candidate product is a buyer contract for that answer: selected device, independent key, exact question, spending limit, and useful-time limit.
+The implemented purchase supplies this contact evidence. It does not supply access rights or prove that a route is clear.
+
+Start at the moment of arrival. Advance availability, dock reservations, and charging sessions need different commitments and service contracts.
+The first pilot must expose a repeated failure that the facility's existing API or integration does not already resolve.
+Compare useful evidence, integration effort, failure recovery, and total costs before claiming an advantage.
+
+Open-RMF already supplies infrastructure interoperability. robotic.sh already presents a machine-service market.
+Machine commerce alone is not a novelty claim. [Open-RMF](https://www.open-rmf.org/), [robotic.sh](https://www.robotic.sh/).
+The differentiated hypothesis is independent buyer acceptance of transaction-associated physical evidence across operators.
+The receipt signs the challenge. The ledger supplies the purchase association. Neither proves physical truth or atomic service delivery.
+No source check establishes an uncrowded market. A real buyer workflow must establish the wedge.
+
+### Validate one relationship
+
 1. Find one fleet decision that depends on infrastructure another operator controls.
 2. Establish the operator's permission and the buyer's right to use the service.
 3. Connect an existing API or checked contact to the same observation contract.

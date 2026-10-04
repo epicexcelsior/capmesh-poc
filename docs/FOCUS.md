@@ -1,72 +1,59 @@
 # FieldProof: start here
 
-**Decision: finish the existing MVP and submit the Germany bounty first.**
-As of October 4, 2026. This page condenses the decision. The linked records preserve its evidence.
+**Decision: submit the verified Germany MVP first.**
+As of October 4, 2026. The deadline is October 5 at 23:59:59 CEST.
+Use [the documentation guide](README.md) for one reading path and the complete reference map.
 
 ## The thesis to keep
 
-FieldProof tests whether autonomous machines can buy and verify physical services from infrastructure another operator owns.
-The first implemented step buys a fresh contact observation before an immediate decision.
-The demo uses a contact stand-in, Solana Devnet payment, and an independently checked device receipt.
-The buyer checks provenance and age. Its controller retains permission and motion-safety checks.
+Company target: one integration for machines to transact with physical infrastructure another operator owns.
+The current prototype purchases and verifies a fresh contact observation. Access, actuation, reservation, and completed-service evidence remain future work.
 
-The business hypothesis is a useful cross-organization workflow with repeat buyers and authorized suppliers.
-Signatures, request objects, and a local demand ledger are supporting mechanisms. They do not establish a moat.
-The [strategy](STRATEGY.md#the-story-to-explain) owns the company story, first relationship, alternatives, and expansion conditions.
-The [October 4 source check](research/2026-10-04-physical-services.md) corrects the claim that infrastructure interoperability lacks existing solutions.
-The MVP sells an observation. Access, reservation, actuation, and proof of completed service remain future work.
+The first buyer hypothesis is a fleet software operator with repeated interactions at independent facilities.
+Start with one fleet and one authorized facility. A second facility tests integration reuse.
+Test paid integration and support before recurring software fees, transaction fees, or a marketplace.
+No customer, sustainable price, avoided-cost result, or commercial network exists today.
 
-## The findings that change our choices
+## The wedge to test
 
-- **Physical robotics has winning precedent.** CrowdBrain won Frontier's grand prize. Category statistics do not justify abandoning physical AI.
-- **Payment and freshness mechanisms have precedents.** MCPay, PreDataPool, and DePIN Data Exchange narrow our novelty claim.
-- **Keep operational evidence separate from training data.** Training datasets require different capture, licensing, and quality controls.
-- **Match freshness to the action.** A ten-second contact observation fits an immediate nearby decision. It cannot predict availability after a long trip.
-- **Customer economics remain unvalidated.** The demo price establishes neither revenue nor willingness to pay. Query counts do not justify installations.
-- **Prioritize useful integration.** Solana onboarding has a documented limitation. Native Agung registry readiness now passes. Activation remains a separate, bounded decision.
+A visiting robot reaches an external loading gate and needs a current contact answer for its next decision.
+Its buyer selects the device, trusted key, question, budget, and useful-time limit.
+The demo checks that contract. A contact answer alone cannot authorize safe passage.
 
-Sources, counterexamples, calculations, and uncertainties: [October 2 research decision](research/2026-10-02-fieldproof.md).
+Open-RMF already connects fleets and infrastructure. Machine-service markets also exist.
+The proposed additional value is independent acceptance of transaction-associated physical evidence across operators.
+The receipt signs the challenge. The gateway ledger associates that challenge with the purchase.
+Neither a signature nor a payment establishes physical truth, atomic delivery, or a defensible company.
+The [strategy](STRATEGY.md#the-wedge-to-test-first) owns the pilot, alternatives, economics, and falsification test.
 
 ## What works and what remains open
 
-The October 2 continuation passed both held/released P-256 input checks and the full hardware suite.
-The review corrected setup, provisioning, documentation, and public-point validation defects.
-Current test counts and remaining discovery reliability limits live in [verification](VERIFICATION.md).
-The browser inspector now checks the recorded Solana transfer independently. No new payment ran in this continuation.
-The public inspector export passed local review. Publication and human registration remain pending owner actions.
-The [current 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) plays and passes full decoding.
-See [verification](VERIFICATION.md) for exact checks and evidence limits.
-Start with [Understand the product](HOW_IT_WORKS.html#understand) for a plain-language explanation and demonstration sequence.
-The [peaq integration decision](PEAQ_INTEGRATION.md) records the actual registry reads and remaining activation inputs.
-The proposed peaq ID was absent at the current recorded finalized block. This check neither reserves nor activates it.
+| Working result | Remaining limit |
+|---|---|
+| Public Solana Devnet purchase and real ESP32-signed receipt | Test tokens establish no revenue. Payment and measurement remain separate. |
+| Both held/released BOOT states | BOOT represents a contact. No external gate is installed. |
+| Browser signature, challenge, expiry, and attack checks | The installed buyer pin remains the trust root. The device key is not protected against flash extraction. |
+| No-hardware simulator and standalone recorded inspector | Public test/video links and human registration remain owner actions. |
+| Agung readiness and offline key/service input preparation | No peaq identity is activated. Full preflight and explicit write approval remain open. |
+| Two-observer software policy and bounded BLE runner | Actual paired hardware timing and independent sensing remain unverified. |
 
-Three commercial questions remain: does a buyer lack a useful fact, does the operator permit its sale, and can repeat delivery cover costs?
-One buyer conversation about an actual incident and a concrete paid pilot tests more than another broad competitor search.
-Outreach requires separate authorization.
+The [verification record](VERIFICATION.md) owns exact tests and discovery reliability limits.
+The [short rehearsal](REHEARSAL.md) explains the working loop. [How it works](HOW_IT_WORKS.html#understand) provides the complete illustrated reference.
 
 ## Do next
 
 1. Complete human Germany registration and the FieldProof Colosseum project page.
-2. Make the test instructions and current technical video accessible to judges.
-3. Complete the human MVP submission before October 5 at 23:59:59 CEST.
-4. Test one buyer workflow alongside packaging. Do not delay the bounty for it.
-5. Finish the founder presentation and useful peaq path for the October 13 submissions.
+2. Publish and verify the prepared test and video links.
+3. Rehearse quote, simulated purchase, expiry, recorded payment, and receipt attacks.
+4. Complete human submission before October 5 at 23:59:59 CEST.
+5. Test one actual buyer incident, workaround, operator permission, useful-time limit, and pilot budget alongside packaging.
 
-The [bounty execution plan](BOUNTY_PLAN.md) owns deadlines, acceptance gates, and remaining actions.
-The [product risks](STRATEGY.md#product-risks-and-decisions) govern pilot limits.
+The [bounty plan](BOUNTY_PLAN.md) owns acceptance gates. [Submission preparation](SUBMISSION.md) owns required fields and owner publication steps.
+The [hardware plan](HARDWARE_NEXT.md#decide-in-one-minute-today) provides the available-board fallback and optional borrowed contact.
+MakerSpace's published Sunday/Monday closure makes a normal workshop trip unsuitable before this deadline. [Current hours](https://www.maker-space.de/oeffnungszeiten/).
+Use the Android phone as a camera or judge screen. Another sensor type requires a separate contract and trust setup.
 
-**Stop rule:** reopen research only for an unresolved submission requirement, a failed acceptance gate, or a concrete buyer objection.
-Keep the contact question, receipt format, and payment rail stable through the Germany submission.
-Keep broader opportunities in the evidence archive.
-
-The founder authorized a bounded hardware extension on October 2.
-Keep the same contact question, receipt format, payment rail, and recorded fallback.
-The [parts and acceptance plan](HARDWARE_NEXT.md) prioritizes an external contact, then distinct device identities.
-The [contact setup guide](CONTACT_SETUP.md) now defines prepared input selection, independent provider pins, and configuration recovery.
-The software rejects mixed simulation terms and mismatched buyer/gateway keys before payment.
-External-fixture and second-board physical tests remain open. The existing board still reads GPIO9.
-The [two-observer software policy](CORROBORATION.md) now rejects conflicting, missing, stale, invalid, skewed, and replayed pairs.
-Both configured receipts must report fresh, stable OPEN before DISPATCH. Signed fixtures establish software behavior only.
-The unpaid BLE pair runner now discovers once, invokes concurrently, and keeps both original challenges and public pins fixed.
-Software fixtures passed. Actual two-board timing, physical disagreement, paired payments, independent sensing, and customer need remain open.
-Do not replace the verified entry with an extension that misses its gates.
+**Stop rule:** keep the contact question, receipt format, payment rail, and recorded fallback stable through the Germany submission.
+Reopen scope for a failed acceptance gate, unresolved requirement, or concrete buyer objection.
+External contacts remain optional until their physical checks pass. Broad research and more device types do not replace buyer evidence.
+The [dated research](research/2026-10-04-physical-services.md) preserves sources and reasoning.

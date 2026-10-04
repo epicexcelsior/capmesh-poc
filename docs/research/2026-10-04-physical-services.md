@@ -42,6 +42,13 @@ FieldProof tests a commercial boundary above that connection: explicit terms, pe
 No fleet adapter, permissioned facility integration, or recurring customer exists today.
 The first pilot must establish a problem that an existing API, camera, integrator, or Open-RMF deployment does not already solve adequately.
 
+The October 4 demo follow-up also checked robotic.sh. Its official page presents a machine-service market with digital and physical categories.
+This establishes an adjacent machine-commerce product. It does not establish its field-evidence semantics or customer adoption.
+[robotic.sh](https://www.robotic.sh/).
+The narrower hypothesis is a visiting robot's transaction-associated contact evidence at an external loading gate.
+The [strategy](../STRATEGY.md#the-wedge-to-test-first) owns that pilot and its falsification test.
+No source check establishes that the market is empty or that customers prefer this contract.
+
 ## Corrections to the proposed pitch
 
 | Proposed claim | Accurate wording today |
