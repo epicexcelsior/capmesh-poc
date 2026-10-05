@@ -2,6 +2,15 @@
 
 **Fresh physical proof for machine-to-machine commerce.**
 
+**Try FieldProof:** [public receipt inspector](https://epicexcelsior.github.io/capmesh-poc/) · [interactive guide](https://epicexcelsior.github.io/capmesh-poc/guide.html) · [captioned 2:30 technical walkthrough](https://epicexcelsior.github.io/capmesh-poc/assets/fieldproof-signed-receipt.webm).
+
+The public inspector verifies recorded real ESP32 evidence. Select **Verify original**, then change the state, challenge, or key.
+Select **Verify recorded payment** for a read-only Solana Devnet query.
+The recorded receipt is expired, so its decision remains WAIT. The guide labels its interactive examples as teaching models.
+No hosted action creates a payment or reads hardware. Use [Run without hardware](#run-without-hardware) for the complete simulated purchase.
+
+**Deployment:** Solana Devnet, 0.001 Devnet USDC per real observation. No custom Solana program.
+
 Machines can pay online. Payment does not tell a visiting robot whether another operator's gate is open now.
 FieldProof purchases a contact observation on Solana and verifies the device's signed answer before a demo `DISPATCH` or `WAIT` recommendation.
 
@@ -114,7 +123,7 @@ Open `/guide.html` in the exported package for the self-contained story, radio e
 The guide labels its interactive examples as teaching models. Its receipt link opens the actual browser verifier.
 It refuses to overwrite an existing directory or archive. Select a new output name for another export.
 This package inspects recorded evidence. Use the simulator commands above to exercise a complete purchase without funding.
-Publication remains an owner action. Serve the exported directory on HTTPS for browser cryptography outside localhost.
+The [public inspector](https://epicexcelsior.github.io/capmesh-poc/) serves the exported directory on HTTPS through GitHub Pages.
 
 ## Run with the ESP32
 

@@ -161,8 +161,8 @@ Complete the human form. Save its receipt or confirmation page.
 |---|---|---|
 | Germany eligibility | Founder reports an Earn location-change cooldown. No organizer exception is confirmed. | Ask Carlo to confirm eligibility and the submission route before the deadline |
 | Public repository | Public at `https://github.com/epicexcelsior/capmesh-poc` | Paste the link into the submission form |
-| Test access | Reproducible simulator and exported recorded inspector. No verified public test URL. | Provide an accessible test/download link and clear instructions. Verify it while signed out |
-| Presentation link | Current captioned technical walkthrough ready locally. Founder presentation incomplete. | Record the founder presentation and provide public viewing links |
+| Test access | [Public recorded inspector](https://epicexcelsior.github.io/capmesh-poc/?submission=20261005) and [interactive guide](https://epicexcelsior.github.io/capmesh-poc/guide.html). Verified without sign-in on October 5. | Paste the inspector link. Label recorded evidence and teaching models accurately |
+| Presentation link | [Public captioned 2:30 technical fallback](https://epicexcelsior.github.io/capmesh-poc/assets/fieldproof-signed-receipt.webm). Founder video remains a separate task. | Use the final founder video when available and verify its public link |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |
 | Team contact | No submission contact selected | Supply the contact directly in the submission form |
