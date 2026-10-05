@@ -4,6 +4,35 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 founder recording consolidation
+
+Starting source: clean, pushed `54d1c05aa0a7700c5ae475247f2d08dd0dce36b3` on `main`.
+The canonical recording script now contains four scenes and 197 suggested spoken words.
+The local reader matches all four spoken blocks. Recording setup and technical reference remain folded below the script.
+The local start page links the live input, actual payment excerpt, saved inspector, and next pilot.
+
+The actual paid capture contains a long initial wait and only a few seconds of fresh acceptance.
+A ten-second excerpt starts at source time 22.8 seconds. It preserves original playback speed and receipt times.
+An 80-pixel footer labels it as the recorded actual October 5 Devnet purchase.
+The original 1280 × 900 frame remains visible without cropping. The full capture remains available.
+The excerpt is supporting footage. Founder narration and the live physical scene remain unrecorded.
+
+| Check | Observed result |
+|---|---|
+| Gateway suite | `npm --prefix gateway test`: 51 passed, zero failed, 783.474225 milliseconds. |
+| Export and launcher suite | `uv run --project host pytest -q tests/test_judge_export.py tests/test_demo_launcher.py`: 15 passed in 0.23 seconds. |
+| Full and focused simulator | Both browser runs passed configured terms, OPEN/DISPATCH, current-time expiry to WAIT, and mobile width. Focused view fits 1280 × 900 and 1920 × 1080. No funds or hardware. |
+| Quote presentation regression | A new quote reset the decision text to WAIT but retained the preceding DISPATCH color. The reproduced class was `decision`. Resetting it to `decision wait` fixed the mismatch. Both browser runs cover this transition. |
+| Local materials | Four canonical spoken blocks, fourteen local links, frame navigation, desktop/mobile width, and no page errors passed. The first helper read a fold's state before the hash event completed. Waiting for the visible state corrected the helper. |
+| Current actual payment query | One read-only `getTransaction` request verified the unchanged October 5 transfer at slot 507676124. VALID signature, EXPIRED age, WAIT, tamper rejection, and original recovery passed. No RPC fixture or clock override. |
+| Excerpt | H.264, 1280 × 980, 25 fps, ten seconds, no audio. Complete decode and visual frame inspection passed. SHA256: `a02a8459dbb92479863666ede08b27d71c158bc240041bfb314459ecc18e3a2f`. |
+| Source and visual review | Changed JavaScript syntax and whitespace checks passed. The focused input, paid inspector, start page, and labeled excerpt were inspected. Primary review checked the source diff and truthful mode labels. No independent review ran. |
+
+The attached application remains GPIO20. The operator must remove added leads and confirm the bare board before restoration.
+No button application restore, new hardware reading, payment, phone-camera recording, or microphone test occurred in this change.
+OBS and phone instructions remain an owner procedure. They do not establish a successful founder recording.
+Public hosting, eligibility confirmation, registration, and human submission remain incomplete.
+
 ## October 5 GPIO20 package-contact preparation
 
 Starting source: clean, pushed `aee9e754ccdf3aa10add0e80268d54d66f526d85` on `main`.

@@ -1,116 +1,137 @@
 # Record one clear FieldProof video
 
-Record a 2:30 screen walkthrough with your voice. Change these suggested words to sound like you.
-The opening must explain the buyer's problem before it names the technology.
-Use the verified gate-contact demo below. The foil package sensor remains unverified.
+Record your voice and screen. Use a phone camera for your hand on BOOT during the same take.
+Aim for 2:30. Your explanation and the live interaction carry the video.
 
-## Prepare only these three things
+**One story:** A robot needs a current answer from another operator's gate. Payment stays confirmed after that answer expires.
 
-1. Open the three recording frames from the local start page.
-2. Open the actual 32.8-second October 5 paid capture from that page.
-3. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+**Hardware prerequisite:** The attached board still runs the GPIO20 experiment. BOOT cannot control that input.
+Unplug USB, remove both added leads, and reconnect the bare board. Confirm the board is clear before firmware restoration.
+Use the live BOOT scene only after restoration and an actual held/released check.
+The foil fixture is unreliable. Keep the verified gate-contact story.
 
-Before recording, check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT in the saved inspector.
-Make a five-second microphone test. Play it back with sound.
-Keep private wallets, terminals, notifications, and unrelated tabs outside the capture.
-The [rehearsal](REHEARSAL.md#record-one-150-second-walkthrough) owns setup and recovery. The [demo runbook](DEMO.md) owns live commands.
+## 1. Explain the problem / 0:00–0:20
 
-## 1. The problem / 0:00–0:20
-
-**Show:** The problem frame. A face-camera introduction is optional.
+**Show:** Your face or the problem frame. Keep the robot and gate visible.
 
 **Say:**
 
-> A delivery robot arrives at a warehouse owned by another company. It can pay for an observation, but payment doesn't tell it whether the gate is open now. FieldProof checks whether a signed physical answer is still useful.
+> A delivery robot arrives at another company's warehouse. It can pay, but payment doesn't tell it whether the gate is open now. FieldProof lets the buyer verify a fresh physical answer before its next decision.
 
-**Point:** The robot and the gate belong to different operators. The question is about now.
+## 2. Show the physical input / 0:20–1:15
 
-## 2. The product / 0:20–0:40
+**Show:** The focused physical page at `http://127.0.0.1:4023/?present=1`.
+Film your hand and board with the phone at the same time.
 
-**Show:** The purchase frame: Pay → Measure → Verify.
-
-**Say:**
-
-> The buyer asks one question, chooses a device, and sets a ten-second limit. It pays 0.001 test USDC on Solana Devnet. After settlement, the ESP32 reads its contact input and signs the answer.
-
-**Point:** Payment comes before the measurement. The device signs the observation, not the payment.
-
-## 3. The actual purchase / 0:40–1:13
-
-**Show:** Play the continuous October 5 paid capture. Speak over its silent footage.
-
-**Say:**
-
-> This is a recording of our actual purchase today. The laptop sends the payment and talks to the ESP32 over Bluetooth. The buyer checks the device key, the question, and the observation's age. Fresh OPEN evidence produces DISPATCH. Eleven seconds later, the same answer expires and the buyer changes to WAIT.
-
-**Point:** This footage records actual Devnet settlement and a real ESP32 input. It uses the original clock.
-If playback takes longer, pause your narration. Never edit the receipt times to make the saved answer fresh.
-
-## 4. Why the buyer waits / 1:13–1:45
-
-**Show:** The current saved inspector. Point to payment, signature, age, and WAIT.
-Select **Flip contact state**. Wait for REJECTED. Select **Verify original** to restore it.
+1. Hold BOOT.
+2. Select **Get payment quote**.
+3. Select **Request observation**.
+4. Keep BOOT held until the page shows CLOSED and WAIT.
+5. Release BOOT.
+6. Select **Get payment quote** again.
+7. Select **Request observation** again.
+8. Point to OPEN and DISPATCH.
+9. Wait for the evidence age to exceed ten seconds.
+10. Point to WAIT.
 
 **Say:**
 
-> Here is that saved answer now. Solana still verifies the payment. The device signature is still valid. But the observation is too old. Now I change its contact state. The signature check rejects it, and the buyer keeps WAIT. Paying for an answer does not make every answer acceptable.
+> This ESP32 is the observer. BOOT stands in for a gate contact. This live hardware rehearsal uses simulated payment. Holding it gives CLOSED, so the buyer waits. I release it and request a new observation. OPEN gives DISPATCH. Now I leave that answer alone. After ten seconds, it expires. The buyer waits again.
 
-**Point:** One attack is enough. Keep the pointer still while you explain each result.
-If the current chain query fails, state that failure. Do not read the successful-query line above.
-Use the recorded purchase and its Explorer link as historical evidence instead.
+**Keep clear:** Pressing BOOT alone does not update the page. Each state needs a new request.
+DISPATCH is a prototype recommendation. This demo controls no gate and moves no robot.
+If a request fails, stop the take. Preserve the error and diagnose it before another request.
 
-## 5. What the hardware does / 1:45–2:05
+## 3. Show the real Solana proof / 1:15–2:05
 
-**Show:** A short shot of the ESP32. The Seeker shot is optional.
-
-**Say:**
-
-> This board is the physical observer. For this prototype, its BOOT button stands in for a gate contact. The Seeker independently verifies the same receipt. It does not supply a second measurement or send the payment.
-
-**Point:** The board is real. The gate and robot are illustrations. DISPATCH is a demo recommendation.
-If you omit the phone, omit the last two spoken sentences.
-
-## 6. The next useful test / 2:05–2:30
-
-**Show:** The pilot frame. Return to face camera for the last sentence if convenient.
+**Show:** Play the short October 5 paid excerpt from the local start page.
+Then open `http://127.0.0.1:4021/proof?live=1&present=1`.
+Verify the displayed transfer result before you describe it.
+Select **Flip contact state**. Point to REJECTED and WAIT.
 
 **Say:**
 
-> The next test is one fleet working with one authorized facility, then a second facility using the same integration. I want to test paid integration and support first. Customer demand is still unvalidated. The goal is one interface for machines to transact with infrastructure they do not own.
+> Here is the actual payment run from today. The buyer sends 0.001 test USDC on Solana Devnet. After settlement, the laptop requests the ESP32 answer over Bluetooth. The device signs that answer. Here, the browser independently verifies the receipt and the transfer. The payment remains confirmed and the signature remains valid, but the answer expires. If I change the signed state, verification rejects it.
 
-**Point:** This is the next business test, not an existing customer or network claim.
+**Keep clear:** Label the excerpt **Recorded actual Devnet purchase · October 5**.
+It preserves the original clock and continuous fresh-to-expired transition.
+The excerpt omits the initial waiting period. Keep the full capture as supporting evidence.
+The saved inspector never pays or measures hardware. The saved answer is expired now.
+If the current chain query fails, state the failure. Use the recorded result and Explorer link as historical evidence.
 
-## Record these extra shots only if convenient
+## 4. Explain the next useful test / 2:05–2:30
 
-| Shot | Length | What to show |
-|---|---|---|
-| Board close-up | 8 seconds | USB-powered board. Point to BOOT. Show one press and release. |
-| Laptop and board | 5 seconds | Both devices in one frame. Keep private screens outside the shot. |
-| Seeker verifier | 5 seconds | FieldProof's receipt page with payment, signature, expired age, and WAIT. |
+**Show:** The pilot frame or your face. Keep the ending personal.
 
-These are supporting shots. A board press alone does not prove a new request or payment.
-For a new physical request, show the action and result in one continuous shot. Label simulated settlement explicitly.
-The existing actual paid capture supplies the complete transaction evidence.
-Skip extra shots if they delay the main recording. Screen capture with your voice is sufficient for this route.
+**Say:**
 
-## Keep the first take simple
+> The next test is one fleet and one authorized facility, then a second facility using the same integration. I want to test paid integration and support first. Customer demand is unvalidated. The goal is one interface for machines to transact with infrastructure they don't own.
 
-Record the screen and voice together. You do not need music, transitions, or a new slide deck.
-If you stumble, pause and repeat the sentence. Trim the pause afterward.
-Capture at 1280 × 900 or larger. Keep the browser zoom at 100 percent.
-Keep the final video within two to three minutes. Verify sound and public playback before submission.
+The four sections are rehearsal targets. Speak naturally and measure the take.
+Pause while results load. Trim setup pauses, but keep the physical action and resulting answer together.
+
+## Record screen and hardware together
+
+Use OBS for the screen and voice. Use the Seeker's ordinary camera for the hand and board.
+The phone acts as a camera in this take. Its separate verifier role remains optional.
+
+1. Open OBS. Run **Tools → Auto-Configuration Wizard** for recording.
+2. Add a screen or window capture source for the FieldProof browser.
+3. On Wayland, use the PipeWire capture source and select the browser or display.
+4. Select your microphone in **Settings → Audio**.
+5. Speak and verify movement in the microphone meter.
+6. Mute desktop audio to avoid notification sounds.
+7. Set the recording path in **Settings → Output**.
+8. Select MKV as the recording format.
+9. Use 1920 × 1080 at 30 fps if the five-second test plays smoothly.
+10. Keep the native screen resolution if 1080p makes text small or adds scaling blur.
+
+OBS documents source setup, audio meters, and a test recording in its [quick-start guide](https://obsproject.com/kb/quick-start-guide).
+OBS recommends MKV for interrupted-recording recovery. Use **File → Remux Recordings** to export MP4 without re-encoding.
+See the [official output guide](https://obsproject.com/kb/standard-recording-output-guide).
+
+1. Prop the phone horizontally. Frame BOOT, your hand, and part of the laptop screen.
+2. Keep power cables secure. Use a lamp beside the board.
+3. Make a five-second test with screen capture, voice, and the phone camera.
+4. Play both recordings. Verify readable text, clear speech, focus, and the visible button.
+5. Start both recordings for the main take.
+6. Clap once where the phone sees your hands.
+7. Say “FieldProof, take one,” then start the opening.
+8. Keep both recordings running through the BOOT scene.
+9. Stop both recordings after the closing sentence.
+
+The clap aligns the two recordings. Use OBS audio as the final voice track.
+Overlay the phone view during BOOT without covering the state, age, or decision.
+Keep the action and result synchronized. Keep a short wide shot as evidence of the live setup.
+
+Do not build another slide deck. Use the problem and pilot frames briefly.
+Keep the product on screen for most of the video. Skip music and decorative transitions.
+Keep private wallets, terminals, notifications, and unrelated tabs outside both recordings.
+
+## Finish one take
+
+1. Watch the complete video with sound.
+2. Verify the live scene says simulated payment.
+3. Verify the paid scene says recorded actual Devnet purchase.
+4. Verify the button, state, age, and decision remain readable.
+5. Export the final MP4.
+6. Open the public video link while signed out before submission.
+
 Use the [video cover and project graphic](SUBMISSION.md#ready-to-use-visual-materials).
+The [rehearsal](REHEARSAL.md#record-one-150-second-walkthrough) owns setup and recovery.
+The [demo runbook](DEMO.md) owns gateway and actual-payment commands.
 
-## Explain these terms if someone asks
+## Explain the technicals in plain words
 
-- **Solana:** records the test-USDC payment from buyer to merchant.
-- **x402:** gives the buyer payment terms through an HTTP response.
-- **Bluetooth:** carries the question and device answer between the laptop and ESP32.
-- **Device signature:** lets the buyer verify the answer against its trusted device key.
-- **Challenge:** identifies this particular question. Another question cannot reuse this answer.
-- **Freshness:** compares the observation's signed time with the buyer's age limit.
-- **WAIT:** the available evidence does not permit the demo recommendation to dispatch.
-- **peaq:** machine identity is the planned next integration. Registry reads work. Activation remains incomplete.
+- **Solana:** records the test-USDC transfer from buyer to merchant.
+- **x402:** returns machine-readable payment terms before delivery.
+- **Bluetooth:** carries the question and answer between the laptop and ESP32. USB supplies power.
+- **Device signature:** authenticates the answer against the buyer's trusted device key.
+- **Challenge:** binds the answer to this particular question.
+- **Freshness:** compares the signed observation time with the buyer's ten-second limit.
+- **WAIT:** the available evidence does not permit the prototype dispatch recommendation.
 
-The signature verifies a device's claim. It does not prove truthful sensing, safe movement, or permission to enter.
+The device signs its observation, not a Solana transaction. The gateway ledger associates the question with the purchase.
+A signature authenticates a device's claim. It does not prove truthful sensing, safe movement, or permission to enter.
 Payment and delivery are separate. Automatic refunds do not exist in this prototype.
+peaq identity activation remains incomplete. Keep it outside this MVP video.

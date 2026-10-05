@@ -8,6 +8,7 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
 
 (async () => {
   const url = new URL(origin);
+  const presenting = url.searchParams.get('present') === '1';
   assert.equal(url.protocol, 'http:');
   assert.equal(url.hostname, '127.0.0.1', 'Use only the local prototype simulator');
   assert.equal(url.username + url.password, '');
@@ -47,14 +48,36 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
     assert.equal(await page.textContent('#decision'), expected);
     assert.equal(receipt.payment_mode, 'simulated; no funds moved');
     assert.equal(receipt.decision.evidence_mode, 'simulated');
-    assert.match(await page.textContent('#contact-note'), /evidence is simulated/);
+    assert.match(await page.textContent(presenting ? '#presentation-source' : '#contact-note'), presenting ? /Simulated contact input/ : /evidence is simulated/);
+    assert.match(await page.textContent('#mode'), /SIMULATED PAYMENT · NO FUNDS MOVED/);
+    if (expected === 'DISPATCH') {
+      await page.click('#quote');
+      await page.waitForFunction(() => document.getElementById('reason').textContent === '402 quote received. No evidence yet.');
+      assert.equal(await page.textContent('#decision'), 'WAIT');
+      assert.equal(await page.getAttribute('#decision', 'class'), 'decision wait', 'A new quote must remove the prior DISPATCH style');
+      assert.equal(await page.textContent('#state'), '—');
+      assert.equal(await page.textContent('#age'), '—');
+      await page.click('#observe');
+      await page.waitForFunction(() => document.getElementById('decision').textContent === 'DISPATCH');
+    }
+    if (presenting) {
+      assert.equal(await page.isVisible('.hero'), false);
+      assert.equal(await page.isVisible('.stage-title'), true);
+      assert.equal(await page.textContent('#observe'), 'Request observation');
+      for (const viewport of [{ width: 1280, height: 900 }, { width: 1920, height: 1080 }]) {
+        await page.setViewportSize(viewport);
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+        assert.ok(await page.locator('.desk').evaluate(node => node.getBoundingClientRect().bottom <= innerHeight), 'The decision must fit the desktop recording frame');
+      }
+      await page.setViewportSize({ width: 1280, height: 900 });
+    }
     mkdirSync(resolve(root, '.local'), { recursive: true });
-    await page.screenshot({ path: resolve(root, '.local/purchase-desktop.png'), fullPage: true });
+    await page.screenshot({ path: resolve(root, presenting ? '.local/purchase-focus-desktop.png' : '.local/purchase-desktop.png'), fullPage: true });
     await page.waitForFunction(() => document.getElementById('reason').textContent.includes('Evidence expired'), {}, { timeout: 16000 });
     assert.equal(await page.textContent('#decision'), 'WAIT');
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    await page.screenshot({ path: resolve(root, '.local/purchase-mobile.png'), fullPage: true });
+    await page.screenshot({ path: resolve(root, presenting ? '.local/purchase-focus-mobile.png' : '.local/purchase-mobile.png'), fullPage: true });
     assert.deepEqual(errors, []);
     console.log(`Simulated browser purchase passed: ${health.provider}, configured terms, ${expected}, expired WAIT, desktop/mobile, no page errors. No funds or hardware.`);
   } finally { await browser.close(); }

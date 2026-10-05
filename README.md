@@ -29,7 +29,7 @@ The device signs the question and answer. The gateway ledger associates that que
 Payment and delivery remain separate. This MVP controls no gate and moves no robot.
 The phone acts as a second browser verifier, not another sensor or payer.
 
-**Learn:** [illustrated guide](docs/HOW_IT_WORKS.html). **Record:** [one 150-second walkthrough](docs/REHEARSAL.md#record-one-150-second-walkthrough).
+**Learn:** [illustrated guide](docs/HOW_IT_WORKS.html). **Record:** [one founder-led walkthrough](docs/RECORDING_SCRIPT.md).
 **Submit:** [remaining human tasks](docs/SUBMISSION.md#required-fields-that-remain-incomplete).
 The [documentation map](docs/README.md) routes specific questions. The [verification record](docs/VERIFICATION.md) records executed checks and limits.
 
@@ -53,6 +53,7 @@ python3 scripts/demo.py sim
 ```
 
 Open `http://127.0.0.1:4022`. Select **Get payment quote**, then **Run simulation**.
+Add `?present=1` for a compact recording view. Its **Request observation** button uses the same simulated purchase.
 The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.
 Fresh OPEN produces DISPATCH. The same evidence expires to WAIT after its age limit.
 Open `/proof?present=1` for recorded hardware evidence, receipt attacks, and the independent Solana payment query.

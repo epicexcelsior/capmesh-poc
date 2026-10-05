@@ -93,7 +93,8 @@ For a complete real payment and input flow, use the [paid-run procedure](DEMO.md
 The October 5 run passed on the laptop and Seeker. Both verified payment, accepted fresh OPEN, and changed to expired WAIT.
 The [public buyer output](evidence/device-signed-purchase-20261005.json) preserves its original signed times. It is expired now.
 The Seeker acts as a browser verifier. It is not a sensor, payment signer, or BLE relay.
-The continuous 32.8-second capture remains local. Use it as technical footage inside your required longer founder explanation.
+The continuous 32.8-second capture remains local. A ten-second excerpt preserves its fresh-to-expired transition at original speed.
+Use that excerpt inside your founder explanation. Keep the complete capture as supporting evidence.
 
 ## Explain the optional pair extension
 
@@ -106,20 +107,19 @@ Keep this scene optional in the timed video. The main purchase still uses one bo
 
 ## Record one 150-second walkthrough
 
-Use this route for the Germany MVP. The local start page links three recording frames and the actual October 5 paid footage.
-Record your own voice and screen. These are cues, not final application answers.
-Use the [starter voice script](RECORDING_SCRIPT.md) for suggested words, screen actions, timing, and optional supporting shots.
+Use this route for the Germany MVP. The local start page links one recording script and the actual October 5 paid excerpt.
+Use the [recording script](RECORDING_SCRIPT.md) for four scenes, exact live actions, OBS setup, and simultaneous phone recording.
 You need the existing ESP32, laptop, and optional Seeker. No new hardware is required.
 For a fresh checkout, use the [expiry illustration](assets/fieldproof-evidence-window.svg), [payment diagram](assets/fieldproof-payment-to-observation.svg), and [pilot plan](STRATEGY.md#validate-one-relationship).
 The founder's recording frames and paid capture stay local. The repository includes the public evidence and captioned technical fallback.
 
 Before recording:
 
-1. Open the three recording frames from the local start page.
-2. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
-3. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT.
-4. Open the continuous 32.8-second paid capture and check playback.
-5. Enable microphone capture in your recorder and make a five-second voice test.
+1. Complete the recording script's hardware prerequisite before the live BOOT scene.
+2. Open the focused physical page at `http://127.0.0.1:4023/?present=1`.
+3. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+4. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT in the saved inspector.
+5. Follow the script's five-second recording test before the main take.
 
 Handle the reported Germany cooldown with Carlo in parallel. Confirm eligibility and the human submission route before submitting.
 
@@ -127,8 +127,10 @@ The paid inspector reads saved output and queries Solana. Reloading sends no fun
 If port 4021 is unavailable, use the exported inspector and import its October 5 public JSON.
 Follow the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) only when you need another actual purchase.
 
-The starter script owns the six timed scenes: problem, product, actual purchase, expired answer, hardware, and next pilot.
-The recording frames show one idea each. The inspector's focused view emphasizes payment, signature, age, and decision.
+The script owns four scenes: problem, live physical input, actual payment and rejection, and next pilot.
+Use the problem and pilot frames briefly. Keep the product on screen for most of the video.
+The physical page's `?present=1` view keeps its payment mode visible and changes only presentation.
+The inspector's focused view emphasizes payment, signature, age, and decision.
 Select **Show full page** for the challenge, sample, and additional attack controls. All verification checks still run in focused view.
 
 Keep the current saved receipt expired. Never change its clock or timestamps for a recording.
