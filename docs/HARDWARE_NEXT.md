@@ -87,8 +87,11 @@ The manufacturer, revision, and physical wiring remain unverified.
 Chip GPIO numbers and physical header positions are different labels.
 
 GPIO20 has no other assignment in the current firmware and is not a chip boot-strapping or USB pin.
-An isolated GPIO20 input-with-pull-up build passed. It was not flashed. The attached board still uses GPIO9.
-The next fixture check requires two separate secure leads. No package-presence reading or package decision passed yet.
+An isolated GPIO20 input-with-pull-up build passed. An application-only flash passed hash verification on October 5.
+The attached board now reads GPIO20. Its original GPIO9 application backup preserves the button fallback.
+The operator can make two insulated leads. The physical foil checks remain pending.
+Package-policy software and browser fixtures passed. A paid ABSENT reading passed with the existing signing key.
+The first reported foil closure still read ABSENT. No PRESENT proof or complete package flow passed yet.
 
 1. Disconnect the bare LED until its series resistor and wiring are identified.
 2. Photograph both board faces and all visible model and pin labels.

@@ -1,3 +1,17 @@
+// The buyer selects this application policy. A receipt cannot select its own meaning.
+export function contactPolicy(purpose = 'gate-access', sensor = 'gpio9-contact') {
+  if (purpose !== 'gate-access' && purpose !== 'package-pickup') throw new Error('Unsupported buyer purpose');
+  if (purpose === 'package-pickup' && sensor !== 'gpio20-contact') {
+    throw new Error('Package pickup requires the selected GPIO20 contact');
+  }
+  return {
+    state: closed => typeof closed !== 'boolean' ? 'UNAVAILABLE'
+      : purpose === 'package-pickup' ? (closed ? 'PACKAGE_PRESENT' : 'PACKAGE_ABSENT') : (closed ? 'CLOSED' : 'OPEN'),
+    decision: (accepted, closed) => accepted && typeof closed === 'boolean' &&
+      (purpose === 'package-pickup' ? closed : !closed) ? 'DISPATCH' : 'WAIT',
+  };
+}
+
 // Independent read-only check of the recorded demonstration payment.
 export const DEVNET_RPC = 'https://api.devnet.solana.com';
 const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
@@ -109,24 +123,28 @@ export async function querySettlement(purchase, fetcher = fetch) {
 
 // Public fields from the independent buyer. This never selects a verification key from input.
 
-export function publicBuyerRun(input) {
+export function publicBuyerRun(input, purpose = 'gate-access') {
+  if (purpose !== 'gate-access' && purpose !== 'package-pickup') throw new Error('Unsupported buyer purpose');
+  const sensor = purpose === 'package-pickup' ? 'gpio20-contact' : 'gpio9-contact';
   const p = input?.purchase || input, c = p?.challenge, r = p?.receipt, s = r?.result;
   if (!p || Array.isArray(p) || typeof p.purchase_id !== 'string' || !/^[0-9a-f]{16}$/.test(p.purchase_id) ||
+      (purpose === 'package-pickup' && (p.purpose !== purpose || c?.contact === undefined)) ||
       c?.id !== p.purchase_id || !Number.isInteger(c.nonce) || c.nonce < 1 || c.nonce > 0x7fffffff ||
       !Number.isSafeInteger(c.created_at) || c.created_at < 1 || c.location !== 'demo-gate' || c.max_age_seconds !== 10 ||
-      (c.contact !== undefined && (c.contact?.provider !== 'esp32-c6-96a2' || c.contact.sensor !== 'gpio9-contact' || Object.keys(c.contact).length !== 2)) ||
+      (c.contact !== undefined && (c.contact?.provider !== 'esp32-c6-96a2' || c.contact.sensor !== sensor || Object.keys(c.contact).length !== 2)) ||
       r?.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.request_id !== c.id || r.nonce !== c.nonce ||
       r.provider !== 'esp32-c6-96a2' || r.capability !== 'state.observe' ||
-      r.parameters?.location !== 'demo-gate' || Object.keys(r.parameters).length !== 1 || s?.metric !== 'gate.closed' || s.sensor !== 'gpio9-contact' ||
+      r.parameters?.location !== 'demo-gate' || Object.keys(r.parameters).length !== 1 || s?.metric !== 'gate.closed' || s.sensor !== sensor ||
       typeof s.closed !== 'boolean' || s.total_samples !== 5 || s.stable_samples !== 5 ||
       !Number.isSafeInteger(r.started_at) || r.started_at < 1 || !Number.isSafeInteger(r.completed_at) ||
       r.started_at < c.created_at - 2 || r.completed_at < r.started_at ||
       !/^v3:[A-Za-z0-9+/]{86}==$/.test(r.receipt_signature || '')) {
-    throw new Error('Use the independent buyer output for the installed GPIO9 observer, ten-second contract, and Devnet payment.');
+    throw new Error(`Use the independent buyer output for the installed ${sensor} observer, selected purpose, ten-second contract, and Devnet payment.`);
   }
   recordedPaymentDetails(p); // Fixed chain, merchant, and amount. Chain verification remains separate.
-  return { purchase_id: p.purchase_id,
-    challenge: { id: c.id, nonce: c.nonce, created_at: c.created_at, location: 'demo-gate', max_age_seconds: 10 },
+  return { purchase_id: p.purchase_id, ...(purpose === 'package-pickup' ? { purpose } : {}),
+    challenge: { id: c.id, nonce: c.nonce, created_at: c.created_at, location: 'demo-gate', max_age_seconds: 10,
+      ...(purpose === 'package-pickup' ? { contact: { provider: 'esp32-c6-96a2', sensor } } : {}) },
     settlement: { success: true, payer: p.settlement.payer, transaction: p.settlement.transaction, network: p.settlement.network },
     receipt: { protocol: r.protocol, request_id: r.request_id, status: r.status, provider: r.provider,
       capability: r.capability, parameters: { location: 'demo-gate' }, nonce: r.nonce,

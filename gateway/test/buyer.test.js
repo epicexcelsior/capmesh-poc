@@ -14,6 +14,40 @@ import { readFileSync } from 'node:fs';
 const testPin = generateKeyPairSync('ec', { namedCurve: 'prime256v1' }).publicKey
   .export({ format: 'der', type: 'spki' }).subarray(-65).toString('hex');
 
+test('package pickup changes only the accepted contact state and retains authentication and freshness checks', () => {
+  const keys = generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
+  const pin = keys.publicKey.export({ format: 'der', type: 'spki' }).subarray(-65).toString('hex');
+  const contact = { ...DEFAULT_CONTACT, sensor: 'gpio20-contact' };
+  const purchase = { id: '0123456789abcdef', nonce: 123, max_age_seconds: 10, created_at: 100 };
+  for (const closed of [false, true]) {
+    const receipt = { protocol: 'capmesh/0.1', status: 'success', request_id: purchase.id, provider: contact.provider,
+      capability: 'state.observe', nonce: purchase.nonce, parameters: { location: 'demo-gate' },
+      result: { metric: 'gate.closed', sensor: contact.sensor, closed, stable_samples: 5, total_samples: 5 },
+      started_at: 100, completed_at: 100 };
+    const message = ['fieldproof-observation-v1', receipt.protocol, receipt.request_id, receipt.provider, receipt.capability,
+      'demo-gate', receipt.nonce, 'gate.closed', contact.sensor, Number(closed), 5, 5, 100, 100].join('|');
+    receipt.receipt_signature = 'v3:' + sign('sha256', Buffer.from(message), { key: keys.privateKey, dsaEncoding: 'ieee-p1363' }).toString('base64');
+    const verify = (body = { receipt }, terms = purchase, now = 100, key = pin, selected = contact) =>
+      checkEvidence(body, terms, now, key, selected, 'package-pickup');
+    assert.equal(verify().decision, closed ? 'DISPATCH' : 'WAIT');
+    assert.equal(verify(undefined, undefined, 110).decision, closed ? 'DISPATCH' : 'WAIT');
+    assert.throws(() => verify(undefined, undefined, 111), /freshness/);
+    assert.throws(() => verify({ receipt: { ...receipt, result: { ...receipt.result, closed: !closed } } }), /authentication/);
+    assert.throws(() => verify(undefined, { ...purchase, nonce: 124 }), /challenge/);
+    assert.throws(() => verify(undefined, undefined, undefined, testPin), /authentication/);
+    assert.throws(() => verify(undefined, undefined, undefined, undefined, DEFAULT_CONTACT), /GPIO20/);
+  }
+});
+
+test('incompatible package policy fails before any HTTP request or payment', async t => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  globalThis.fetch = async () => { assert.fail('No HTTP request is allowed'); };
+  const signer = await generateKeyPairSigner();
+  await assert.rejects(buyObservation(signer, undefined, { purpose: 'package-pickup', receiptPublicKey: testPin }), /GPIO20/);
+  await assert.rejects(buyObservation(signer, undefined, { purpose: 'unknown', receiptPublicKey: testPin }), /purpose/);
+});
+
 test('buyer rejects wrong chain, asset, recipient, amount, and payment scheme', () => {
   const offer = { scheme: 'exact', network: NETWORK, asset: USDC, payTo: PAY_TO, amount: '1000' };
   assert.deepEqual(allowedOffers([offer]), [offer]);

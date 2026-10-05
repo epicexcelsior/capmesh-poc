@@ -3,7 +3,10 @@
 **The software supports another input and another device. Physical verification remains open.**
 Audience: the operator who prepares the fixture and the buyer who selects its evidence.
 Use this guide after the [board, sensor, and wiring checks](HARDWARE_NEXT.md#resolve-the-board-before-wiring).
-The attached board still reads GPIO9. Neither new firmware build was flashed during the overnight diagnostic.
+On October 5, the attached board changed to GPIO20 for a prototype foil-contact check.
+The application-only flash passed hash verification. The open check and a paid ABSENT proof passed. The first reported foil closure still read ABSENT.
+A direct lead-contact check remains pending. No PRESENT proof exists yet.
+The original GPIO9 application backup preserves the button fallback. Its archived receipts remain unchanged.
 
 ## Understand the four settings
 
@@ -19,6 +22,37 @@ Discovering a device does not provision its key.
 The buyer rejects a valid signature when its provider, sensor, challenge, or age fails the contract.
 The gateway compares the buyer's public pin before it creates a quote.
 It never treats a gateway response as authority to replace the buyer's pin.
+
+## GPIO20 foil-contact candidate
+
+The operator identified ESP32-C6 Super Mini and printed `20` and `GND` labels. The chip reports ESP32-C6FH4.
+GPIO20 has no other firmware assignment. It is separate from USB and chip strapping pins.
+[Espressif GPIO restrictions](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-reference/peripherals/gpio.html).
+The exact board manufacturer and revision remain unverified.
+
+1. Disconnect USB before wiring.
+2. Connect printed `20` to foil A with one insulated lead.
+3. Connect printed `GND` to foil B with a separate insulated lead.
+4. Secure the leads and keep exposed metal away from other board pins.
+5. Keep the foil pieces apart, then reconnect USB.
+
+The input uses its internal pull-up. Open contact reads `closed: false`. Contact to ground reads `closed: true`.
+The explicit package-pickup policy maps these values to PACKAGE_ABSENT and PACKAGE_PRESENT.
+Fresh, authenticated PRESENT evidence permits DISPATCH. ABSENT, stale, or invalid evidence keeps WAIT.
+This fixture demonstrates contact closure. It cannot identify a package or distinguish absence from a broken wire.
+
+The firmware profile is [package-contact.defaults](../firmware/esp32/package-contact.defaults).
+Use it after `sdkconfig.defaults` in an isolated build. Keep the default GPIO9 configuration for the button fallback.
+Flash only the application at `0x10000`. Preserve the partition table and NVS signing-key storage.
+Restore the saved GPIO9 application at the same offset to return to BOOT. Disconnect the foil during restoration.
+
+The paid buyer opts in with `--package --sensor gpio20-contact`.
+The gateway uses `FIELDPROOF_CONTACT_SENSOR=gpio20-contact` and `FIELDPROOF_BUYER_PURPOSE=package-pickup`.
+The inspector uses `/proof?view=package&live=1&present=1`. It requires a new GPIO20 buyer output.
+The package view never loads the older GPIO9 purchase as fallback evidence.
+The signed wire labels remain `gate.closed` and `demo-gate`. The local buyer policy gives the contact its package meaning.
+Payment, nonce generation, signature format, and cryptographic verification remain unchanged.
+Do not describe this fixture as verified until both physical states and a new end-to-end request pass.
 
 ## Preserve the working demonstration
 

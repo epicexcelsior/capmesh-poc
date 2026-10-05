@@ -1,7 +1,23 @@
-import { querySettlement, recordedPaymentDetails, publicBuyerRun } from './settlement.mjs';
+import { querySettlement, recordedPaymentDetails, publicBuyerRun, contactPolicy } from './settlement.mjs';
 
 const el = id => document.getElementById(id);
 const controls = ['original', 'tamper', 'challenge', 'identity'];
+const packageView = new URL(location.href).searchParams.get('view') === 'package';
+const purpose = packageView ? 'package-pickup' : 'gate-access';
+const selectedSensor = packageView ? 'gpio20-contact' : 'gpio9-contact';
+const policy = contactPolicy(purpose, selectedSensor);
+if (packageView) {
+  document.body.dataset.view = 'package';
+  el('receipt-question').textContent = 'Is the package at the pickup point?';
+  el('scene-owner').textContent = "Another operator's pickup point";
+  el('scene-caption').textContent = 'Prototype foil contact. Closed contact represents a package. The illustration moves no robot.';
+  el('observer-label').textContent = 'ESP32-C6 / GPIO20';
+  el('path-note').textContent = 'x402 settlement, then a BLE contact observation. A foil contact represents package presence.';
+  el('stage-note').textContent = 'Prototype package-presence contact. Read-only inspection. No robot motion.';
+  el('intro-lead').textContent = 'A visiting robot needs a fresh package-presence answer from another operator before pickup.';
+  if (el('watch-run')) el('watch-run').href = '?view=package&live=1&present=1';
+  el('wire-note').textContent = 'Package pickup is a local buyer policy. The unchanged signed wire fields remain gate.closed and demo-gate. Closed GPIO20 contact represents PACKAGE_PRESENT.';
+}
 let recorded, pin, differentKey;
 let running = false;
 let loadedRun = false, paymentVerified = false, lastChecks = null, sourceRevision = 0, watchCycle = 0;
@@ -20,7 +36,7 @@ function status(id, text, kind) {
 }
 
 function renderScene(closed, decision) {
-  const claim = typeof closed === 'boolean' ? (closed ? 'CLOSED' : 'OPEN') : 'UNAVAILABLE';
+  const claim = policy.state(closed);
   el('scene-claim').textContent = `Receipt claim: ${claim}`;
   el('scene-decision').textContent = decision;
   el('gate-scene').dataset.claim = claim.toLowerCase();
@@ -107,15 +123,17 @@ function refreshDecision() {
   renderAge(now - r.completed_at, challenge.max_age_seconds, fresh);
   status('live-payment-check', paymentVerified ? 'VERIFIED' : 'NOT VERIFIED', paymentVerified ? 'pass' : 'expired');
   const accepted = authentic && bound && contract && fresh && (!loadedRun || paymentVerified);
-  el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
-  el('decision').className = `decision ${accepted && !s.closed ? 'pass' : 'expired'}`;
+  const decision = policy.decision(accepted, s.closed);
+  el('decision').textContent = decision;
+  el('decision').className = `decision ${decision === 'DISPATCH' ? 'pass' : 'expired'}`;
   renderScene(s.closed, el('decision').textContent);
   el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
     : !bound ? 'This receipt cannot answer a different buyer challenge.'
       : !contract ? 'The contact does not satisfy the buyer contract.'
         : !fresh ? 'The original signature is valid. The observation is too old for dispatch.'
           : loadedRun && !paymentVerified ? 'Fresh signed answer. Verify its reported payment before the combined demo decision.'
-            : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
+            : packageView ? (s.closed ? 'Fresh contact evidence says PACKAGE_PRESENT.' : 'Fresh contact evidence says PACKAGE_ABSENT. Wait for a package.')
+              : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
 }
 
 async function experiment(mode = 'original') {
@@ -144,14 +162,14 @@ async function experiment(mode = 'original') {
       r.capability === 'state.observe' && r.request_id === challenge.id && r.nonce === challenge.nonce &&
       r.parameters.location === challenge.location && Object.keys(r.parameters).length === 1;
     const s = r.result;
-    const contract = s.metric === 'gate.closed' && s.sensor === 'gpio9-contact' && typeof s.closed === 'boolean' &&
+    const contract = s.metric === 'gate.closed' && s.sensor === selectedSensor && typeof s.closed === 'boolean' &&
       s.total_samples === 5 && s.stable_samples === 5;
     status('signature', authentic ? 'VALID' : 'REJECTED', authentic ? 'pass' : 'fail');
     status('binding', bound ? 'MATCHES' : 'REJECTED', bound ? 'pass' : 'fail');
     status('contract', contract ? '5/5 AGREE' : 'REJECTED', contract ? 'pass' : 'fail');
     lastChecks = { r, challenge, authentic, bound, contract };
     refreshDecision();
-    el('state').textContent = s.closed ? 'CLOSED' : 'OPEN';
+    el('state').textContent = policy.state(s.closed);
     el('payload').textContent = JSON.stringify({ experiment: mode, challenge, receipt: r }, null, 2);
   } catch {
     if (revision !== sourceRevision) return;
@@ -192,13 +210,13 @@ function clearSource(reason) {
 }
 
 async function showPurchase(input, buyer = false) {
-  const next = publicBuyerRun(input);
+  const next = publicBuyerRun(input, purpose);
   clearSource('Verifying this buyer output.');
   recorded = next; loadedRun = buyer;
   el('live-payment-row').hidden = !buyer;
   el('source-banner').textContent = buyer ? 'Loaded independent buyer output · Solana Devnet' : 'Recorded hardware evidence · Solana Devnet';
   el('source-description').textContent = buyer ? 'This prototype purchases one contact observation. This inspector verifies the selected buyer output.' : 'This prototype purchases one contact observation. This inspector uses recorded evidence.';
-  el('receipt-source').textContent = buyer ? `Buyer run ${next.purchase_id} / demo-gate` : 'Recorded purchase / demo-gate';
+  el('receipt-source').textContent = buyer ? `Buyer run ${next.purchase_id} / ${packageView ? 'prototype pickup' : 'demo-gate'}` : 'Recorded purchase / demo-gate';
   el('stage-source').textContent = buyer ? `Buyer run ${next.purchase_id} / browser sends no funds` : 'Recorded device evidence / actual Devnet test payment';
   el('stage-heading').textContent = 'Is the answer still useful?';
   el('payment-source').textContent = buyer ? 'Loaded buyer settlement / verify it against Solana / no browser payment' : 'Actual recorded test payment · October 1 · No new payment here';
@@ -294,8 +312,8 @@ async function init() {
       if (cycle === watchCycle) await showPurchase(input);
     } catch { if (cycle === watchCycle) clearSource('Committed evidence is unavailable.'); }
   };
-  el('use-recorded').disabled = false;
-  el('use-recorded').onclick = archived;
+  el('use-recorded').disabled = packageView;
+  el('use-recorded').onclick = packageView ? null : archived;
   el('run-file').disabled = false;
   el('run-file').onchange = async () => {
     const file = el('run-file').files[0]; if (!file) return;
@@ -309,9 +327,13 @@ async function init() {
     el('run-file').value = '';
   };
   setInterval(refreshDecision, 250);
-  if (new URL(location.href).searchParams.get('live') === '1') void watchBuyerRun();
+  if (packageView || new URL(location.href).searchParams.get('live') === '1') void watchBuyerRun();
   else await archived();
-  await inspectContactStates();
+  if (!packageView) await inspectContactStates();
+  else {
+    el('contact-results').replaceChildren();
+    el('contact-status').textContent = 'GPIO9 button records belong to the gate demo. This view requires a new GPIO20 buyer output.';
+  }
 }
 
 init().catch(error => {

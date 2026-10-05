@@ -4,6 +4,42 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 GPIO20 package-contact preparation
+
+Starting source: clean, pushed `aee9e754ccdf3aa10add0e80268d54d66f526d85` on `main`.
+The operator reports ESP32-C6 Super Mini, printed `20` and `GND` labels, and a disconnected external LED.
+The ROM reports ESP32-C6FH4 revision 0.2. GPIO20 has no other firmware assignment.
+The official chip GPIO table lists USB on GPIO12/13 and strapping on GPIO4/5/8/9/15.
+[Espressif GPIO restrictions](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-reference/peripherals/gpio.html).
+The board manufacturer, revision, and physical foil circuit remain unverified.
+
+| Check | Observed result |
+|---|---|
+| Actual button backup | Read only the factory application region at `0x10000`, length `0x1F0000`. The local backup contains 2,031,616 bytes. SHA256: `2a01f68a7e873e88390e6775c4cf6c974ef0562491aa1164ef4abf8dcada39ee`. NVS was excluded. |
+| GPIO20 application flash | Wrote 1,274,320 application bytes at `0x10000`. esptool verified the written hash and reset the board. The partition table and NVS were preserved. The current input is GPIO20 with its internal pull-up. |
+| Application policy | The buyer explicitly selects package pickup and GPIO20. Authenticated fresh closed contact permits DISPATCH. Open contact keeps WAIT. The default gate policy remains unchanged. Incompatible policy fails before HTTP or payment. |
+| Gateway suite | `npm --prefix gateway test`: 51 passed, zero failed, 726.702998 milliseconds. New cases cover both package states, the ten/eleven-second boundary, tampering, wrong challenge, wrong key, wrong sensor, and the public output route. |
+| Browser fixtures | Package, original receipt, and buyer-run scripts passed. Package fixtures cover no archive substitution, ABSENT, PRESENT, required new payment check, tampering, expiry, GPIO9 rejection, desktop fit, and mobile width. They use generated signing keys, a fixed clock, and RPC fixtures. They establish no physical or chain result. |
+| Export and launcher suite | `uv run --project host pytest -q tests/test_judge_export.py tests/test_demo_launcher.py`: 15 passed in 0.17 seconds. |
+| Primary review | The public-output selector initially omitted the package contact contract. Retaining it restored browser revalidation. A gateway regression checks the sanitized output again. The package view also guards the live-monitor link omitted from static exports. |
+| Runtime preparation | A separate real-Devnet gateway on port 4025 reports GPIO20 and uses its own local purchase ledger. It now waits for a new PRESENT buyer output. |
+
+The first physical open check returned GPIO20 `closed: false`, five matching samples, authenticated PACKAGE_ABSENT, and WAIT.
+It verified signing-key continuity against the existing public pin.
+One new 0.001 Devnet USDC purchase returned authenticated ABSENT and WAIT at age four seconds.
+The browser verified its actual transfer at slot 507801924 and its fresh receipt at age six seconds.
+Expiry and tampering kept WAIT. This check used the actual clock and RPC.
+Purchase ID: `6416e1a74caf4906`.
+[Actual ABSENT payment](https://explorer.solana.com/tx/3vJfYMKSveVA6UXSWeCjmjaev3eAYsdP14TLzqEAEYGdjRCkPEbbUStwWUe2Fr5ZFbS2nwGrbTavaoTDBA4nM4Lz?cluster=devnet).
+
+When the operator reported touching foil, a second unpaid reading still returned authenticated ABSENT with five matching samples.
+The electrical closure remains unverified. A direct bare-lead contact check will isolate foil contact from board/lead continuity.
+The second payment remains paused. No PRESENT proof or complete two-state package flow exists yet.
+The actual GPIO9 backup provides the button fallback through an application restore. BOOT does not control the current GPIO20 input.
+The unchanged signed wire labels remain `gate.closed` and `demo-gate`. Package meaning comes from the explicit local buyer policy.
+The README and recording narrative still describe the verified gate demo. They will change only after the new physical flow passes.
+No peaq write, public hosting, outreach, registration, or submission occurred.
+
 ## October 5 starter narration and simpler recording views
 
 Starting source: clean `c14d505013a5a574a30381c239c385d98f99f7f3` on `main`.

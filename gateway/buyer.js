@@ -10,6 +10,7 @@ import { decodePaymentResponseHeader } from '@x402/core/http';
 import { NETWORK, USDC, PAY_TO } from './server.js';
 import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
 import { saveBuyerRun } from './buyer-output.js';
+import { contactPolicy } from '../docs/settlement.mjs';
 
 const provisionedKey = loadReceiptPins()[DEFAULT_CONTACT.provider];
 
@@ -18,8 +19,9 @@ export function allowedOffers(offers, payTo = PAY_TO) {
     offer.payTo === payTo && /^\d+$/.test(offer.amount) && BigInt(offer.amount) > 0n && BigInt(offer.amount) <= 1000n);
 }
 
-export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000), publicKey = provisionedKey, selectedContact = DEFAULT_CONTACT) {
+export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000), publicKey = provisionedKey, selectedContact = DEFAULT_CONTACT, purpose = 'gate-access') {
   const contact = contactContract(selectedContact);
+  const policy = contactPolicy(purpose, contact.sensor);
   const r = body?.receipt, s = r?.result;
   if (!r || r.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.provider !== contact.provider ||
       r.capability !== 'state.observe' || r.request_id !== purchase.id || r.nonce !== purchase.nonce ||
@@ -40,12 +42,14 @@ export function checkEvidence(body, purchase, now = Math.floor(Date.now() / 1000
       !verify('sha256', Buffer.from(message), { key, dsaEncoding: 'ieee-p1363' }, signature)) {
     throw new Error('Receipt authentication failed');
   }
-  return { decision: s.closed ? 'WAIT' : 'DISPATCH', evidence_age_seconds: Math.max(0, now - r.completed_at),
+  return { decision: policy.decision(true, s.closed), evidence_age_seconds: Math.max(0, now - r.completed_at),
     receipt_identity: 'pinned-device-p256' };
 }
 
 export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', options = {}) {
   const contact = contactContract(options.contact);
+  const purpose = options.purpose ?? 'gate-access';
+  contactPolicy(purpose, contact.sensor); // Reject incompatible local policy before any request or payment.
   const receiptPublicKey = options.receiptPublicKey ?? loadReceiptPins(options.pinsPath)[contact.provider];
   receiptKey(receiptPublicKey); // Buyer configuration, never a key from the gateway response.
   const url = new URL(origin);
@@ -77,7 +81,8 @@ export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', o
     const body = await response.json();
     return { purchase_id: purchase.id, challenge: { id: purchase.id, nonce, created_at: createdAt,
       location: purchase.location, max_age_seconds: purchase.max_age_seconds, contact }, settlement,
-      ...checkEvidence(body, purchase, Math.floor(Date.now() / 1000), receiptPublicKey, contact), receipt: body.receipt };
+      ...checkEvidence(body, purchase, Math.floor(Date.now() / 1000), receiptPublicKey, contact, purpose),
+      ...(purpose === 'package-pickup' ? { purpose } : {}), receipt: body.receipt };
   } catch { throw new Error(`Payment response or evidence failed verification. Keep purchase ID ${purchase.id} for review before another payment.`); }
 }
 
@@ -85,9 +90,10 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     provider: { type: 'string', default: DEFAULT_CONTACT.provider },
     sensor: { type: 'string', default: DEFAULT_CONTACT.sensor }, pins: { type: 'string' }, output: { type: 'string' },
+    package: { type: 'boolean', default: false },
   } });
   const [path, origin] = positionals;
-  if (!path || positionals.length > 2) throw new Error('Usage: node buyer.js keypair.json [http://127.0.0.1:4021] [--output new-result.json] [--provider ID --sensor gpio18-contact --pins public-pins.json]');
+  if (!path || positionals.length > 2) throw new Error('Usage: node buyer.js keypair.json [http://127.0.0.1:4021] [--output new-result.json] [--provider ID --sensor gpio18-contact --pins public-pins.json] [--package --sensor gpio20-contact]');
   const contact = contactContract({ provider: values.provider, sensor: values.sensor });
   const receiptPublicKey = loadReceiptPins(values.pins)[contact.provider];
   receiptKey(receiptPublicKey);
@@ -95,7 +101,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (!Array.isArray(bytes) || bytes.length !== 64 || !bytes.every(v => Number.isInteger(v) && v >= 0 && v <= 255)) throw new Error('Use a 64-byte Solana CLI keypair file');
   const signer = await createKeyPairSignerFromBytes(Uint8Array.from(bytes));
   const action = async () => {
-    const result = await buyObservation(signer, origin, { contact, receiptPublicKey });
+    const result = await buyObservation(signer, origin, { contact, receiptPublicKey, purpose: values.package ? 'package-pickup' : 'gate-access' });
     console.log(JSON.stringify(result, null, 2)); // Preserve successful evidence even if the output file fails.
     return result;
   };

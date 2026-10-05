@@ -11,7 +11,7 @@ import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { getTransactionDecoder } from '@solana/kit';
 import { PurchaseStore } from './store.js';
 import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
-import { publicBuyerRun } from '../docs/settlement.mjs';
+import { publicBuyerRun, contactPolicy } from '../docs/settlement.mjs';
 
 export const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 export const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
@@ -51,8 +51,9 @@ export async function createGateway({ paymentServer, store, observe = observeHar
     origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false,
     sensor = simulated ? 'simulated-contact' : 'gpio9-contact',
     provider = sensor === 'simulated-contact' ? 'sim-contact-01' : DEFAULT_CONTACT.provider, assetsRoot = root,
-    receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS), buyerRunPath } = {}) {
+    receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS), buyerRunPath, buyerPurpose = 'gate-access' } = {}) {
   const contact = contactContract({ provider, sensor }, { simulated });
+  contactPolicy(buyerPurpose, sensor);
   const publicKey = sensor === 'simulated-contact' ? null : receiptPins[provider];
   if (sensor !== 'simulated-contact') receiptKey(publicKey);
   const requirements = await paymentServer.buildPaymentRequirements({
@@ -105,7 +106,7 @@ export async function createGateway({ paymentServer, store, observe = observeHar
       const buffer = Buffer.alloc(32769), size = readSync(file, buffer, 0, buffer.length, 0);
       if (size > 32768) throw new Error('Buyer output exceeds its inspection limit');
       // Select only public contract fields. A wallet array or extra secret fields never reach the browser.
-      res.json(publicBuyerRun(JSON.parse(buffer.subarray(0, size).toString('utf8'))));
+      res.json(publicBuyerRun(JSON.parse(buffer.subarray(0, size).toString('utf8')), buyerPurpose));
     } catch (error) {
       res.status(error.code === 'ENOENT' ? 404 : 503).json({ error: 'Buyer output is unavailable or incomplete. Preserve the buyer terminal result.' });
     } finally { if (file !== undefined) closeSync(file); }
@@ -246,7 +247,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const paymentServer = await createPaymentServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL || 'https://x402.org/facilitator' }));
   const store = new PurchaseStore(resolve(root, '.local/purchases.sqlite'));
   const app = await createGateway({ paymentServer, store, origin: `http://127.0.0.1:${port}`, payTo: process.env.SOLANA_PAY_TO || PAY_TO,
-    ...contact, receiptPins, buyerRunPath: process.env.FIELDPROOF_BUYER_RUN_FILE
+    ...contact, receiptPins, buyerPurpose: process.env.FIELDPROOF_BUYER_PURPOSE || 'gate-access', buyerRunPath: process.env.FIELDPROOF_BUYER_RUN_FILE
       ? resolve(root, process.env.FIELDPROOF_BUYER_RUN_FILE) : undefined });
   app.listen(port, '127.0.0.1', () => console.log(`FieldProof gateway on http://127.0.0.1:${port}`));
 }

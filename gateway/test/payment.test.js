@@ -13,8 +13,9 @@ import { address, appendTransactionMessageInstruction, compileTransaction, creat
 import { createGateway, createPaymentServer, NETWORK, PAY_TO, USDC } from '../server.js';
 import { PurchaseStore } from '../store.js';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
+import { publicBuyerRun } from '../../docs/settlement.mjs';
 
-async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', provider, receiptPins, assetsRoot, buyerRunPath } = {}) {
+async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', provider, receiptPins, assetsRoot, buyerRunPath, buyerPurpose } = {}) {
   const events = [];
   const observations = [];
   const facilitator = {
@@ -25,7 +26,7 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   };
   const paymentServer = await createPaymentServer(facilitator);
   const store = new PurchaseStore(path);
-  const app = await createGateway({ paymentServer, store, simulated: true, sensor, provider, receiptPins, assetsRoot, buyerRunPath, observe: async purchase => {
+  const app = await createGateway({ paymentServer, store, simulated: true, sensor, provider, receiptPins, assetsRoot, buyerRunPath, buyerPurpose, observe: async purchase => {
     events.push('measure');
     observations.push(purchase);
     if (deliveryFails) throw new Error('device unavailable');
@@ -79,6 +80,29 @@ test('public buyer output route is bounded, sanitized, recoverable, and performs
   assert.doesNotMatch(JSON.stringify(publicRun), /PRIVATE FIXTURE/);
   assert.deepEqual(f.events, []);
   assert.deepEqual(f.store.demand(), []);
+});
+
+test('package output route keeps its configured purpose and rejects the old GPIO9 record without measurement', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-package-output-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'run.json');
+  const f = await fixture(t, { buyerRunPath: path, sensor: 'gpio20-contact', buyerPurpose: 'package-pickup' });
+  const input = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url))).purchase;
+  writeFileSync(path, JSON.stringify(input));
+  assert.equal((await fetch(`${f.url}/buyer-run`)).status, 503);
+  input.purpose = 'package-pickup';
+  input.challenge.contact = { provider: 'esp32-c6-96a2', sensor: 'gpio20-contact' };
+  input.receipt.result.sensor = 'gpio20-contact';
+  input.secret = 'PRIVATE FIXTURE';
+  writeFileSync(path, JSON.stringify(input));
+  const response = await fetch(`${f.url}/buyer-run`);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.purpose, 'package-pickup');
+  assert.equal(body.receipt.result.sensor, 'gpio20-contact');
+  assert.deepEqual(publicBuyerRun(body, 'package-pickup'), body);
+  assert.doesNotMatch(JSON.stringify(body), /PRIVATE FIXTURE/);
+  assert.deepEqual(f.events, []);
 });
 
 test('external contact terms survive restart and reach the observation worker unchanged', async t => {

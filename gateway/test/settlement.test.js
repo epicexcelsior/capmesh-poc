@@ -1,11 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { DEVNET_RPC, querySettlement, verifySettlement, publicBuyerRun } from '../../docs/settlement.mjs';
+import { DEVNET_RPC, querySettlement, verifySettlement, publicBuyerRun, contactPolicy } from '../../docs/settlement.mjs';
 
 // Minimal public RPC fixture derived from the recorded October 1 transaction.
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/settlement-rpc.json', import.meta.url)));
 const purchase = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url))).purchase;
+
+test('package view requires explicit new GPIO20 buyer terms and never relabels GPIO9 records', () => {
+  assert.throws(() => publicBuyerRun(purchase, 'package-pickup'));
+  const p = structuredClone(purchase);
+  p.purpose = 'package-pickup';
+  p.challenge.contact = { provider: 'esp32-c6-96a2', sensor: 'gpio20-contact' };
+  p.receipt.result.sensor = 'gpio20-contact';
+  assert.equal(publicBuyerRun(p, 'package-pickup').receipt.result.sensor, 'gpio20-contact');
+  assert.throws(() => publicBuyerRun(p));
+  delete p.purpose;
+  assert.throws(() => publicBuyerRun(p, 'package-pickup'));
+  const policy = contactPolicy('package-pickup', 'gpio20-contact');
+  assert.equal(policy.state(false), 'PACKAGE_ABSENT');
+  assert.equal(policy.state(true), 'PACKAGE_PRESENT');
+  assert.equal(policy.decision(true, true), 'DISPATCH');
+  assert.equal(policy.decision(true, false), 'WAIT');
+  assert.equal(policy.decision(false, true), 'WAIT');
+  assert.equal(policy.decision(true, undefined), 'WAIT');
+});
 
 test('buyer inspection selects public contract fields without trusting a supplied key or decision', () => {
   const input = structuredClone(purchase);
