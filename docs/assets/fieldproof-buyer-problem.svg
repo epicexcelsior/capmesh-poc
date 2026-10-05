@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="270" viewBox="0 0 1100 270" role="img" aria-labelledby="title desc">
+<title id="title">A visiting robot asks another operator about its gate</title>
+<desc id="desc">Illustrated use case. Company A operates the robot. Company B operates the gate. The robot asks whether the gate is open now.</desc>
+<g font-family="system-ui,sans-serif" fill="#183146">
+<text x="46" y="38" font-size="22" font-weight="700">Company A: robot fleet</text>
+<text x="750" y="38" font-size="22" font-weight="700">Company B: facility</text>
+<path d="M24 228H1076" stroke="#becfd9" stroke-width="2"/>
+<g transform="translate(60 70) scale(1.25)">
+<path d="M46 76h83l17 28H35z" fill="#146b8d" stroke="#183146" stroke-width="2"/>
+<rect x="59" y="50" width="54" height="26" rx="5" fill="#fff" stroke="#183146" stroke-width="2"/>
+<path d="M86 50V36h19" fill="none" stroke="#183146" stroke-width="3"/>
+<circle cx="108" cy="36" r="4" fill="#067b65"/>
+<circle cx="56" cy="111" r="12" fill="#183146"/><circle cx="126" cy="111" r="12" fill="#183146"/>
+</g>
+<path d="M810 106H956V226H935V127H810" fill="#dfebf1" stroke="#183146" stroke-width="3"/>
+<rect x="800" y="168" width="22" height="58" fill="#183146"/>
+<path d="M811 177H930" stroke="#a35a10" stroke-width="12" stroke-dasharray="18 12"/>
+<text x="508" y="133" text-anchor="middle" font-size="29" font-weight="700">Is the gate open now?</text>
+<path d="M288 177H724l-14-10m14 10-14 10" fill="none" stroke="#146b8d" stroke-width="3"/>
+<text x="46" y="261" font-size="16" fill="#39576b">Illustrated use case. The prototype observes a button contact. It moves no robot or gate.</text>
+</g>
+</svg>

@@ -81,8 +81,14 @@ Use your existing access to check the electronics area and material rules. [Make
 
 ## Resolve the board before wiring
 
-The current chip is ESP32-C6FH4. The exact development-board model and header layout remain unknown.
+The current chip is ESP32-C6FH4. On October 5, the founder identified the board as ESP32-C6 Super Mini.
+The founder reported printed `20` and `GND` labels and disconnected the external LED.
+The manufacturer, revision, and physical wiring remain unverified.
 Chip GPIO numbers and physical header positions are different labels.
+
+GPIO20 has no other assignment in the current firmware and is not a chip boot-strapping or USB pin.
+An isolated GPIO20 input-with-pull-up build passed. It was not flashed. The attached board still uses GPIO9.
+The next fixture check requires two separate secure leads. No package-presence reading or package decision passed yet.
 
 1. Disconnect the bare LED until its series resistor and wiring are identified.
 2. Photograph both board faces and all visible model and pin labels.

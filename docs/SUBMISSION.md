@@ -114,6 +114,7 @@ Simulated payments and Devnet tokens do not establish real revenue.
 ## Judging walkthrough
 
 Record one narrated 2–3 minute MVP walkthrough. Use the [recording route](REHEARSAL.md#record-one-150-second-walkthrough) in your own words.
+The [starter voice script](RECORDING_SCRIPT.md) provides a first take and a short supporting-shot list.
 Show the problem, actual purchase, expiry, one attack, and the next pilot.
 The local start page links three recording frames and the continuous 32.8-second October 5 paid capture.
 Its public buyer output is [committed here](evidence/device-signed-purchase-20261005.json). The same saved answer is expired today.

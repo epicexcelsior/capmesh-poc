@@ -108,31 +108,28 @@ Keep this scene optional in the timed video. The main purchase still uses one bo
 
 Use this route for the Germany MVP. The local start page links three recording frames and the actual October 5 paid footage.
 Record your own voice and screen. These are cues, not final application answers.
+Use the [starter voice script](RECORDING_SCRIPT.md) for suggested words, screen actions, timing, and optional supporting shots.
 You need the existing ESP32, laptop, and optional Seeker. No new hardware is required.
 For a fresh checkout, use the [expiry illustration](assets/fieldproof-evidence-window.svg), [payment diagram](assets/fieldproof-payment-to-observation.svg), and [pilot plan](STRATEGY.md#validate-one-relationship).
 The founder's recording frames and paid capture stay local. The repository includes the public evidence and captioned technical fallback.
 
 Before recording:
 
-1. Resolve the reported Germany cooldown with Carlo and confirm the human submission route.
-2. Open the three recording frames from the local start page.
-3. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
-4. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT.
-5. Open the continuous 32.8-second paid capture and check playback.
-6. Enable microphone capture in your recorder and make a five-second voice test.
+1. Open the three recording frames from the local start page.
+2. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+3. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT.
+4. Open the continuous 32.8-second paid capture and check playback.
+5. Enable microphone capture in your recorder and make a five-second voice test.
+
+Handle the reported Germany cooldown with Carlo in parallel. Confirm eligibility and the human submission route before submitting.
 
 The paid inspector reads saved output and queries Solana. Reloading sends no funds and does not refresh the evidence.
 If port 4021 is unavailable, use the exported inspector and import its October 5 public JSON.
 Follow the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) only when you need another actual purchase.
 
-| Time | Action | Point to explain |
-|---|---|---|
-| 0:00–0:20 | Frame 1: robot and another operator's gate | Payment does not tell the robot whether the gate is open now. This is the buyer hypothesis, not a customer claim. |
-| 0:20–0:40 | Frame 2: follow the actual purchase order | Quote, Solana settlement, Bluetooth measurement, signed answer, buyer verification. The purchase buys an observation. |
-| 0:40–1:13 | Play the continuous October 5 paid capture | One actual 0.001 Devnet USDC purchase. Fresh OPEN produces DISPATCH, then expiry produces WAIT. The capture has no clock override. |
-| 1:13–1:45 | Show the current inspector. Point to payment, signature, age, and WAIT. Flip contact state. | The payment remains verified. The original signature remains valid. The answer expires. Altering it fails authentication. Restore the original. |
-| 1:45–2:05 | Show the ESP32 and optional Seeker verifier | BOOT represents a contact. The phone verifies the same receipt independently. It supplies no new sensor or payment. |
-| 2:05–2:30 | Frame 3: one fleet, one facility, then a second facility | Test integration reuse and a paid pilot. Integration/support first, recurring software next. Customer demand remains unvalidated. |
+The starter script owns the six timed scenes: problem, product, actual purchase, expired answer, hardware, and next pilot.
+The recording frames show one idea each. The inspector's focused view emphasizes payment, signature, age, and decision.
+Select **Show full page** for the challenge, sample, and additional attack controls. All verification checks still run in focused view.
 
 Keep the current saved receipt expired. Never change its clock or timestamps for a recording.
 Use the continuous capture to show its actual fresh state and expiry. State that it is recorded footage.

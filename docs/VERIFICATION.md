@@ -4,6 +4,37 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 starter narration and simpler recording views
+
+Starting source: clean `c14d505013a5a574a30381c239c385d98f99f7f3` on `main`.
+The starter script owns suggested spoken words, six timed scenes, screen actions, and three optional supporting shots.
+The local reader uses the canonical Markdown's six spoken blocks. The script contains 255 suggested spoken words.
+Three simpler recording frames show the buyer problem, purchase order, and next pilot.
+The focused inspector displays payment, signature, age, and decision. All acceptance checks continue to run.
+The full page retains challenge checks, sample checks, and additional attack controls.
+
+| Check | Observed result |
+|---|---|
+| Browser inspector | Gateway and prefixed static export passed receipt authentication, expiry, attack controls, focused/full view, desktop fit, input archives, damaged archives, RPC fixtures, HTTP 429 recovery, and mobile width. |
+| Hidden-check rejection | A historical-clock fixture retained a valid signature and fresh answer while its challenge failed. Focused view hid that row but kept WAIT and its challenge-failure explanation. This fixture establishes no current physical evidence. |
+| Buyer-output fixtures | No archive substitution, required chain query, continuous expiry, output replacement, wallet rejection, asynchronous source races, viewport fit, and no-side-effect checks passed. |
+| Actual laptop query | The simpler view queried the unchanged October 5 transfer at slot 507676124. It displayed VALID, VERIFIED TRANSFER, the original expired age, and WAIT. Tampering was rejected. No clock or RPC fixture occurred in this check. |
+| Recording frames and reader | All three frames fit 1280 × 900 with footer bottom 813.25 pixels. Keyboard navigation, deep links, 390-pixel width, and sixteen local start links passed. The reader's six spoken blocks matched the Markdown exactly. Both reader widths and no page errors passed. |
+| Gateway and export suites | `npm --prefix gateway test`: 47 passed, zero failed, 883.897807 milliseconds. `uv run --project host pytest -q tests/test_judge_export.py tests/test_demo_launcher.py`: 15 passed in 0.29 seconds. |
+| Package and source checks | Thirteen manifest entries and fourteen ZIP members matched every digest and byte. Sixty-eight local documentation references resolved. Changed JavaScript syntax and `git diff --check` passed. |
+| Visual review | Problem frame, purchase frame, simplified actual paid inspector, pilot frame, and local reader were inspected. Primary review checked the complete change, hidden checks, source handling, and truthful footage labels. No independent review ran. |
+
+Current inspector ZIP SHA256: `2a6646db6e957f332ebcc9c19b74b1eae226521374dcf107fbee3d150f4b84e6`.
+The existing actual paid capture remains unchanged. The script keeps BOOT as the demonstrated contact until an external fixture passes.
+No payment, hardware observation, firmware flash, peaq write, public hosting, outreach, registration, or submission occurred.
+
+An isolated GPIO20 candidate compiled with the existing ESP-IDF 6.1 toolchain and input pull-up configuration.
+Initial activation failed because the generic exporter searched outside the managed installation for its Python environment and constraints.
+The installed managed activation script restored the paths. Python dependency verification passed before the build. No dependency safeguard was bypassed.
+The founder reports an ESP32-C6 Super Mini with printed `20` and `GND` labels. The external LED is disconnected.
+GPIO20 has no other firmware assignment. This build was not flashed and establishes no external-contact or package-presence result.
+Two secure foil leads, live open/closed checks, the package-specific decision rule, and end-to-end verification remain pending.
+
 ## October 5 submission graphics and upload checklist
 
 Starting source: clean `a189233d4faa1c4034a9ee3438a4a3f5427955d9` on `main`.

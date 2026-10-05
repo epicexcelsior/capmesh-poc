@@ -14,6 +14,7 @@ The current prototype buys and verifies a contact observation. Physical-service 
 
 Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough) for the MVP video.
 Its cues connect three visual frames, actual paid footage, one attack, and the next pilot.
+Read the [starter voice script](RECORDING_SCRIPT.md) for exact suggested words, screen actions, and optional supporting shots.
 You do not need to read every reference file before the demonstration.
 
 ## Find the document that owns the answer
