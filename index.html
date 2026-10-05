@@ -64,7 +64,7 @@ body.local-buyer-enabled.presentation .checks{display:flex;flex-direction:column
 <p id="intro-lead" class="lead">A visiting robot needs a current answer from another operator's gate. Verify one paid observation, then try to break it.</p>
 <p><a href="#payment">See the Solana payment</a> · <a href="#receipt">Test the signed answer</a></p>
 <p>Solana records payment. The device signs its answer. The buyer checks the signature, challenge, input, and age before its decision.</p>
-<p id="source-description">This prototype purchases one contact observation. This inspector uses recorded evidence.</p><p>Use the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a> for a new simulated purchase.</p>
+<p id="source-description">This prototype purchases one contact observation. This inspector uses recorded evidence.</p><p>Use the <a href="https://github.com/epicexcelsior/fieldproof#run-without-hardware">repository quick start</a> for a new simulated purchase.</p>
 <p id="wire-note" class="note">The signed contact describes the selected input. The buyer selects its acceptance policy.</p>
 <details><summary>Inspect a new paid buyer run</summary><p>Load the independent buyer's result JSON. Never load a wallet keypair. Loading a result creates no payment or measurement.</p><label for="run-file">Buyer output JSON</label> <input id="run-file" type="file" accept=".json,application/json" disabled><p>The static package supports file inspection. Live monitoring requires the repository gateway.</p><button id="use-recorded" class="secondary" disabled>Use October 1 recorded evidence</button><p id="source-status" role="status" aria-live="polite">Installed buyer pin remains the trust root.</p></details>
 </div>
