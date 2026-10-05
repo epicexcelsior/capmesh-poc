@@ -41,7 +41,7 @@ def guide_links(page):
                    "overview.html", "diagnostics.html", "evidence/contact-states.json", "evidence/devnet-purchase.json"}
         if target.split("#")[0] not in allowed:
             raise ValueError(f"The guide contains an unsupported local link: {target}")
-        return f'href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/{target}"'
+        return f'href="https://github.com/epicexcelsior/fieldproof/blob/main/docs/{target}"'
     return re.sub(r'href="([^"]+)"', rewrite, page)
 
 

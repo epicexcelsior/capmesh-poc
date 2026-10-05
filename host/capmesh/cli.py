@@ -24,19 +24,19 @@ def get_engine(solana: bool = False):
 
 @click.group()
 def main():
-    """CapMesh — Machine Capability Marketplace CLI."""
+    """FieldProof — Fresh physical observations for machine-to-machine commerce."""
     pass
 
 @main.command()
 @click.option("--timeout", default=4.0, help="Scan duration in seconds")
 def scan(timeout: float):
-    """Scan for all nearby CapMesh capability providers (BLE + Local)."""
-    console.print(f"[bold cyan]Scanning for CapMesh providers ({timeout}s)...[/bold cyan]")
+    """Scan for all nearby FieldProof capability providers (BLE + Local)."""
+    console.print(f"[bold cyan]Scanning for FieldProof providers ({timeout}s)...[/bold cyan]")
     engine = get_engine()
 
     results = asyncio.run(engine.discover_all(timeout=timeout))
     if not results:
-        console.print("[yellow]No CapMesh providers found.[/yellow]")
+        console.print("[yellow]No FieldProof providers found.[/yellow]")
         return
 
     for m, transport in results:
@@ -62,7 +62,7 @@ def manifest(device_id: str):
 @click.argument("capability")
 @click.option("--duration", default=3, help="Duration in seconds (for led.blink)")
 @click.option("--count", default=5, help="Number of blink cycles")
-@click.option("--data", default="CapMesh payload test", help="Data argument (for compute/echo)")
+@click.option("--data", default="FieldProof payload test", help="Data argument (for compute/echo)")
 @click.option("--auth", default="hmac-sha256", type=click.Choice(["mock", "hmac-sha256"]), help="Authorization type")
 @click.option("--nonce", default=None, type=int, help="Explicit nonce (for replay testing)")
 @click.option("--expiration", default=None, type=int, help="Explicit expiration epoch (for expiration testing)")
@@ -146,7 +146,7 @@ def invoke(device_id: str, capability: str, duration: int, count: int, data: str
 def policy_run(intent: str, max_price: float, solana_tx: str):
     """
     Autonomous agent capability routing.
-    Example: capmesh policy-run visual_signal --max-price 0.01
+    Example: fieldproof policy-run visual_signal --max-price 0.01
     """
     console.print(f"[bold cyan]Agent Policy Engine evaluating goal: '{intent}' (Budget: <= ${max_price})...[/bold cyan]")
     engine = get_engine(solana=bool(solana_tx))
@@ -189,10 +189,10 @@ def demo(simulated: bool, timeout: float):
 @click.option("--port", default=8088, type=int, help="Port to listen on")
 def serve_http(host: str, port: int):
 
-    """Start a CapMesh HTTP capability provider daemon on the network."""
+    """Start a FieldProof HTTP capability provider daemon on the network."""
     from .provider.http_server import CapMeshHTTPServer
     server = CapMeshHTTPServer(host=host, port=port)
-    console.print(f"[bold green]Starting CapMesh HTTP Provider on {host}:{port}...[/bold green]")
+    console.print(f"[bold green]Starting FieldProof HTTP Provider on {host}:{port}...[/bold green]")
     console.print(f"Endpoints: [cyan]GET /manifest[/cyan], [cyan]POST /invoke[/cyan], [cyan]GET /receipt[/cyan]")
     server.start()
     try:

@@ -37,7 +37,7 @@ def test_judge_package_contains_only_public_assets_and_works_under_a_url_prefix(
     assert 'Live monitoring requires the repository gateway.' in (output / "index.html").read_text()
     guide = (output / "guide.html").read_text()
     assert 'href="./index.html?present=1"' in guide
-    assert 'href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/PROTOCOL.md#request"' in guide
+    assert 'href="https://github.com/epicexcelsior/fieldproof/blob/main/docs/PROTOCOL.md#request"' in guide
     with ZipFile(archive) as bundle:
         assert set(bundle.namelist()) == {*module.ASSETS, "index.html", "README.txt", "manifest.json"}
         assert all(b"PRIVATE FIXTURE" not in bundle.read(name) for name in bundle.namelist())

@@ -25,7 +25,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Produce and inspect a 2:30 presentation from the verified simulator recording and explanatory title cards.
 - [x] Promote the newer signed-receipt walkthrough with recorded verified payment and browser attacks. Preserve older recordings as history.
 - [x] Prepare local submission text against verified track requirements.
-- [x] Push the repository and make it public: https://github.com/epicexcelsior/capmesh-poc
+- [x] Push the repository and make it public: https://github.com/epicexcelsior/fieldproof
 - [ ] Provide test access, presentation link, Colosseum project details, and submission contact.
 - [x] Preserve the buyer purchase ID after a lost payment connection or truncated delivery.
 - [x] Run the gateway suite. Current executed results live in the verification record.

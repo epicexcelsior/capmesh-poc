@@ -13,7 +13,7 @@ Current verified evidence:
 - The current 2:30 walkthrough inspects recorded public payment and device evidence and executes browser attack checks.
 - A read-only peaq Agung check verified registry peers, activation flags, the proposed observer ID, and the full tier-0 bond.
 
-The repository is public at `https://github.com/epicexcelsior/capmesh-poc`. Registration, public video links, founder presentation, and submission remain owner tasks. Follow the [bounty execution plan](BOUNTY_PLAN.md).
+The repository is public at `https://github.com/epicexcelsior/fieldproof`. Registration, public video links, founder presentation, and submission remain owner tasks. Follow the [bounty execution plan](BOUNTY_PLAN.md).
 
 ## Open the result
 
@@ -86,7 +86,7 @@ Native Agung registry readiness is a separate verified read-only path. Activatio
 2. Provide the presentation, test access, Colosseum project, and contact in the submission form.
 3. Validate one recurring buyer decision and the site's permission to sell its operational state.
 
-The repository is public at `https://github.com/epicexcelsior/capmesh-poc`.
+The repository is public at `https://github.com/epicexcelsior/fieldproof`.
 Upload, registration, and submission did not occur here.
 Build outputs, local databases, private keys, node modules, and environment files remain excluded from Git.
 Git, networking, USB, and BLE access are restored. No further access is needed for the completed local checks.

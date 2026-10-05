@@ -260,7 +260,7 @@ test('actual founder guide links reach public assets or repository references', 
     const link = new URL(target, `${f.url}/learn`);
     if (link.origin !== f.url) {
       if (link.hostname === 'github.com') {
-        assert.ok(link.pathname.startsWith('/epicexcelsior/capmesh-poc/blob/main/docs/'));
+        assert.ok(link.pathname.startsWith('/epicexcelsior/fieldproof/blob/main/docs/'));
         references += 1;
       }
       continue;

@@ -2,7 +2,7 @@
 
 **Fresh physical proof for machine-to-machine commerce.**
 
-**Try FieldProof:** [public receipt inspector](https://epicexcelsior.github.io/capmesh-poc/) · [interactive guide](https://epicexcelsior.github.io/capmesh-poc/guide.html) · [captioned 2:30 technical walkthrough](https://epicexcelsior.github.io/capmesh-poc/assets/fieldproof-signed-receipt.webm).
+**Try FieldProof:** [public receipt inspector](https://epicexcelsior.github.io/fieldproof/) · [interactive guide](https://epicexcelsior.github.io/fieldproof/guide.html) · [captioned 2:30 technical walkthrough](https://epicexcelsior.github.io/fieldproof/assets/fieldproof-signed-receipt.webm).
 
 The public inspector verifies recorded real ESP32 evidence. Select **Verify original**, then change the state, challenge, or key.
 Select **Verify recorded payment** for a read-only Solana Devnet query.
@@ -87,9 +87,9 @@ The [latest verified October 5 click output](docs/evidence/device-signed-purchas
 <summary>CLI attack checks and optional two-observer rehearsal</summary>
 
 ```bash
-uv run --project host capmesh observe-demo --simulated
-uv run --project host capmesh observe-demo --simulated --closed
-uv run --project host capmesh corroborate-demo --scenario all
+uv run --project host fieldproof observe-demo --simulated
+uv run --project host fieldproof observe-demo --simulated --closed
+uv run --project host fieldproof corroborate-demo --scenario all
 ```
 
 The CLI rejects stale providers, replayed answers, altered answers, and replayed device requests. It records local test demand.
@@ -123,7 +123,7 @@ Open `/guide.html` in the exported package for the self-contained story, radio e
 The guide labels its interactive examples as teaching models. Its receipt link opens the actual browser verifier.
 It refuses to overwrite an existing directory or archive. Select a new output name for another export.
 This package inspects recorded evidence. Use the simulator commands above to exercise a complete purchase without funding.
-The [public inspector](https://epicexcelsior.github.io/capmesh-poc/) serves the exported directory on HTTPS through GitHub Pages.
+The [public inspector](https://epicexcelsior.github.io/fieldproof/) serves the exported directory on HTTPS through GitHub Pages.
 
 ## Run with the ESP32
 
@@ -140,11 +140,11 @@ The two installers use different tool and Python environment paths.
 
 ```bash
 (cd firmware/esp32 && idf.py build)
-uv run --project host capmesh observe-demo
+uv run --project host fieldproof observe-demo
 ```
 
 Keep other BLE scans closed. Live mode fails when the board is unavailable. It never substitutes simulated hardware.
-For HTTP, connect to the board's `CAPMESH_96A2` access point and use `capmesh observe-demo --http-url http://192.168.4.1`.
+For HTTP, connect to the board's `CAPMESH_96A2` access point and use `fieldproof observe-demo --http-url http://192.168.4.1`.
 On Linux with overlapping VPN routes, add `--http-interface wlp2s0` and use your Wi-Fi interface name.
 The new observation path and replay rejection are verified over physical Wi-Fi.
 
@@ -232,7 +232,8 @@ Five matching samples do not establish calibrated confidence or independent corr
 The board retains up to 64 unexpired request nonces. It refuses new requests when that table is full.
 A reboot clears replay state and the clock anchor. The first authenticated request supplies the prototype time anchor.
 
-No production device provisioning, external gate sensor, peaq transaction, paired hardware verification, customer pilot, or public deployment exists yet.
-The local product and reports stay in this repository. No repository rename, publication, or submission occurs automatically.
+The public static inspector is deployed. Production device provisioning, external gate sensors, peaq transactions, paired hardware verification, and customer pilots remain incomplete.
+The hardware gateway runs locally. Account registration and submission remain owner tasks.
 
-The original CapMesh package name and BLE UUIDs remain compatible. FieldProof replaces its earlier LED-marketplace direction.
+The Python distribution is `fieldproof`, and its CLI command is `fieldproof`. The `capmesh` command remains a compatibility alias.
+Internal module names, BLE identifiers, and signed `capmesh/0.1` receipts retain their existing values for hardware and evidence compatibility.

@@ -160,9 +160,9 @@ Complete the human form. Save its receipt or confirmation page.
 | Field | Current state | Required next action |
 |---|---|---|
 | Germany eligibility | Founder reports an Earn location-change cooldown. No organizer exception is confirmed. | Ask Carlo to confirm eligibility and the submission route before the deadline |
-| Public repository | Public at `https://github.com/epicexcelsior/capmesh-poc` | Paste the link into the submission form |
-| Test access | [Public recorded inspector](https://epicexcelsior.github.io/capmesh-poc/?submission=20261005) and [interactive guide](https://epicexcelsior.github.io/capmesh-poc/guide.html). Verified without sign-in on October 5. | Paste the inspector link. Label recorded evidence and teaching models accurately |
-| Presentation link | [Public captioned 2:30 technical fallback](https://epicexcelsior.github.io/capmesh-poc/assets/fieldproof-signed-receipt.webm). Founder video remains a separate task. | Use the final founder video when available and verify its public link |
+| Public repository | Public at `https://github.com/epicexcelsior/fieldproof` | Paste the link into the submission form |
+| Test access | [Public recorded inspector](https://epicexcelsior.github.io/fieldproof/?submission=20261005) and [interactive guide](https://epicexcelsior.github.io/fieldproof/guide.html). Verified without sign-in on October 5. | Paste the inspector link. Label recorded evidence and teaching models accurately |
+| Presentation link | [Public captioned 2:30 technical fallback](https://epicexcelsior.github.io/fieldproof/assets/fieldproof-signed-receipt.webm). Founder video remains a separate task. | Use the final founder video when available and verify its public link |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |
 | Team contact | No submission contact selected | Supply the contact directly in the submission form |
@@ -173,7 +173,7 @@ Video upload, account registration, and submission require explicit authorizatio
 
 ## Owner publication steps
 
-The origin is `https://github.com/epicexcelsior/capmesh-poc.git`. `main` is pushed and the repository visibility is Public. Keep every later change pushed before submission.
+The origin is `https://github.com/epicexcelsior/fieldproof.git`. `main` is pushed and the repository visibility is Public. Keep every later change pushed before submission.
 
 1. Check that `origin` still points to the repository judges will review.
 2. Run `git push -u origin main` after every accepted change.

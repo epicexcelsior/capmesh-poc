@@ -70,7 +70,7 @@ export async function createGateway({ paymentServer, store, observe = observeHar
       if (target === 'http://127.0.0.1:4022/proof?present=1') return 'href="/proof?present=1"';
       if (target === 'overview.html') return 'href="/"';
       if (guideReferences.has(target.split('#')[0])) {
-        return `href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/${target}"`;
+        return `href="https://github.com/epicexcelsior/fieldproof/blob/main/docs/${target}"`;
       }
       return attribute;
     }));
