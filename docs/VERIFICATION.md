@@ -4,6 +4,33 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 BOOT application restore
+
+Starting source: clean, pushed `c3f8cd8b936e9c980dab39cb4b4a61f37679a8c6` on `main`.
+The operator confirmed the board is clear and connected. The added leads are removed.
+The saved factory application matched its original SHA256 and 2,031,616-byte length before restoration.
+esptool wrote only the application at `0x10000`, verified its hash, and reset the board.
+The NVS key storage and partition table were not written.
+
+`python3 scripts/demo.py board --expect open` passed one actual GPIO9 BLE observation.
+The result was device-signed OPEN, DISPATCH, age four seconds, and five matching samples.
+The bounded runner completed in 12.436 seconds and verified the existing pinned signing key.
+The fresh signed answer confirms the restored input descriptor and signing-key continuity.
+The controlled visible browser completed two separate real GPIO9 requests after human actions.
+Held BOOT returned signed CLOSED/WAIT at age four seconds, with five matching samples.
+Released BOOT returned signed OPEN/DISPATCH at age four seconds, with five matching samples.
+The same OPEN answer expired to WAIT at eleven seconds, under the actual clock.
+Both requests used the existing pinned device key and simulated settlement. No funds moved.
+
+A separate visible Chromium window opens the focused physical page for the founder.
+Its recording contains only the controlled FieldProof page. It does not capture the microphone, camera, or unrelated applications.
+The browser issued each request only after the corresponding operator confirmation. Its gateway uses simulated settlement and real hardware.
+The completed silent capture remains local. A new non-recording window is ready for the founder's manual rehearsal.
+Its twenty-second OPEN-to-expired excerpt starts at source time 216 seconds and preserves original speed and clock behavior.
+The footer labels real ESP32 input and simulated payment. H.264 decode and fresh/expired frame inspection passed.
+Excerpt SHA256: `3d66a24f2fe9a7780db48971fa78be5f658827f62e9dae24b1aa97f774226c38`.
+The saved actual Devnet payment remains separate evidence. No new funds moved during restoration or the released-input check.
+
 ## October 5 founder recording consolidation
 
 Starting source: clean, pushed `54d1c05aa0a7700c5ae475247f2d08dd0dce36b3` on `main`.

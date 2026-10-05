@@ -5,9 +5,9 @@ Aim for 2:30. Your explanation and the live interaction carry the video.
 
 **One story:** A robot needs a current answer from another operator's gate. Payment stays confirmed after that answer expires.
 
-**Hardware prerequisite:** The attached board still runs the GPIO20 experiment. BOOT cannot control that input.
-Unplug USB, remove both added leads, and reconnect the bare board. Confirm the board is clear before firmware restoration.
-Use the live BOOT scene only after restoration and an actual held/released check.
+**Hardware status:** The added leads are removed. The saved BOOT application is restored and its flash hash verified.
+New held/released browser checks passed CLOSED/WAIT and OPEN/DISPATCH with five matching samples.
+The new OPEN answer expired to WAIT at eleven seconds. Keep BOOT released during reset.
 The foil fixture is unreliable. Keep the verified gate-contact story.
 
 ## 1. Explain the problem / 0:00–0:20

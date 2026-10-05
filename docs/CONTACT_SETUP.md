@@ -6,7 +6,10 @@ Use this guide after the [board, sensor, and wiring checks](HARDWARE_NEXT.md#res
 On October 5, the attached board changed to GPIO20 for a prototype foil-contact check.
 The application-only flash passed hash verification. The open check and a paid ABSENT proof passed. The first reported foil closure still read ABSENT.
 A direct lead-contact check returned authenticated PRESENT and DISPATCH. The foil fixture and paid PRESENT request remain unverified.
-The original GPIO9 application backup preserves the button fallback. Its archived receipts remain unchanged.
+The operator removed the added leads. The saved GPIO9 application is restored, with its flash hash verified.
+New signed held/released browser checks passed CLOSED/WAIT and OPEN/DISPATCH with five matching samples.
+The new OPEN answer expired to WAIT at eleven seconds.
+Use BOOT for the recording. The archived receipts remain unchanged.
 
 ## Understand the four settings
 

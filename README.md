@@ -107,8 +107,8 @@ Publication remains an owner action. Serve the exported directory on HTTPS for b
 
 ## Run with the ESP32
 
-The attached board now runs an isolated GPIO20 contact candidate. Its foil fixture remains under verification.
-The default GPIO9 commands below require the saved button application. See [the current input status](docs/CONTACT_SETUP.md#gpio20-foil-contact-candidate).
+The attached board uses the restored GPIO9 BOOT application. New held/released browser checks passed after restoration.
+The GPIO20 foil experiment remains incomplete. See [the input setup](docs/CONTACT_SETUP.md).
 For another board, follow [trusted identity provisioning](docs/RECEIPT_IDENTITY.md#provision-a-new-board) before live verification.
 A newly generated key cannot match the checked-in demonstration pin.
 

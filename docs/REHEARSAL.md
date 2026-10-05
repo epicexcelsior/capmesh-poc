@@ -115,7 +115,7 @@ The founder's recording frames and paid capture stay local. The repository inclu
 
 Before recording:
 
-1. Complete the recording script's hardware prerequisite before the live BOOT scene.
+1. Read the recording script's hardware status before the live BOOT scene.
 2. Open the focused physical page at `http://127.0.0.1:4023/?present=1`.
 3. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
 4. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT in the saved inspector.

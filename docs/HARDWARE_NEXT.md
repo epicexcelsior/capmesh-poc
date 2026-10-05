@@ -88,8 +88,9 @@ Chip GPIO numbers and physical header positions are different labels.
 
 GPIO20 has no other assignment in the current firmware and is not a chip boot-strapping or USB pin.
 An isolated GPIO20 input-with-pull-up build passed. An application-only flash passed hash verification on October 5.
-The attached board now reads GPIO20. Its original GPIO9 application backup preserves the button fallback.
-The operator can make two insulated leads. The physical foil checks remain pending.
+The added leads are removed. The saved GPIO9 application is restored, with its flash hash verified.
+New signed held/released browser checks passed CLOSED/WAIT and OPEN/DISPATCH. The foil fixture remains incomplete.
+The initial foil fixture failed to close the circuit. A reliable fixture and paid PRESENT flow remain unverified.
 Package-policy software and browser fixtures passed. A paid ABSENT reading passed with the existing signing key.
 The first reported foil closure still read ABSENT. Direct wire-tip closure then returned authenticated PRESENT and DISPATCH.
 The foil fixture and paid PRESENT request remain unverified.
