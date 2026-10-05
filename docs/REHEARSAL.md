@@ -89,6 +89,12 @@ Use the actual recorded transaction for payment evidence. Use the physical brows
 The [physical runbook](DEMO.md#real-hardware) adds live BOOT checks with simulated payment.
 Close other BLE scans first. Keep BOOT released during reset.
 
+For a complete real payment and input flow, use the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run).
+The October 5 run passed on the laptop and Seeker. Both verified payment, accepted fresh OPEN, and changed to expired WAIT.
+The [public buyer output](evidence/device-signed-purchase-20261005.json) preserves its original signed times. It is expired now.
+The Seeker acts as a browser verifier. It is not a sensor, payment signer, or BLE relay.
+The continuous 32.8-second capture remains local. Use it as technical footage inside your required longer founder explanation.
+
 ## Explain the optional pair extension
 
 After the core demonstration, run `uv run --project host capmesh corroborate-demo --scenario all`.

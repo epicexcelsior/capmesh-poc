@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawn } from 'node:child_process';
@@ -14,7 +14,7 @@ import { createGateway, createPaymentServer, NETWORK, PAY_TO, USDC } from '../se
 import { PurchaseStore } from '../store.js';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 
-async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', provider, receiptPins, assetsRoot } = {}) {
+async function fixture(t, { valid = true, settled = true, unknown = false, deliveryFails = false, path = ':memory:', sensor = 'simulated-contact', provider, receiptPins, assetsRoot, buyerRunPath } = {}) {
   const events = [];
   const observations = [];
   const facilitator = {
@@ -25,7 +25,7 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   };
   const paymentServer = await createPaymentServer(facilitator);
   const store = new PurchaseStore(path);
-  const app = await createGateway({ paymentServer, store, simulated: true, sensor, provider, receiptPins, assetsRoot, observe: async purchase => {
+  const app = await createGateway({ paymentServer, store, simulated: true, sensor, provider, receiptPins, assetsRoot, buyerRunPath, observe: async purchase => {
     events.push('measure');
     observations.push(purchase);
     if (deliveryFails) throw new Error('device unavailable');
@@ -52,6 +52,34 @@ async function fixture(t, { valid = true, settled = true, unknown = false, deliv
   const pay = (route, payload) => fetch(route, { headers: { 'PAYMENT-SIGNATURE': encodePaymentSignatureHeader(payload) } });
   return { url, events, observations, store, purchase, pay };
 }
+
+test('public buyer output route is bounded, sanitized, recoverable, and performs no payment or observation', async t => {
+  const unconfigured = await fixture(t);
+  assert.equal((await fetch(`${unconfigured.url}/buyer-run`)).status, 404);
+  const dir = mkdtempSync(join(tmpdir(), 'fieldproof-public-output-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'run.json');
+  const f = await fixture(t, { buyerRunPath: path });
+  assert.equal((await fetch(`${f.url}/buyer-run`)).status, 404);
+  for (const contents of ['{', '[1,2,3]', 'x'.repeat(32769), '{"status":"failed","error":"PRIVATE FIXTURE"}']) {
+    writeFileSync(path, contents);
+    const response = await fetch(`${f.url}/buyer-run`);
+    assert.equal(response.status, 503);
+    const body = await response.text();
+    assert.doesNotMatch(body, /PRIVATE FIXTURE|fieldproof-public-output/);
+  }
+  const input = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url)));
+  input.purchase.secret = 'PRIVATE FIXTURE';
+  writeFileSync(path, JSON.stringify(input));
+  const response = await fetch(`${f.url}/buyer-run`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  const publicRun = await response.json();
+  assert.equal(publicRun.purchase_id, input.purchase.purchase_id);
+  assert.doesNotMatch(JSON.stringify(publicRun), /PRIVATE FIXTURE/);
+  assert.deepEqual(f.events, []);
+  assert.deepEqual(f.store.demand(), []);
+});
 
 test('external contact terms survive restart and reach the observation worker unchanged', async t => {
   const dir = mkdtempSync(join(tmpdir(), 'fieldproof-contact-'));

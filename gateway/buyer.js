@@ -9,6 +9,7 @@ import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { decodePaymentResponseHeader } from '@x402/core/http';
 import { NETWORK, USDC, PAY_TO } from './server.js';
 import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
+import { saveBuyerRun } from './buyer-output.js';
 
 const provisionedKey = loadReceiptPins()[DEFAULT_CONTACT.provider];
 
@@ -83,15 +84,21 @@ export async function buyObservation(signer, origin = 'http://127.0.0.1:4021', o
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
     provider: { type: 'string', default: DEFAULT_CONTACT.provider },
-    sensor: { type: 'string', default: DEFAULT_CONTACT.sensor }, pins: { type: 'string' },
+    sensor: { type: 'string', default: DEFAULT_CONTACT.sensor }, pins: { type: 'string' }, output: { type: 'string' },
   } });
   const [path, origin] = positionals;
-  if (!path || positionals.length > 2) throw new Error('Usage: node buyer.js keypair.json [http://127.0.0.1:4021] [--provider ID --sensor gpio18-contact --pins public-pins.json]');
+  if (!path || positionals.length > 2) throw new Error('Usage: node buyer.js keypair.json [http://127.0.0.1:4021] [--output new-result.json] [--provider ID --sensor gpio18-contact --pins public-pins.json]');
   const contact = contactContract({ provider: values.provider, sensor: values.sensor });
   const receiptPublicKey = loadReceiptPins(values.pins)[contact.provider];
   receiptKey(receiptPublicKey);
   const bytes = JSON.parse(await readFile(path, 'utf8'));
   if (!Array.isArray(bytes) || bytes.length !== 64 || !bytes.every(v => Number.isInteger(v) && v >= 0 && v <= 255)) throw new Error('Use a 64-byte Solana CLI keypair file');
   const signer = await createKeyPairSignerFromBytes(Uint8Array.from(bytes));
-  console.log(JSON.stringify(await buyObservation(signer, origin, { contact, receiptPublicKey }), null, 2));
+  const action = async () => {
+    const result = await buyObservation(signer, origin, { contact, receiptPublicKey });
+    console.log(JSON.stringify(result, null, 2)); // Preserve successful evidence even if the output file fails.
+    return result;
+  };
+  if (values.output) await saveBuyerRun(values.output, action);
+  else await action();
 }

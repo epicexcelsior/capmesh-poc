@@ -90,7 +90,7 @@ The current gateway does not issue refunds.
 | `npm start` | Public Solana Devnet facilitator | Real ESP32 contact after settlement |
 
 The last mode completed a public-facilitator Devnet purchase and a real GPIO9 observation.
-The [paid P-256 evidence](evidence/device-signed-purchase.json) records the current successful transaction and independently checked token balance changes.
+The [paid P-256 evidence](evidence/device-signed-purchase.json) records the October 1 successful transaction and independently checked token balance changes.
 The simulator cannot settle funds and exists only in a separate startup command.
 Node's built-in SQLite avoids another production database dependency. It requires Node.js 22.13+ and currently emits an experimental-feature warning.
 The x402 client and Solana Kit provide conforming transaction signing without a custom partial payment verifier.
@@ -106,6 +106,17 @@ The input-pair section verifies two separately recorded BOOT readings against th
 It checks both challenges, signatures, sample counts, and expired timestamps before displaying either row.
 Damaged input evidence leaves that section unverified and preserves the separate paid-receipt inspector.
 These input checks moved no funds. They do not establish an external gate installation.
+
+The independent buyer can reserve a new private result file before payment with `--output`.
+The optional `FIELDPROOF_BUYER_RUN_FILE` selects that trusted local path. `/buyer-run` returns only supported public contract fields.
+The route performs no payment, observation, or ledger write. It rejects partial, failure, oversized, unsupported, and wallet-array output.
+`/proof?live=1&present=1` monitors once for two minutes. It substitutes no archive and makes one automatic read-only chain query.
+A loaded run requires acceptable evidence and verified payment for the combined demonstration decision.
+Freshness updates continuously. Source revisions prevent old asynchronous verification results from restoring a previous acceptance state.
+The output supplies the inspection challenge. Its trusted provenance remains the independent buyer and its local file.
+The device signature does not directly bind the reported Solana transaction. The gateway ledger remains that association boundary.
+The Seeker can execute the same browser checks through USB reverse forwarding. It supplies no sensor observation or payment signature.
+The [demo procedure](DEMO.md#show-one-new-paid-buyer-run) owns exact commands and recovery.
 
 The static export contains only public assets. It cannot access wallets, device authorization, purchase ledgers, or the physical bridge.
 It works under a URL prefix. A remote host must serve it through HTTPS for browser cryptography.

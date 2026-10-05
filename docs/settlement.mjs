@@ -106,3 +106,30 @@ export async function querySettlement(purchase, fetcher = fetch) {
   }
   return verifySettlement(body.result, purchase);
 }
+
+// Public fields from the independent buyer. This never selects a verification key from input.
+
+export function publicBuyerRun(input) {
+  const p = input?.purchase || input, c = p?.challenge, r = p?.receipt, s = r?.result;
+  if (!p || Array.isArray(p) || typeof p.purchase_id !== 'string' || !/^[0-9a-f]{16}$/.test(p.purchase_id) ||
+      c?.id !== p.purchase_id || !Number.isInteger(c.nonce) || c.nonce < 1 || c.nonce > 0x7fffffff ||
+      !Number.isSafeInteger(c.created_at) || c.created_at < 1 || c.location !== 'demo-gate' || c.max_age_seconds !== 10 ||
+      (c.contact !== undefined && (c.contact?.provider !== 'esp32-c6-96a2' || c.contact.sensor !== 'gpio9-contact' || Object.keys(c.contact).length !== 2)) ||
+      r?.protocol !== 'capmesh/0.1' || r.status !== 'success' || r.request_id !== c.id || r.nonce !== c.nonce ||
+      r.provider !== 'esp32-c6-96a2' || r.capability !== 'state.observe' ||
+      r.parameters?.location !== 'demo-gate' || Object.keys(r.parameters).length !== 1 || s?.metric !== 'gate.closed' || s.sensor !== 'gpio9-contact' ||
+      typeof s.closed !== 'boolean' || s.total_samples !== 5 || s.stable_samples !== 5 ||
+      !Number.isSafeInteger(r.started_at) || r.started_at < 1 || !Number.isSafeInteger(r.completed_at) ||
+      r.started_at < c.created_at - 2 || r.completed_at < r.started_at ||
+      !/^v3:[A-Za-z0-9+/]{86}==$/.test(r.receipt_signature || '')) {
+    throw new Error('Use the independent buyer output for the installed GPIO9 observer, ten-second contract, and Devnet payment.');
+  }
+  recordedPaymentDetails(p); // Fixed chain, merchant, and amount. Chain verification remains separate.
+  return { purchase_id: p.purchase_id,
+    challenge: { id: c.id, nonce: c.nonce, created_at: c.created_at, location: 'demo-gate', max_age_seconds: 10 },
+    settlement: { success: true, payer: p.settlement.payer, transaction: p.settlement.transaction, network: p.settlement.network },
+    receipt: { protocol: r.protocol, request_id: r.request_id, status: r.status, provider: r.provider,
+      capability: r.capability, parameters: { location: 'demo-gate' }, nonce: r.nonce,
+      result: { metric: s.metric, sensor: s.sensor, closed: s.closed, stable_samples: 5, total_samples: 5 },
+      started_at: r.started_at, completed_at: r.completed_at, receipt_signature: r.receipt_signature } };
+}

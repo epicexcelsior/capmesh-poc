@@ -21,7 +21,9 @@ def test_judge_package_contains_only_public_assets_and_works_under_a_url_prefix(
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("public fixture")
-    (root / "docs/proof.html").write_text('<main><a href="/">Back to dispatch desk</a><a href="/learn">Learn</a></main><script src="/proof.js"></script>')
+    (root / "docs/proof.html").write_text('<main><a href="/">Back to dispatch desk</a><a href="/learn">Learn</a>'
+                                         '<a id="watch-run" href="?live=1&amp;present=1">Watch one new buyer run from the configured local gateway</a>'
+                                         '</main><script src="/proof.js"></script>')
     (root / "docs/HOW_IT_WORKS.html").write_text('<a href="http://127.0.0.1:4022/proof?present=1">Inspect</a>'
                                               '<a href="PROTOCOL.md#request">Protocol</a>')
     (root / "secret.keypair.json").write_text("PRIVATE FIXTURE")
@@ -31,6 +33,8 @@ def test_judge_package_contains_only_public_assets_and_works_under_a_url_prefix(
     assert './proof.js' in (output / "index.html").read_text()
     assert 'href="./index.html"' in (output / "index.html").read_text()
     assert 'href="./guide.html"' in (output / "index.html").read_text()
+    assert '?live=1' not in (output / "index.html").read_text()
+    assert 'Live monitoring requires the repository gateway.' in (output / "index.html").read_text()
     guide = (output / "guide.html").read_text()
     assert 'href="./index.html?present=1"' in guide
     assert 'href="https://github.com/epicexcelsior/capmesh-poc/blob/main/docs/PROTOCOL.md#request"' in guide

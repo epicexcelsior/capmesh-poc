@@ -1,9 +1,10 @@
-import { querySettlement, recordedPaymentDetails } from './settlement.mjs';
+import { querySettlement, recordedPaymentDetails, publicBuyerRun } from './settlement.mjs';
 
 const el = id => document.getElementById(id);
 const controls = ['original', 'tamper', 'challenge', 'identity'];
 let recorded, pin, differentKey;
 let running = false;
+let loadedRun = false, paymentVerified = false, lastChecks = null, sourceRevision = 0, watchCycle = 0;
 
 function focusDemo(enabled) {
   document.body.classList.toggle('presentation', enabled);
@@ -77,11 +78,35 @@ async function inspectContactStates() {
   }
 }
 
+function refreshDecision() {
+  if (!lastChecks) return;
+  const { r, challenge, authentic, bound, contract } = lastChecks, s = r.result;
+  const now = Math.floor(Date.now() / 1000);
+  const fresh = Number.isInteger(r.started_at) && Number.isInteger(r.completed_at) &&
+    r.started_at >= challenge.created_at - 2 && r.started_at <= r.completed_at && r.completed_at <= now + 2 &&
+    now - r.completed_at <= challenge.max_age_seconds;
+  status('freshness', fresh ? 'FRESH' : 'EXPIRED', fresh ? 'pass' : 'expired');
+  status('live-payment-check', paymentVerified ? 'VERIFIED' : 'NOT VERIFIED', paymentVerified ? 'pass' : 'expired');
+  const accepted = authentic && bound && contract && fresh && (!loadedRun || paymentVerified);
+  el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
+  renderScene(s.closed, el('decision').textContent);
+  el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
+    : !bound ? 'This receipt cannot answer a different buyer challenge.'
+      : !contract ? 'The contact does not satisfy the buyer contract.'
+        : !fresh ? 'The original signature is valid. The observation is too old for dispatch.'
+          : loadedRun && !paymentVerified ? 'Fresh signed answer. Verify its reported payment before the combined demo decision.'
+            : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
+}
+
 async function experiment(mode = 'original') {
   if (running || !recorded) return;
   running = true;
+  const revision = sourceRevision;
+  lastChecks = null;
+  el('decision').textContent = 'WAIT';
+  renderScene(undefined, 'WAIT');
   controls.forEach(id => { el(id).disabled = true; });
-  const labels = { original: 'Original recorded answer', tamper: 'Altered contact state',
+  const labels = { original: loadedRun ? 'Original buyer answer' : 'Original recorded answer', tamper: 'Altered contact state',
     challenge: 'Another buyer challenge', identity: 'Untrusted verification key' };
   el('experiment-label').textContent = labels[mode];
   controls.forEach(id => { el(id).setAttribute('aria-pressed', String(id === mode)); });
@@ -92,48 +117,133 @@ async function experiment(mode = 'original') {
     if (mode === 'challenge') challenge.nonce = challenge.nonce === 0x7fffffff ? 1 : challenge.nonce + 1;
     const key = mode === 'identity' ? differentKey : pin;
     const authentic = await verifySignature(r, key);
+    if (revision !== sourceRevision) return;
     const bound = r.protocol === 'capmesh/0.1' && r.status === 'success' && r.provider === 'esp32-c6-96a2' &&
       r.capability === 'state.observe' && r.request_id === challenge.id && r.nonce === challenge.nonce &&
       r.parameters.location === challenge.location && Object.keys(r.parameters).length === 1;
     const s = r.result;
     const contract = s.metric === 'gate.closed' && s.sensor === 'gpio9-contact' && typeof s.closed === 'boolean' &&
       s.total_samples === 5 && s.stable_samples === 5;
-    const now = Math.floor(Date.now() / 1000);
-    const fresh = Number.isInteger(r.started_at) && Number.isInteger(r.completed_at) &&
-      r.started_at >= challenge.created_at - 2 && r.started_at <= r.completed_at && r.completed_at <= now + 2 &&
-      now - r.completed_at <= challenge.max_age_seconds;
     status('signature', authentic ? 'VALID' : 'REJECTED', authentic ? 'pass' : 'fail');
     status('binding', bound ? 'MATCHES' : 'REJECTED', bound ? 'pass' : 'fail');
     status('contract', contract ? '5/5 AGREE' : 'REJECTED', contract ? 'pass' : 'fail');
-    status('freshness', fresh ? 'FRESH' : 'EXPIRED', fresh ? 'pass' : 'expired');
-    const accepted = authentic && bound && contract && fresh;
-    el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
-    renderScene(s.closed, el('decision').textContent);
-    el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
-      : !bound ? 'This receipt cannot answer a different buyer challenge.'
-        : !contract ? 'The contact does not satisfy the buyer contract.'
-          : !fresh ? 'The original signature is valid. The recorded evidence is too old for dispatch.'
-            : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
+    lastChecks = { r, challenge, authentic, bound, contract };
+    refreshDecision();
     el('state').textContent = s.closed ? 'CLOSED' : 'OPEN';
     el('payload').textContent = JSON.stringify({ experiment: mode, challenge, receipt: r }, null, 2);
   } catch {
+    if (revision !== sourceRevision) return;
     status('signature', 'REJECTED', 'fail');
     el('decision').textContent = 'WAIT';
     renderScene(undefined, 'WAIT');
     el('reason').textContent = 'Receipt verification failed. Check the evidence and public pin.';
   } finally {
-    running = false;
-    controls.forEach(id => { el(id).disabled = false; });
+    if (revision === sourceRevision) {
+      running = false;
+      controls.forEach(id => { el(id).disabled = !recorded; });
+    }
   }
 }
 
+function clearSource(reason) {
+  sourceRevision += 1;
+  running = false;
+  recorded = null;
+  lastChecks = null;
+  paymentVerified = false;
+  controls.forEach(id => { el(id).disabled = true; });
+  el('chain-query').disabled = true;
+  status('signature', 'NOT VERIFIED', 'fail');
+  status('binding', '—', ''); status('contract', '—', ''); status('freshness', 'UNAVAILABLE', 'expired');
+  status('chain-status', 'NOT QUERIED', ''); status('live-payment-check', 'NOT VERIFIED', 'expired');
+  el('decision').textContent = 'WAIT'; renderScene(undefined, 'WAIT');
+  el('receipt-source').textContent = 'No usable buyer output / demo-gate';
+  el('reason').textContent = reason; el('source-status').textContent = reason;
+  for (const id of ['state', 'measured', 'payment-payer', 'payment-merchant', 'payment-amount']) el(id).textContent = '—';
+  for (const id of ['transaction', 'payment-explorer']) el(id).removeAttribute('href');
+  el('payload').textContent = 'No usable buyer output.';
+  el('chain-summary').textContent = 'No current transfer check.'; el('chain-result').textContent = 'No network query yet.';
+}
+
+async function showPurchase(input, buyer = false) {
+  const next = publicBuyerRun(input);
+  clearSource('Verifying this buyer output.');
+  recorded = next; loadedRun = buyer;
+  el('live-payment-row').hidden = !buyer;
+  el('source-banner').textContent = buyer ? 'Loaded independent buyer output · Solana Devnet' : 'Recorded hardware evidence · Solana Devnet';
+  el('source-description').textContent = buyer ? 'This prototype purchases one contact observation. This inspector verifies the selected buyer output.' : 'This prototype purchases one contact observation. This inspector uses recorded evidence.';
+  el('receipt-source').textContent = buyer ? `Buyer run ${next.purchase_id} / demo-gate` : 'Recorded purchase / demo-gate';
+  el('stage-source').textContent = buyer ? `Buyer run ${next.purchase_id} / browser sends no funds` : 'Recorded device evidence / actual Devnet test payment';
+  el('stage-heading').textContent = buyer ? 'One transaction. Independent buyer checks.' : 'One paid answer. Four buyer checks.';
+  el('payment-source').textContent = buyer ? 'Loaded buyer settlement / verify it against Solana / no browser payment' : 'Actual recorded test payment · October 1 · No new payment here';
+  el('source-status').textContent = buyer ? 'Loaded buyer output. The file supplies its challenge. The installed public pin verifies the device. Chain verification remains separate.' : 'Installed buyer pin remains the trust root.';
+  el('measured').textContent = new Date(next.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');
+  el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(next.settlement.transaction) + '?cluster=devnet';
+  const payment = recordedPaymentDetails(next);
+  el('payment-payer').textContent = payment.payer; el('payment-merchant').textContent = payment.merchant;
+  el('payment-amount').textContent = payment.amount_usdc.toFixed(3);
+  el('payment-explorer').href = el('transaction').href;
+  el('chain-summary').textContent = 'The displayed terms come from the buyer output. Run the read-only query to verify the transfer.';
+  el('chain-query').disabled = false;
+  el('chain-query').textContent = buyer ? 'Verify buyer payment' : 'Verify recorded payment';
+  await experiment();
+}
+
+async function verifyPayment() {
+  if (!recorded) return;
+  const target = recorded, revision = sourceRevision;
+  paymentVerified = false; refreshDecision();
+  el('chain-query').disabled = true;
+  status('chain-status', 'CHECKING', 'expired');
+  el('chain-summary').textContent = 'Checking the actual transfer. No funds move.';
+  el('chain-result').textContent = 'Querying Solana Devnet. No payment or hardware request occurs.';
+  try {
+    const result = await querySettlement(target);
+    if (revision !== sourceRevision) return;
+    paymentVerified = true;
+    status('chain-status', 'VERIFIED TRANSFER', 'pass');
+    el('chain-summary').textContent = `Verified: buyer −0.001 USDC → merchant +0.001 USDC. Confirmed slot ${result.slot}.`;
+    el('chain-result').textContent = JSON.stringify(result, null, 2);
+  } catch (error) {
+    if (revision !== sourceRevision) return;
+    status('chain-status', 'NOT VERIFIED', 'expired');
+    el('chain-result').textContent = error.name === 'TimeoutError' ? 'The Devnet RPC query timed out after 15 seconds. Try again.' : error.message;
+    el('chain-summary').textContent = el('chain-result').textContent;
+  } finally {
+    if (revision === sourceRevision) { el('chain-query').disabled = false; refreshDecision(); }
+  }
+}
+
+async function watchBuyerRun() {
+  const cycle = ++watchCycle, deadline = Date.now() + 120000;
+  clearSource('Waiting for one independent buyer output. This browser sends no funds and invokes no hardware.');
+  el('stage-source').textContent = 'Waiting for a new independent buyer run / no browser payment';
+  el('receipt-source').textContent = 'Waiting for buyer output / demo-gate';
+  while (cycle === watchCycle && Date.now() < deadline) {
+    try {
+      const response = await fetch('/buyer-run', { cache: 'no-store', signal: AbortSignal.timeout(3000) });
+      if (cycle !== watchCycle) return;
+      if (response.ok) {
+        const text = await response.text();
+        if (cycle !== watchCycle) return;
+        if (text.length > 32768) throw new Error('Buyer output exceeds the inspection limit.');
+        await showPurchase(JSON.parse(text), true);
+        if (cycle !== watchCycle) return;
+        await verifyPayment(); // One automatic read-only query. No payment retry occurs.
+        return;
+      }
+      if (response.status !== 404) el('reason').textContent = 'Buyer output is incomplete or failed. Preserve the independent buyer terminal result.';
+    } catch {
+      if (cycle === watchCycle) el('reason').textContent = 'Buyer output is unavailable or failed validation. No recorded fallback was substituted.';
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  if (cycle === watchCycle) clearSource('The two-minute buyer monitor ended. Check the gateway output path, then reload this view.');
+}
+
 async function init() {
-  const [evidenceResponse, pinsResponse] = await Promise.all([
-    fetch(new URL('./evidence/device-signed-purchase.json', import.meta.url)),
-    fetch(new URL('./receipt-keys.json', import.meta.url)),
-  ]);
-  if (!evidenceResponse.ok || !pinsResponse.ok) throw new Error('Committed evidence or buyer configuration is unavailable.');
-  recorded = (await evidenceResponse.json()).purchase;
+  const pinsResponse = await fetch(new URL('./receipt-keys.json', import.meta.url));
+  if (!pinsResponse.ok) throw new Error('Installed buyer configuration is unavailable.');
   const pins = await pinsResponse.json();
   if (pins.algorithm !== 'ecdsa-p256-sha256') throw new Error('Unsupported buyer identity algorithm.');
   const sec1 = pins.providers['esp32-c6-96a2'];
@@ -142,39 +252,38 @@ async function init() {
   pin = await crypto.subtle.importKey('raw', bytes, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
   differentKey = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify'])).publicKey;
   el('pin').textContent = JSON.stringify({ algorithm: pins.algorithm, provider: 'esp32-c6-96a2', sec1_hex: sec1 }, null, 2);
-  el('measured').textContent = new Date(recorded.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');
-  el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(recorded.settlement.transaction) + '?cluster=devnet';
-  const payment = recordedPaymentDetails(recorded);
-  el('payment-payer').textContent = payment.payer;
-  el('payment-merchant').textContent = payment.merchant;
-  el('payment-amount').textContent = payment.amount_usdc.toFixed(3);
-  el('payment-explorer').href = el('transaction').href;
   controls.forEach(id => { el(id).onclick = () => experiment(id); });
-  el('chain-query').disabled = false;
-  el('chain-query').onclick = async () => {
-    el('chain-query').disabled = true;
-    status('chain-status', 'CHECKING', 'expired');
-    el('chain-summary').textContent = 'Checking the actual recorded transfer. No funds move.';
-    el('chain-result').textContent = 'Querying Solana Devnet. No payment or hardware request occurs.';
+  el('chain-query').onclick = verifyPayment;
+  const archived = async () => {
+    const cycle = ++watchCycle;
+    clearSource('Loading committed evidence.');
     try {
-      const result = await querySettlement(recorded);
-      status('chain-status', 'VERIFIED TRANSFER', 'pass');
-      el('chain-summary').textContent = `Verified: buyer −0.001 USDC → merchant +0.001 USDC. Confirmed slot ${result.slot}.`;
-      el('chain-result').textContent = JSON.stringify(result, null, 2);
-    } catch (error) {
-      status('chain-status', 'NOT VERIFIED', 'expired');
-      el('chain-result').textContent = error.name === 'TimeoutError'
-        ? 'The Devnet RPC query timed out after 15 seconds. Try again.'
-        : error.message;
-      el('chain-summary').textContent = el('chain-result').textContent;
-    } finally { el('chain-query').disabled = false; }
+      const response = await fetch(new URL('./evidence/device-signed-purchase.json', import.meta.url));
+      if (!response.ok) throw new Error('Committed evidence is unavailable.');
+      const input = await response.json();
+      if (cycle === watchCycle) await showPurchase(input);
+    } catch { if (cycle === watchCycle) clearSource('Committed evidence is unavailable.'); }
   };
-  await experiment();
+  el('use-recorded').disabled = false;
+  el('use-recorded').onclick = archived;
+  el('run-file').disabled = false;
+  el('run-file').onchange = async () => {
+    const file = el('run-file').files[0]; if (!file) return;
+    const cycle = ++watchCycle;
+    clearSource('Loading selected buyer output.');
+    try {
+      if (file.size > 32768) throw new Error('File too large');
+      const input = JSON.parse(await file.text());
+      if (cycle === watchCycle) await showPurchase(input, true);
+    } catch { if (cycle === watchCycle) clearSource('Rejected buyer output. Use the buyer result JSON, never a wallet keypair.'); }
+    el('run-file').value = '';
+  };
+  setInterval(refreshDecision, 250);
+  if (new URL(location.href).searchParams.get('live') === '1') void watchBuyerRun();
+  else await archived();
   await inspectContactStates();
 }
 
 init().catch(error => {
-  renderScene(undefined, 'WAIT');
-  status('signature', 'NOT VERIFIED', 'fail');
-  el('reason').textContent = error.message;
+  clearSource(error.message);
 });

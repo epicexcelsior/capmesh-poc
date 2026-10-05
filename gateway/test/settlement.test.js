@@ -1,11 +1,49 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { DEVNET_RPC, querySettlement, verifySettlement } from '../../docs/settlement.mjs';
+import { DEVNET_RPC, querySettlement, verifySettlement, publicBuyerRun } from '../../docs/settlement.mjs';
 
 // Minimal public RPC fixture derived from the recorded October 1 transaction.
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/settlement-rpc.json', import.meta.url)));
 const purchase = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url))).purchase;
+
+test('buyer inspection selects public contract fields without trusting a supplied key or decision', () => {
+  const input = structuredClone(purchase);
+  input.secret = 'PRIVATE FIXTURE';
+  input.receipt_public_key = 'UNTRUSTED';
+  input.receipt.result.extra = 'PRIVATE FIXTURE';
+  input.decision = { decision: 'DISPATCH' };
+  const result = publicBuyerRun({ purchase: input, secret: 'PRIVATE FIXTURE' });
+  assert.equal(result.receipt.receipt_signature, purchase.receipt.receipt_signature);
+  assert.equal(result.challenge.nonce, purchase.challenge.nonce);
+  assert.doesNotMatch(JSON.stringify(result), /PRIVATE FIXTURE|UNTRUSTED|decision/);
+  assert.deepEqual(Object.keys(result).sort(), ['challenge', 'purchase_id', 'receipt', 'settlement']);
+});
+
+test('buyer inspection rejects wallet arrays, mismatched contract, challenge, and payment fields', () => {
+  const changes = [
+    p => { p.challenge.nonce += 1; },
+    p => { p.purchase_id = p.challenge.id = p.receipt.request_id = 1234567890123456; },
+    p => { p.challenge.contact = { provider: 'esp32-c6-96a2', sensor: 'gpio18-contact' }; },
+    p => { p.challenge.contact = { provider: 'another-board', sensor: 'gpio9-contact' }; },
+    p => { p.receipt.parameters.extra = 'unsupported'; },
+    p => { p.receipt.provider = 'another-board'; },
+    p => { p.receipt.result.sensor = 'gpio18-contact'; },
+    p => { p.receipt.result.closed = 'false'; },
+    p => { p.receipt.result.stable_samples = 4; },
+    p => { p.challenge.max_age_seconds = 100; },
+    p => { p.receipt.started_at = 0; },
+    p => { p.receipt.receipt_signature += '='; },
+    p => { p.settlement.success = false; },
+    p => { p.settlement.network = 'mainnet'; },
+  ];
+  for (const change of changes) {
+    const input = structuredClone(purchase); change(input);
+    assert.throws(() => publicBuyerRun(input));
+  }
+  assert.throws(() => publicBuyerRun(Array(64).fill(1)));
+  assert.throws(() => publicBuyerRun({ status: 'failed' }));
+});
 
 test('chain check confirms the exact recorded transfer, independently of the stored chain summary', () => {
   const proof = verifySettlement(structuredClone(fixture), purchase);

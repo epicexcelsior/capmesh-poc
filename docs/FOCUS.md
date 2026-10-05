@@ -31,7 +31,7 @@ The [strategy](STRATEGY.md#the-wedge-to-test-first) owns the pilot, alternatives
 
 | Working result | Remaining limit |
 |---|---|
-| Public Solana Devnet purchase and real ESP32-signed receipt | Test tokens establish no revenue. Payment and measurement remain separate. |
+| Public Solana Devnet purchases and real ESP32-signed receipts. Laptop and Seeker verified the October 5 fresh result and expiry. | Test tokens establish no revenue. Payment and measurement remain separate. |
 | Both held/released BOOT states | BOOT represents a contact. No external gate is installed. |
 | Browser signature, challenge, expiry, and attack checks | The installed buyer pin remains the trust root. The device key is not protected against flash extraction. |
 | No-hardware simulator and standalone recorded inspector | Public test/video links and human registration remain owner actions. |
@@ -56,7 +56,9 @@ The [bounty plan](BOUNTY_PLAN.md) owns acceptance gates. [Submission preparation
 The [hardware plan](HARDWARE_NEXT.md#highest-value-with-almost-no-lab-time) provides the available-board fallback and optional quick pickup.
 The founder now identifies Munich Maker Lab, a different lab, and has little sourcing time. Skip the trip unless parts are ready for pickup.
 MakerSpace's published closure applies only to MakerSpace. [MakerSpace hours](https://www.maker-space.de/oeffnungszeiten/).
-Use the Android phone as a camera or judge screen. Another sensor type requires a separate contract and trust setup.
+The attached Seeker now runs the portable browser verifier through USB forwarding. It supplies no sensor data or payment signature.
+Use the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) for a new approved purchase. The recorded fallback remains valid.
+Another sensor type requires a separate contract and trust setup.
 
 **Stop rule:** keep the contact question, receipt format, payment rail, and recorded fallback stable through the Germany submission.
 Reopen scope for a failed acceptance gate, unresolved requirement, or concrete buyer objection.

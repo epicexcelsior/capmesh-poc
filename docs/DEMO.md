@@ -172,7 +172,86 @@ The older [October 1 checks](evidence/contact-states.json) retain historical HMA
 If the connection or evidence delivery fails, keep the purchase ID from the buyer error. Review it before another payment.
 The keypair stays outside the repository. The client accepts only loopback endpoints and 0.001 USDC on the configured Devnet mint.
 This successful payment gate passed on October 1, 2026. The user funded the disposable buyer through the supported faucet interface.
-Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer. [Paid P-256 evidence](evidence/device-signed-purchase.json) records the current signed purchase.
+Independent Devnet RPC checks confirmed the exact mint, recipient, and 1,000-unit transfer. [Paid P-256 evidence](evidence/device-signed-purchase.json) records the October 1 signed purchase.
+
+The [October 5 buyer output](evidence/device-signed-purchase-20261005.json) records another actual paid physical observation.
+The laptop and Seeker independently verified its transfer at slot 507676124 and its fresh OPEN receipt.
+Both changed from DISPATCH to WAIT after the useful-time window expired. No browser clock override or RPC fixture occurred.
+
+## Show one new paid buyer run
+
+This path spends 0.001 Devnet test USDC. It requires explicit approval, a funded disposable buyer, and the provisioned ESP32.
+Run commands from the repository root. Keep other BLE scans closed. Release BOOT for the OPEN demonstration.
+Port 4021 must be free for a new gateway. If it is occupied, stop only your own server or select a free `PORT`.
+Use that port and the same new output path in the gateway, browser, buyer, and USB forwarding.
+
+1. Select a new result filename for this purchase. Preserve existing files.
+2. Start the gateway in its own terminal:
+
+```bash
+FIELDPROOF_BUYER_RUN_FILE=.local/demo-run-001.json node gateway/server.js
+```
+
+3. Open `http://127.0.0.1:4021/proof?live=1&present=1`.
+4. Verify the waiting scene shows WAIT and no usable answer.
+5. In another terminal, run the approved purchase with the same output path:
+
+```bash
+node gateway/buyer.js /path/to/disposable.keypair.json http://127.0.0.1:4021 --output .local/demo-run-001.json
+```
+
+6. Preserve the terminal result, output file, purchase ID, and transaction signature.
+7. Verify the browser shows the selected run, device checks, and actual chain result.
+8. If every check passes within ten seconds, verify OPEN and DISPATCH.
+9. Wait until the measurement is eleven seconds old. Verify EXPIRED and WAIT.
+10. Select the Explorer link to inspect the actual test-USDC transfer.
+
+The browser monitors for two minutes and makes one automatic read-only chain query after it accepts a supported output.
+The monitor substitutes no recorded purchase. The output's trusted provenance remains the independent buyer and its local file.
+The browser uses its installed public pin. It ignores supplied keys and claimed decisions.
+It does not establish that the receipt directly signs the transaction. The ledger supplies that association.
+A loaded run requires both acceptable evidence and a successful chain query for the combined demo decision.
+A slow or failed query can outlast freshness. WAIT remains the correct result.
+
+The buyer reserves its output with mode 0600 before HTTP or payment. An existing path causes refusal.
+A failed action records a failure file. The endpoint rejects failure, partial, oversized, unsupported, or wallet-array output.
+The public endpoint selects supported fields. It exposes no wallet, error details, or local path.
+If delivery fails after payment, preserve the purchase ID and review the chain before another purchase.
+Automatic retries and refunds do not exist. Never delete the output to disguise a failed attempt.
+
+For manual inspection, open the full page and expand **Inspect a new paid buyer run**.
+Select only the result JSON. Never select a wallet keypair.
+Select **Verify buyer payment**. An old valid receipt remains expired.
+The standalone static package supports manual file inspection. Live monitoring requires the configured repository gateway.
+The package includes the October 5 buyer output for manual inspection. Its original signed times remain unchanged.
+
+### Use the Seeker as a portable verifier
+
+Prerequisites: authorized USB debugging, Android Platform Tools, Chrome, and the local gateway.
+The October 5 Seeker test verified the real recorded transfer and rejected all three receipt attacks.
+The phone supplies no sensor data, signs no payment, and makes no BLE request in this path.
+
+1. Run `adb devices -l`.
+2. Identify the attached phone's authorized serial.
+3. Replace `PHONE_SERIAL` in these commands:
+
+```bash
+adb -s PHONE_SERIAL reverse tcp:4021 tcp:4021
+adb -s PHONE_SERIAL shell am start -a android.intent.action.VIEW -d 'http://127.0.0.1:4021/proof?present=1' -p com.android.chrome
+```
+
+4. Verify VALID signature, EXPIRED, and WAIT for the recorded receipt.
+5. Select **Verify recorded payment**. Verify the actual transfer or state the query failure.
+6. For a new approved purchase, open `http://127.0.0.1:4021/proof?live=1&present=1` before the CLI command.
+
+USB reverse forwards the phone's localhost port to the laptop's localhost port. It exposes no public gateway.
+The phone runs Web Crypto and its read-only Devnet RPC query independently. The public key still comes from the installed buyer configuration.
+If you disconnect USB, the forwarded gateway becomes unavailable. Use the standalone inspector as the recorded fallback.
+Remove the forwarding when you finish:
+
+```bash
+adb -s PHONE_SERIAL reverse --remove tcp:4021
+```
 
 ## Failure review
 

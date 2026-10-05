@@ -74,7 +74,8 @@ SQLite reserves each transaction proof once and preserves its purchase state and
 
 A public-facilitator purchase settled 0.001 Devnet USDC and then returned a real authenticated GPIO9 observation.
 Independent RPC checks confirmed the successful transaction, configured mint, buyer debit, and merchant credit.
-[Paid P-256 evidence](evidence/device-signed-purchase.json) records the current transaction and receipt. The public gateway also returns the expected 402 offer.
+[October 1 P-256 evidence](evidence/device-signed-purchase.json) records the first device-signed purchase.
+[October 5 buyer output](evidence/device-signed-purchase-20261005.json) records the purchase both laptop and Seeker verified. The public gateway also returns the expected 402 offer.
 Tests execute verification, settlement, retries, and failures through the real SDK with a simulated facilitator.
 The signing test creates and cryptographically verifies an Ed25519 buyer signature against a local RPC fixture.
 The live purchase establishes the chain integration separately from these unit tests.
@@ -114,6 +115,10 @@ A separate founder presentation remains incomplete.
 The October 5 local kit adds a 75.64-second visual proof companion with an actual read-only Devnet query.
 It shows the payment, robot-and-gate illustration, receipt attacks, and recorded BOOT states. It includes captions and no audio.
 Use it as a short explanation or additional demo. It does not replace a required 2–3 minute presentation.
+The later October 5 capture adds a continuous 32.8-second actual paid physical run, without audio.
+Laptop and Seeker independently verified its transfer and fresh receipt, then changed to expired WAIT.
+The [public output](evidence/device-signed-purchase-20261005.json) preserves the original signed observation.
+Use this footage inside the founder explanation. The phone acts as a verifier, not a sensor or payer.
 The local review kit also contains a 159.88-second visual version: a ten-second flow picture followed by the unchanged technical walkthrough.
 It remains local and includes no audio. Its full decode, browser playback, opening picture, transition, and closing frame passed.
 The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.

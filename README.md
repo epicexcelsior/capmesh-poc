@@ -130,6 +130,11 @@ It compares the selected provider, sensor, and its trusted public pin with the q
 The gateway stores those terms and rejects an older quote after configuration changes.
 It never prints key material. Do not use a funded mainnet keypair.
 
+The [paid-run procedure](docs/DEMO.md#show-one-new-paid-buyer-run) connects `--output` to the browser's two-minute monitor.
+It also configures the Seeker as a portable verifier through USB forwarding.
+The [October 5 buyer output](docs/evidence/device-signed-purchase-20261005.json) preserves the actual purchase both browsers verified.
+Both accepted fresh OPEN and changed to expired WAIT. The phone supplies no sensor data and signs no payment.
+
 Retries return the original evidence without a second settlement or measurement.
 The browser stops dispatch after its freshness window. A cached receipt does not become fresh on retry.
 Unknown settlement and paid delivery failure require manual review. See the [demo and recovery runbook](docs/DEMO.md).

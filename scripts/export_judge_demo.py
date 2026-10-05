@@ -16,6 +16,7 @@ ASSETS = {
     "settlement.mjs": "docs/settlement.mjs",
     "receipt-keys.json": "host/capmesh/protocol/receipt_keys.json",
     "evidence/device-signed-purchase.json": "docs/evidence/device-signed-purchase.json",
+    "evidence/device-signed-purchase-20261005.json": "docs/evidence/device-signed-purchase-20261005.json",
     "evidence/device-signed-contact-states.json": "docs/evidence/device-signed-contact-states.json",
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
     "assets/fieldproof-service-boundaries.svg": "docs/assets/fieldproof-service-boundaries.svg",
@@ -58,6 +59,7 @@ def export(output):
         page = page.replace('src="/proof.js"', 'src="./proof.js"')
         page = page.replace('<a href="/">Back to dispatch desk</a>', '<a href="./index.html">Restart inspection</a>')
         page = page.replace('href="/learn"', 'href="./guide.html"')
+        page = page.replace('<a id="watch-run" href="?live=1&amp;present=1">Watch one new buyer run from the configured local gateway</a>', 'The static package supports file inspection. Live monitoring requires the repository gateway.')
         page = page.replace('</main>', '<p><a href="./assets/fieldproof-signed-receipt.webm">Watch the captioned 2:30 walkthrough</a></p></main>')
         (stage / "index.html").write_text(page)
         (stage / "guide.html").write_text(guide_links((stage / "guide.html").read_text()))
@@ -71,6 +73,9 @@ def export(output):
             "4. Select Verify recorded payment for a read-only Solana Devnet RPC query.\n"
             "5. Inspect the separately signed BOOT held/released input pair. Those checks moved no funds.\n"
             "6. Watch assets/fieldproof-signed-receipt.webm.\n\n"
+            "For the October 5 real purchase, open Inspect a new paid buyer run.\n"
+            "Select evidence/device-signed-purchase-20261005.json, then Verify buyer payment.\n"
+            "Its authentic evidence is expired now. No new payment occurs.\n\n"
             "This package contains recorded evidence, public verification keys, and browser code.\n"
             "It contains no wallet, backend, private key, physical gateway, or payment endpoint.\n"
             "It never charges funds or measures hardware. Authentic expired evidence remains WAIT.\n"

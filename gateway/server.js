@@ -4,13 +4,14 @@ import { randomUUID, createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, openSync, readSync, closeSync } from 'node:fs';
 import { HTTPFacilitatorClient, x402ResourceServer } from '@x402/core/server';
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader, encodePaymentResponseHeader, encodePaymentSignatureHeader } from '@x402/core/http';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { getTransactionDecoder } from '@solana/kit';
 import { PurchaseStore } from './store.js';
 import { contactContract, DEFAULT_CONTACT, loadReceiptPins, receiptKey } from './contact.js';
+import { publicBuyerRun } from '../docs/settlement.mjs';
 
 export const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 export const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
@@ -50,7 +51,7 @@ export async function createGateway({ paymentServer, store, observe = observeHar
     origin = 'http://127.0.0.1:4021', payTo = PAY_TO, simulated = false,
     sensor = simulated ? 'simulated-contact' : 'gpio9-contact',
     provider = sensor === 'simulated-contact' ? 'sim-contact-01' : DEFAULT_CONTACT.provider, assetsRoot = root,
-    receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS) } = {}) {
+    receiptPins = loadReceiptPins(process.env.FIELDPROOF_RECEIPT_PINS), buyerRunPath } = {}) {
   const contact = contactContract({ provider, sensor }, { simulated });
   const publicKey = sensor === 'simulated-contact' ? null : receiptPins[provider];
   if (sensor !== 'simulated-contact') receiptKey(publicKey);
@@ -96,6 +97,19 @@ export async function createGateway({ paymentServer, store, observe = observeHar
     receipt_identity: sensor === 'simulated-contact' ? 'public-demo-hmac' : 'pinned-device-p256',
     mode: simulated ? 'simulated settlement; no funds moved' : 'Solana Devnet; physical contact demo' }));
   app.get('/demand', (_req, res) => res.json(store.demand()));
+  app.get('/buyer-run', (_req, res) => {
+    if (!buyerRunPath) return res.status(404).json({ error: 'No independent buyer output is configured.' });
+    let file;
+    try {
+      file = openSync(buyerRunPath, 'r');
+      const buffer = Buffer.alloc(32769), size = readSync(file, buffer, 0, buffer.length, 0);
+      if (size > 32768) throw new Error('Buyer output exceeds its inspection limit');
+      // Select only public contract fields. A wallet array or extra secret fields never reach the browser.
+      res.json(publicBuyerRun(JSON.parse(buffer.subarray(0, size).toString('utf8'))));
+    } catch (error) {
+      res.status(error.code === 'ENOENT' ? 404 : 503).json({ error: 'Buyer output is unavailable or incomplete. Preserve the buyer terminal result.' });
+    } finally { if (file !== undefined) closeSync(file); }
+  });
   app.get('/manifest', (_req, res) => res.json({ product: 'FieldProof', metric: 'gate.closed',
     location: 'demo-gate', sensor, provider, contact, receipt_public_key: publicKey,
     price: '0.001 USDC', confidence: null, create_request: '/requests' }));
@@ -232,6 +246,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const paymentServer = await createPaymentServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL || 'https://x402.org/facilitator' }));
   const store = new PurchaseStore(resolve(root, '.local/purchases.sqlite'));
   const app = await createGateway({ paymentServer, store, origin: `http://127.0.0.1:${port}`, payTo: process.env.SOLANA_PAY_TO || PAY_TO,
-    ...contact, receiptPins });
+    ...contact, receiptPins, buyerRunPath: process.env.FIELDPROOF_BUYER_RUN_FILE
+      ? resolve(root, process.env.FIELDPROOF_BUYER_RUN_FILE) : undefined });
   app.listen(port, '127.0.0.1', () => console.log(`FieldProof gateway on http://127.0.0.1:${port}`));
 }

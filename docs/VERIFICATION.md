@@ -1,8 +1,59 @@
 # FieldProof verification record
 
-Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates to October 1.
+Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates to October 1 and October 5.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 5 live paid run and Seeker verification
+
+Starting source: `46ddaed81c3cad73a70c39d0233358c73a8050f7` on `main`, with the reviewed buyer-monitor changes uncommitted during capture.
+The user explicitly approved one 0.001 Devnet test-USDC purchase, then authorized small Solana Devnet test transactions generally.
+This continuation executed one purchase. It created no phone wallet, custom Solana program, peaq transaction, or GPIO output.
+
+The buyer completed purchase `26e4bdea64934d52`. Its original challenge and signed GPIO9 OPEN receipt remain in the [public output](evidence/device-signed-purchase-20261005.json).
+The buyer accepted the receipt at age six seconds. It paid before the gateway requested the physical observation.
+The laptop and actual Seeker Chrome independently queried the same transfer and accepted the fresh result.
+At 08:47:36 UTC, both showed VALID, MATCHES, 5/5 AGREE, FRESH, VERIFIED TRANSFER, and DISPATCH.
+Both changed to EXPIRED and WAIT against the real clock. Tampering produced a rejected signature and WAIT.
+No clock override, RPC fixture, simulated settlement, or substituted archive occurred in this capture.
+
+[Actual Solana Devnet transaction](https://explorer.solana.com/tx/5Rqq2o1GeAX2TXDYf7NXLFAxZnunkxqQz8tpnh5musVi5poZd6jhtDs1axpFy7EHuWh4h3EU4xchbkbNpXMoXttz?cluster=devnet).
+Both chain reads confirmed slot 507676124, the configured test-USDC mint, payer −1000, merchant +1000, and the matching SPL Token instruction.
+The disposable buyer's confirmed test-USDC balance changed from 19.998 to 19.997. The post-purchase balance read occurred at 08:53:40 UTC.
+The phone acted as a portable browser verifier through USB reverse forwarding. It supplied no sensor data and signed no payment.
+The ESP32 communicated with the laptop through BLE. Its USB cable supplied power.
+
+| Check | Observed result |
+|---|---|
+| Initial browser check on the running gateway | Timed out because the newly requested module was absent from its loaded asset whitelist. Reusing the existing shared module restored compatibility without restarting the founder's gateway. |
+| Gateway suite | `npm --prefix gateway test`: 47 passed, zero failed. Output reservation, failure preservation, public-field selection, size limits, wallet-array rejection, partial-file recovery, and absent configuration passed. |
+| Test-command correction | Initial `npm test` at the repository root failed because no root test script exists. The declared gateway command passed. |
+| Python launcher/export suite | 15 passed in 0.37 seconds. Host and firmware behavior did not change. The preceding full Python result remains 204 passed and ten hardware skips. |
+| Buyer-monitor browser fixtures | No archive substitution, required payment check, continuous expiry, source replacement, wallet rejection, delayed RPC/signature/archive results, desktop fit, and no payment/device requests passed. |
+| Signature-race regression | Removing the source-revision guard made the focused test fail: an old REJECTED result replaced NOT VERIFIED after invalid input. Restoring the guard made the test pass. |
+| Gateway and prefixed static receipt inspector | Original receipt, expiry, three attacks, synchronized illustration, focus modes, input archives, damaged archives, RPC fixtures, HTTP 429 recovery, and mobile width passed. |
+| Founder guide | Six steps, three rehearsal modes, eight executed software outcomes, deep references, unique anchors, desktop/mobile width, and no page errors passed. |
+| Board preflight | One bounded actual BLE sample passed at 08:20:57 UTC. Device-signed OPEN, receipt age six seconds, and elapsed time 12.769 seconds. No payment occurred. |
+| Actual Seeker recorded-receipt test | Chrome 150.0.7871.64 verified the October 1 signature and actual transfer. All three receipt attacks returned WAIT. No horizontal overflow occurred. |
+| Actual new paid run | Independent CLI purchase, actual BLE observation, both browser transfer checks, fresh DISPATCH, real-time expiry, and altered-answer rejection passed. |
+| Actual static-package inspection | Loading the October 5 public JSON produced VALID, EXPIRED, and WAIT. A read-only actual Devnet query verified slot 507676124. |
+| Continuous video | Raw capture: 32.8 seconds, VP8, 1280 × 900, no audio. Full decoding passed. |
+| Captioned video | Initial subtitle scaling obscured the controls. Explicit ASS canvas dimensions placed captions below unchanged footage. Final capture: 32.8 seconds, VP8, 1280 × 1000, no audio. Full decoding and Chromium metadata passed. |
+| Visual inspection | Laptop and Seeker fresh-result screenshots, Seeker payment, and accepted/expired/tampered video frames passed. |
+| Final static package | Twelve manifest entries and thirteen ZIP members matched every digest and archived byte. |
+| Final syntax and references | Changed JavaScript syntax and `git diff --check` passed. 105 changed Markdown local references resolved. |
+| Local start page | Three tasks, all local links, loaded diagram, mobile width, and no page errors passed. The eligibility note reflects the founder's reported cooldown. No exception is confirmed. |
+| Review | Primary checklist and source/diff review covered file ownership, side effects, source races, trust roots, failure paths, and documentation. Independent review was not repeated after the earlier account-limit failure. |
+
+Public buyer output SHA256: `30e656d8c7e4d08f84cde6bc4ee31b90d481627b067ec848e7fdb05cdb6afd61`.
+Actual dual-browser capture record SHA256: `06ea919df92e9e948ecf3d6479696c05a4443507e4b56d388ab2e9ba58ce6f24`.
+Raw paid video SHA256: `2169077395ffceea600d9c04be1bc83f44f337dd2957c9c28eb9f61a994265dc`.
+Final captioned video SHA256: `886662661815754422992a0c909fef9aee71430bd03f4f4f725056a49a4863a5`.
+Final inspector ZIP SHA256: `a9fef8d7d2df01f7b1dc3f2a90070416367da74a337cc83196cf7deb749d371b`.
+Board preflight log SHA256: `e680e20d3462cfaae165cf186a933220a2fd657bd744b9afe41a0cb48727dc02`.
+Video, screenshots, terminal output, and raw test records remain in ignored local storage. Public links and human submission remain owner tasks.
+The short capture does not replace a required 2–3 minute founder presentation. The existing longer technical walkthrough remains available.
+The founder's physical gateway stayed active. No firmware, new sensor, gate actuation, peaq activation, public deployment, outreach, registration, or submission occurred.
 
 ## October 5 visual buyer decision and short proof companion
 

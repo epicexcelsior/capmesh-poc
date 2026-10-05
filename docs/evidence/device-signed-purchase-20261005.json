@@ -1,0 +1,37 @@
+{
+  "purchase_id": "26e4bdea64934d52",
+  "challenge": {
+    "id": "26e4bdea64934d52",
+    "nonce": 315826837,
+    "created_at": 1791190040,
+    "location": "demo-gate",
+    "max_age_seconds": 10
+  },
+  "settlement": {
+    "success": true,
+    "payer": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+    "transaction": "5Rqq2o1GeAX2TXDYf7NXLFAxZnunkxqQz8tpnh5musVi5poZd6jhtDs1axpFy7EHuWh4h3EU4xchbkbNpXMoXttz",
+    "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
+  },
+  "receipt": {
+    "protocol": "capmesh/0.1",
+    "request_id": "26e4bdea64934d52",
+    "status": "success",
+    "provider": "esp32-c6-96a2",
+    "capability": "state.observe",
+    "parameters": {
+      "location": "demo-gate"
+    },
+    "nonce": 315826837,
+    "result": {
+      "metric": "gate.closed",
+      "sensor": "gpio9-contact",
+      "closed": false,
+      "stable_samples": 5,
+      "total_samples": 5
+    },
+    "started_at": 1791190049,
+    "completed_at": 1791190049,
+    "receipt_signature": "v3:Gk1q+3lfVtt3GVYAYqSJn3TBEJ7AEMFwkGn4EturxmZwZtecQJaXGBEdUJZjkW4JZFMSQSV4uSe4LswFwq3LeA=="
+  }
+}
