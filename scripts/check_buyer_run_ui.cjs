@@ -44,19 +44,30 @@ const output = value => ({ name: 'buyer-fixture.json', mimeType: 'application/js
     assert.equal(await page.textContent('#scene-claim'), 'Receipt claim: UNAVAILABLE');
     assert.equal(await page.isDisabled('#original'), true);
     assert.equal(await page.isDisabled('#chain-query'), true);
+    assert.equal(await page.textContent('#evidence-age'), 'Unavailable');
     assert.equal(queries, 0);
     assert.equal(requests.some(r => r.url.endsWith('/evidence/device-signed-purchase.json')), false);
     available = true;
     await page.waitForFunction(() => document.getElementById('decision').textContent === 'DISPATCH');
     assert.equal(await page.textContent('#live-payment-check'), 'VERIFIED');
     assert.equal(await page.textContent('#signature'), 'VALID');
+    assert.equal(await page.textContent('#evidence-age'), '2s old');
+    assert.equal(await page.getAttribute('#age-track', 'aria-valuetext'), '2s old. Maximum age 10 seconds.');
+    assert.equal(await page.textContent('#proof-payment-check'), 'VERIFIED TRANSFER');
     assert.equal(queries, 1);
     const workspace = await page.locator('.workspace').boundingBox();
     assert.ok(workspace.y + workspace.height <= 900, 'Live receipt checks must fit the desktop viewport');
-    await page.evaluate(() => { window.fixtureNow += 11000; });
+    await page.evaluate(() => { window.fixtureNow += 8000; });
+    await page.waitForFunction(() => document.getElementById('evidence-age').textContent === '10s old');
+    assert.equal(await page.textContent('#freshness'), 'FRESH');
+    assert.equal(await page.textContent('#decision'), 'DISPATCH');
+    await page.evaluate(() => { window.fixtureNow += 1000; });
     await page.waitForFunction(() => document.getElementById('freshness').textContent === 'EXPIRED');
     assert.equal(await page.textContent('#decision'), 'WAIT');
     assert.equal(await page.textContent('#scene-decision'), 'WAIT');
+    assert.equal(await page.textContent('#evidence-age'), '11s old');
+    assert.equal(await page.textContent('#signature'), 'VALID');
+    assert.equal(await page.textContent('#proof-payment-check'), 'VERIFIED TRANSFER');
 
     await page.click('#focus');
     await page.locator('.intro details').evaluate(node => { node.open = true; });
@@ -75,6 +86,8 @@ const output = value => ({ name: 'buyer-fixture.json', mimeType: 'application/js
     releaseRpc();
     await pendingResponse;
     assert.equal(await page.textContent('#chain-status'), 'NOT QUERIED');
+    assert.equal(await page.textContent('#proof-payment-check'), 'NOT QUERIED');
+    assert.equal(await page.textContent('#evidence-age'), 'Unavailable');
     assert.equal(await page.textContent('#decision'), 'WAIT');
     assert.equal(await page.isDisabled('#original'), true);
 

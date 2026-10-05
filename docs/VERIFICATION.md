@@ -4,6 +4,38 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 evidence-age display and recording route
+
+Starting source: clean `4c3948ea0aeb7ebfd3cd1b1f6d1d27f8ae2afafa` on `main`.
+This continuation adds an evidence-age display, a focused payment status, one expiry illustration, and three local recording frames.
+It consolidates the tagline, README opening, recording cues, alternatives, and incomplete human-submission fields.
+The acceptance policy, device receipt, payment rail, and hardware configuration remain unchanged.
+No new payment, measurement, wallet, firmware flash, GPIO output, peaq write, public hosting, or human submission occurred.
+
+| Check | Observed result |
+|---|---|
+| Initial inspector layout | The added age and payment displays pushed controls below the 900-pixel viewport. Both existing fit assertions failed. |
+| Inspector layout correction | Measured workspace bottom: 929.64 pixels. Shorter duplicate text and compact presentation spacing restored fit. Desktop and mobile checks passed. |
+| Buyer-monitor fixtures | The same signed answer remained accepted at age ten seconds and expired at eleven seconds. Payment stayed VERIFIED TRANSFER and signature stayed VALID. Missing/replaced sources cleared age and payment status. Race, wallet rejection, and no-side-effect checks passed. |
+| Receipt inspector | Gateway and final prefixed static package passed original signature, expiry, three attacks, focus modes, input archives, damaged archives, RPC fixtures, HTTP 429 recovery, and mobile width. |
+| Actual laptop query | The updated inspector queried the actual October 5 transfer at slot 507676124. It showed VALID, VERIFIED TRANSFER, the original expired age, and WAIT. No clock or RPC fixture occurred. |
+| Actual Seeker recovery | The first navigation failed with connection refused. The laptop returned HTTP 200 and `adb reverse --list` was empty. Restoring USB reverse forwarding restored the page. The runbook now includes this recovery. |
+| Actual Seeker check | Chrome verified the same actual transfer, original age, expired WAIT, and tamper rejection. The original was restored. No horizontal overflow, page error, payment, or hardware request occurred. Temporary DevTools forwarding was removed. |
+| Gateway suite | `npm --prefix gateway test`: 47 passed, zero failed, 761.438 milliseconds. |
+| Focused Python suite | `uv run --project host pytest -q tests/test_judge_export.py tests/test_demo_launcher.py`: 15 passed in 0.23 seconds. Host and firmware code did not change. The prior full Python result remains 204 passed and ten hardware skips. |
+| Launcher and simulator | `python3 scripts/demo.py check` passed all three prerequisite checks. `python3 scripts/demo.py sim` started the declared no-funds server. The browser purchase check passed configured terms, DISPATCH, real-time expiry, mobile width, and no page errors. No hardware occurred. |
+| Founder guide | Six steps, three modes, eight software outcomes, deep references, unique anchors, desktop/mobile width, and no page errors passed. |
+| Recording frames | Initial frames exceeded the recording viewport. Measured image heights and spacing explained the overflow. The final three frame bottoms were 836.09, 868.05, and 893.38 pixels. All fit 1280 × 900. Keyboard navigation, deep links, and 390-pixel width passed. |
+| Local start page | Three owner tasks, twelve local links, mobile width, and no page errors passed. It points to one current export and recording route. |
+| Export integrity | Thirteen manifest entries and fourteen ZIP members matched every digest and archived byte. Existing packages stayed intact. |
+| Visual and source review | All three recording frames, actual desktop inspector, actual Seeker age, and local mobile start page were inspected. Changed JavaScript syntax and `git diff --check` passed. Primary review checked source reset, race guards, truth boundaries, field selection, and scope. No independent review was repeated. |
+
+Final inspector ZIP SHA256: `ae15268c59690415611b85f99a4121bbf28c8cbc3e2ed3ce715cb4702ce5eedf`.
+Screenshots, actual query reports, and recording frames remain in ignored local storage.
+The earlier continuous paid footage remains unchanged. It records actual fresh acceptance and expiry, rather than a refreshed archive.
+The founder's physical gateway stayed active. A separate no-hardware rehearsal server now runs on port 4022.
+Eligibility confirmation, narration, public test/video links, registration, project page, contact details, and human submission remain open.
+
 ## October 5 live paid run and Seeker verification
 
 Starting source: `46ddaed81c3cad73a70c39d0233358c73a8050f7` on `main`, with the reviewed buyer-monitor changes uncommitted during capture.

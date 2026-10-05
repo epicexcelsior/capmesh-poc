@@ -27,6 +27,24 @@ function renderScene(closed, decision) {
   el('gate-scene').dataset.decision = decision.toLowerCase();
 }
 
+function renderAge(age, limit = 10, fresh = false) {
+  const available = Number.isSafeInteger(age);
+  const text = !available ? 'Unavailable' : age < 0 ? `${-age}s ahead`
+    : age < 60 ? `${age}s old`
+      : age < 3600 ? `${Math.floor(age / 60)}m ${age % 60}s old`
+        : age < 86400 ? `${Math.floor(age / 3600)}h ${Math.floor(age % 3600 / 60)}m old`
+          : `${Math.floor(age / 86400)}d ${Math.floor(age % 86400 / 3600)}h old`;
+  el('evidence-age').textContent = text;
+  el('evidence-age').title = available ? `${age} seconds since the signed measurement` : text;
+  el('age-limit').textContent = `Maximum age ${limit}s`;
+  const bounded = available ? Math.max(0, Math.min(limit, age)) : 0;
+  el('age-fill').style.width = `${bounded / limit * 100}%`;
+  el('age-track').dataset.fresh = String(fresh);
+  el('age-track').setAttribute('aria-valuemax', String(limit));
+  el('age-track').setAttribute('aria-valuenow', String(bounded));
+  el('age-track').setAttribute('aria-valuetext', `${text}. Maximum age ${limit} seconds.`);
+}
+
 function message(r) {
   const s = r.result;
   return ['fieldproof-observation-v1', r.protocol, r.request_id, r.provider, r.capability,
@@ -86,9 +104,11 @@ function refreshDecision() {
     r.started_at >= challenge.created_at - 2 && r.started_at <= r.completed_at && r.completed_at <= now + 2 &&
     now - r.completed_at <= challenge.max_age_seconds;
   status('freshness', fresh ? 'FRESH' : 'EXPIRED', fresh ? 'pass' : 'expired');
+  renderAge(now - r.completed_at, challenge.max_age_seconds, fresh);
   status('live-payment-check', paymentVerified ? 'VERIFIED' : 'NOT VERIFIED', paymentVerified ? 'pass' : 'expired');
   const accepted = authentic && bound && contract && fresh && (!loadedRun || paymentVerified);
   el('decision').textContent = accepted && !s.closed ? 'DISPATCH' : 'WAIT';
+  el('decision').className = `decision ${accepted && !s.closed ? 'pass' : 'expired'}`;
   renderScene(s.closed, el('decision').textContent);
   el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
     : !bound ? 'This receipt cannot answer a different buyer challenge.'
@@ -103,7 +123,9 @@ async function experiment(mode = 'original') {
   running = true;
   const revision = sourceRevision;
   lastChecks = null;
+  renderAge(null);
   el('decision').textContent = 'WAIT';
+  el('decision').className = 'decision expired';
   renderScene(undefined, 'WAIT');
   controls.forEach(id => { el(id).disabled = true; });
   const labels = { original: loadedRun ? 'Original buyer answer' : 'Original recorded answer', tamper: 'Altered contact state',
@@ -150,16 +172,20 @@ function clearSource(reason) {
   running = false;
   recorded = null;
   lastChecks = null;
+  renderAge(null);
   paymentVerified = false;
   controls.forEach(id => { el(id).disabled = true; });
   el('chain-query').disabled = true;
   status('signature', 'NOT VERIFIED', 'fail');
-  status('binding', '—', ''); status('contract', '—', ''); status('freshness', 'UNAVAILABLE', 'expired');
+  status('binding', 'UNAVAILABLE', ''); status('contract', 'UNAVAILABLE', ''); status('freshness', 'UNAVAILABLE', 'expired');
   status('chain-status', 'NOT QUERIED', ''); status('live-payment-check', 'NOT VERIFIED', 'expired');
+  status('proof-payment-check', 'NOT QUERIED', '');
+  el('proof-payment-amount').textContent = 'Unavailable';
+  el('decision').className = 'decision expired';
   el('decision').textContent = 'WAIT'; renderScene(undefined, 'WAIT');
   el('receipt-source').textContent = 'No usable buyer output / demo-gate';
   el('reason').textContent = reason; el('source-status').textContent = reason;
-  for (const id of ['state', 'measured', 'payment-payer', 'payment-merchant', 'payment-amount']) el(id).textContent = '—';
+  for (const id of ['state', 'measured', 'payment-payer', 'payment-merchant', 'payment-amount']) el(id).textContent = 'Unavailable';
   for (const id of ['transaction', 'payment-explorer']) el(id).removeAttribute('href');
   el('payload').textContent = 'No usable buyer output.';
   el('chain-summary').textContent = 'No current transfer check.'; el('chain-result').textContent = 'No network query yet.';
@@ -182,6 +208,7 @@ async function showPurchase(input, buyer = false) {
   const payment = recordedPaymentDetails(next);
   el('payment-payer').textContent = payment.payer; el('payment-merchant').textContent = payment.merchant;
   el('payment-amount').textContent = payment.amount_usdc.toFixed(3);
+  el('proof-payment-amount').textContent = `${payment.amount_usdc.toFixed(3)} Devnet USDC`;
   el('payment-explorer').href = el('transaction').href;
   el('chain-summary').textContent = 'The displayed terms come from the buyer output. Run the read-only query to verify the transfer.';
   el('chain-query').disabled = false;
@@ -195,6 +222,7 @@ async function verifyPayment() {
   paymentVerified = false; refreshDecision();
   el('chain-query').disabled = true;
   status('chain-status', 'CHECKING', 'expired');
+  status('proof-payment-check', 'CHECKING', 'expired');
   el('chain-summary').textContent = 'Checking the actual transfer. No funds move.';
   el('chain-result').textContent = 'Querying Solana Devnet. No payment or hardware request occurs.';
   try {
@@ -202,11 +230,13 @@ async function verifyPayment() {
     if (revision !== sourceRevision) return;
     paymentVerified = true;
     status('chain-status', 'VERIFIED TRANSFER', 'pass');
+    status('proof-payment-check', 'VERIFIED TRANSFER', 'pass');
     el('chain-summary').textContent = `Verified: buyer −0.001 USDC → merchant +0.001 USDC. Confirmed slot ${result.slot}.`;
     el('chain-result').textContent = JSON.stringify(result, null, 2);
   } catch (error) {
     if (revision !== sourceRevision) return;
     status('chain-status', 'NOT VERIFIED', 'expired');
+    status('proof-payment-check', 'NOT VERIFIED', 'expired');
     el('chain-result').textContent = error.name === 'TimeoutError' ? 'The Devnet RPC query timed out after 15 seconds. Try again.' : error.message;
     el('chain-summary').textContent = el('chain-result').textContent;
   } finally {

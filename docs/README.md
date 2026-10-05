@@ -12,7 +12,8 @@ The current prototype buys and verifies a contact observation. Physical-service 
 4. Explain the radio links and the eight optional software cases.
 5. Complete [the human submission checklist](SUBMISSION.md#required-fields-that-remain-incomplete).
 
-Use [the short rehearsal](REHEARSAL.md) for timed recording cues.
+Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough) for the MVP video.
+Its cues connect three visual frames, actual paid footage, one attack, and the next pilot.
 You do not need to read every reference file before the demonstration.
 
 ## Find the document that owns the answer

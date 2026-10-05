@@ -7,6 +7,10 @@ Use [the documentation map](README.md) only to find a specific reference.
 
 ## The thesis to keep
 
+FieldProof: fresh physical proof for machine-to-machine commerce.
+The demo's central moment is a confirmed payment and valid signature with expired evidence and WAIT.
+The buyer checks an answer's useful lifetime independently of payment and authentication.
+
 Company target: one integration for machines to transact with physical infrastructure another operator owns.
 The current prototype purchases and verifies a fresh contact observation. Access, actuation, reservation, and completed-service evidence remain future work.
 
@@ -43,8 +47,8 @@ The [short rehearsal](REHEARSAL.md) provides timed recording cues. The HTML guid
 
 ## Do next
 
-One clear transaction is the submission priority. More hardware and device types remain optional.
-Use [the one-minute recorded proof](REHEARSAL.md#explain-the-recorded-proof-in-one-minute) before the live BOOT demonstration.
+One clear transaction is the submission priority. The ESP32 and Seeker already support it.
+Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough) with actual paid footage, expiry, and one attack.
 
 1. Rehearse quote, simulated purchase, expiry, real BOOT input, and recorded receipt attacks yourself.
 2. Complete human Germany registration and the FieldProof Colosseum project page.

@@ -113,6 +113,9 @@ The route performs no payment, observation, or ledger write. It rejects partial,
 `/proof?live=1&present=1` monitors once for two minutes. It substitutes no archive and makes one automatic read-only chain query.
 A loaded run requires acceptable evidence and verified payment for the combined demonstration decision.
 Freshness updates continuously. Source revisions prevent old asynchronous verification results from restoring a previous acceptance state.
+The age display uses the original signed completion time and current browser clock. It never starts a new freshness window on page load.
+The focused payment strip reports NOT QUERIED, CHECKING, VERIFIED TRANSFER, or NOT VERIFIED from the same chain query.
+Only a successful current query displays VERIFIED TRANSFER. Failed or replaced sources clear that result.
 The output supplies the inspection challenge. Its trusted provenance remains the independent buyer and its local file.
 The device signature does not directly bind the reported Solana transaction. The gateway ledger remains that association boundary.
 The Seeker can execute the same browser checks through USB reverse forwarding. It supplies no sensor observation or payment signature.

@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FieldProof — Receipt inspection</title>
+<title>FieldProof | Receipt inspection</title>
 <style>
-:root{--fog:#eef4f8;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9}
+:root{--fog:#f3f3ed;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9}
 *{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--fog);color:var(--ink);font:17px/1.55 system-ui,sans-serif}header,main,footer{max-width:1120px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);gap:16px}.brand{font-size:24px;font-weight:800;letter-spacing:-.03em}a{color:var(--sea)}.label,code{font:13px/1.6 ui-monospace,monospace}.label{text-transform:uppercase;letter-spacing:.08em;color:var(--sea)}h1{font:clamp(40px,6vw,68px)/1.05 Impact,'Arial Narrow',sans-serif;letter-spacing:.01em;margin:18px 0 24px}h2{font-size:24px;margin:12px 0}p{max-width:70ch}.lead{font-size:21px;max-width:750px}.workspace{display:grid;grid-template-columns:1.1fr 1fr;border:2px solid var(--ink);background:white;margin-top:32px}.receipt,.checks{padding:28px}.checks{background:#dfebf1;border-left:2px solid var(--ink)}.receipt dl{display:grid;grid-template-columns:1fr 1fr;margin:24px 0;gap:20px}dt{font-size:13px;color:#39576b}dd{margin:0;font-size:20px;font-weight:700}button{font:700 15px system-ui;padding:12px 16px;background:var(--sea);color:white;border:0;border-radius:4px;cursor:pointer;margin:5px 6px 5px 0}button.secondary{background:white;color:var(--sea);border:1px solid var(--sea)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:4px}.check{padding:14px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px}.pass{color:var(--teal)}.fail{color:var(--danger)}.expired{color:var(--amber)}.decision{font:48px/1.1 Impact,'Arial Narrow',sans-serif;color:var(--amber);margin:22px 0 8px}.note{font-size:14px;color:#39576b}.notice{border-left:4px solid var(--amber);background:#fff8e9;padding:14px 20px;margin-top:28px}pre{background:var(--ink);color:var(--fog);padding:20px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:400px;overflow:auto;font-size:12px}details{margin:24px 0}footer{font-size:13px;border-top:1px solid var(--line)}
 @media(max-width:700px){header,main,footer{padding:18px}.workspace{grid-template-columns:1fr}.receipt,.checks{padding:22px}.checks{border-left:0;border-top:2px solid var(--ink)}header{flex-direction:column}.receipt dl{gap:14px}}
 .header-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.header-actions button{margin:0}.stage-title{display:none}.experiment{font-weight:700;color:var(--sea);min-height:1.55em}button[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--ink)}body.presentation .intro,body.presentation .reference,body.presentation footer{display:none}body.presentation .stage-title{display:block}body.presentation .workspace{margin-top:18px}body.presentation .decision{font-size:64px}body.presentation .stage-title h1{font-size:36px;margin:6px 0}body.presentation .stage-title p{margin:6px 0;font-size:14px}body.presentation .receipt,body.presentation .checks{padding:22px}
@@ -13,6 +13,8 @@
 .money-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin:20px 0;background:white;border:1px solid var(--line);padding:22px}.wallet-label{font-size:15px;font-weight:700}.money-flow code{display:block;overflow-wrap:anywhere;font-size:12px}.transfer-amount{text-align:center;font:36px/1.2 Impact,'Arial Narrow',sans-serif;color:var(--sea)}.transfer-amount small{display:block;font:13px/1.5 ui-monospace,monospace;color:var(--ink)}#chain-summary{font-size:17px;font-weight:600}#payment{scroll-margin-top:18px}#payment h2{margin-top:24px}@media(max-width:700px){.money-flow{grid-template-columns:1fr;gap:14px}.transfer-amount{text-align:left}.transfer-amount small{display:inline;margin-left:12px}}
 .gate-scene{margin:14px 0;background:var(--fog);border:1px solid var(--line);padding:12px}.scene-owners,.scene-result{display:flex;justify-content:space-between;gap:12px;font-size:13px}.scene-owners{color:#39576b}.scene-owners span:last-child{text-align:right}.gate-scene svg{display:block;width:100%;height:auto}.scene-result{align-items:center;font-size:14px}.scene-result strong{font:24px/1.2 Impact,'Arial Narrow',sans-serif;color:var(--amber)}.gate-scene figcaption{font-size:12px;color:#39576b;margin-top:6px}.gate-arm{transform-origin:352px 94px}.gate-scene[data-claim="open"] .gate-arm{transform:rotate(-72deg)}.route-ready{display:none}.gate-scene[data-decision="dispatch"] .route-ready{display:block}.gate-scene[data-decision="dispatch"] .route-wait{display:none}.gate-scene[data-decision="dispatch"] .scene-result strong{color:var(--teal)}.receipt dl{margin:18px 0;gap:12px}.receipt dd{font-size:17px}.scene-result span{max-width:30ch}
 body.presentation .receipt dl{display:none}body.presentation .gate-scene svg{height:110px}body.presentation .experiment{margin:8px 0}
+.payment-strip{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:10px 0;font:13px/1.5 ui-monospace,monospace}.age-readout{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:12px 0 6px}.age-readout strong{font:700 26px/1.2 ui-monospace,monospace;letter-spacing:-.04em}.age-readout span{font-size:13px}.age-track{height:8px;background:white;border:1px solid var(--line);position:relative}.age-track span{display:block;height:100%;width:0;background:var(--amber)}.age-track[data-fresh="true"] span{background:var(--teal)}.age-caption{font-size:12px;margin:6px 0 0;color:#39576b}.decision.pass{color:var(--teal)}
+body.presentation header{padding-top:16px;padding-bottom:16px}body.presentation .stage-title p{max-width:none}body.presentation .check{padding:10px 0}body.presentation .receipt button{padding:10px 12px;font-size:14px}
 </style>
 </head>
 <body>
@@ -27,7 +29,7 @@ body.presentation .receipt dl{display:none}body.presentation .gate-scene svg{hei
 <p id="source-description">This prototype purchases one contact observation. This inspector uses recorded evidence.</p><p>Use the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a> for a new simulated purchase.</p>
 <details><summary>Inspect a new paid buyer run</summary><p>Load the independent buyer's result JSON. Never load a wallet keypair. This browser never pays or measures hardware.</p><label for="run-file">Buyer output JSON</label> <input id="run-file" type="file" accept=".json,application/json" disabled><p><a id="watch-run" href="?live=1&amp;present=1">Watch one new buyer run from the configured local gateway</a></p><button id="use-recorded" class="secondary" disabled>Use October 1 recorded evidence</button><p id="source-status" role="status" aria-live="polite">Installed buyer pin remains the trust root.</p></details>
 </div>
-<div class="stage-title"><div id="stage-source" class="label">Recorded device evidence / actual Devnet test payment</div><h1 id="stage-heading">One paid answer. Four buyer checks.</h1><p>BOOT represents a contact. This browser moves no funds and measures no hardware. The illustration follows the verified decision.</p></div>
+<div class="stage-title"><div id="stage-source" class="label">Recorded device evidence / actual Devnet test payment</div><h1 id="stage-heading">One paid answer. Four buyer checks.</h1><p>Real ESP32 contact stand-in. Read-only inspection. No robot motion.</p></div>
 <div id="receipt" class="workspace">
 <section class="receipt" aria-label="Receipt inspection"><div id="receipt-source" class="label">Recorded purchase / demo-gate</div><h2>Is the gate open?</h2>
 <figure id="gate-scene" class="gate-scene" data-decision="wait" data-claim="unknown" aria-label="Illustrated receipt claim and buyer decision">
@@ -50,17 +52,21 @@ body.presentation .receipt dl{display:none}body.presentation .gate-scene svg{hei
 <div class="scene-result"><span id="scene-claim">Receipt claim: loading</span><strong id="scene-decision">WAIT</strong></div>
 <figcaption>Illustration follows the receipt claim and buyer decision. It shows no live gate and moves no robot.</figcaption>
 </figure>
+<div class="payment-strip"><span>Solana · <span id="proof-payment-amount">0.001 Devnet USDC</span></span><strong id="proof-payment-check">NOT QUERIED</strong></div>
 <p id="experiment-label" class="experiment">Original recorded answer</p>
-<dl><div><dt>Contact state</dt><dd id="state">—</dd></div><div><dt>Price paid</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd>ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">—</dd></div></dl>
-<p class="note">The BOOT button represents the contact. This purchase used the public x402 facilitator and a real BLE observation.</p>
+<dl><div><dt>Contact state</dt><dd id="state">Pending</dd></div><div><dt>Configured price</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd>ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">Pending</dd></div></dl>
+<p class="note">Live path: x402 settlement, then a BLE contact observation. BOOT represents the contact.</p>
 <p><a id="transaction" href="#">Inspect the Devnet transaction</a></p>
 <div role="group" aria-label="Receipt experiments"><button id="original" aria-pressed="true" disabled>Verify original</button><button id="tamper" class="secondary" aria-pressed="false" disabled>Flip contact state</button><button id="challenge" class="secondary" aria-pressed="false" disabled>Change challenge</button><button id="identity" class="secondary" aria-pressed="false" disabled>Use another key</button></div>
 </section>
 <section class="checks" aria-label="Buyer checks"><div class="label">Buyer acceptance / 10-second freshness</div>
-<div class="check"><span>Device signature</span><strong id="signature">—</strong></div>
-<div class="check"><span>Buyer challenge</span><strong id="binding">—</strong></div>
-<div class="check"><span>Contact contract</span><strong id="contract">—</strong></div>
-<div class="check"><span>Evidence freshness</span><strong id="freshness">—</strong></div>
+<div class="check"><span>Device signature</span><strong id="signature">Pending</strong></div>
+<div class="check"><span>Buyer challenge</span><strong id="binding">Pending</strong></div>
+<div class="check"><span>Contact input</span><strong id="contract">Pending</strong></div>
+<div class="check"><span>Evidence freshness</span><strong id="freshness">Pending</strong></div>
+<div class="age-readout"><strong id="evidence-age">Unavailable</strong><span id="age-limit">Maximum age 10s</span></div>
+<div id="age-track" class="age-track" role="meter" aria-label="Evidence age" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" aria-valuetext="Unavailable"><span id="age-fill"></span></div>
+<p class="age-caption">Original measurement time. Current browser clock.</p>
 <div id="live-payment-row" class="check" hidden><span>Current Solana payment check</span><strong id="live-payment-check">NOT VERIFIED</strong></div>
 <div id="decision" class="decision">WAIT</div><p id="reason" role="status" aria-live="polite">Loading the committed evidence.</p><p class="note">The signature authenticates the device's claim. It never extends freshness or proves safe access. No button charges money or measures hardware.</p>
 </section>
@@ -70,7 +76,7 @@ body.presentation .receipt dl{display:none}body.presentation .gate-scene svg{hei
 <h2>This is where Solana enters the transaction.</h2>
 <div class="money-flow" aria-label="Recorded buyer to merchant payment">
 <div><div class="wallet-label">Buyer wallet</div><code id="payment-payer">Loading recorded terms.</code></div>
-<div class="transfer-amount"><span id="payment-amount">—</span><small>Devnet USDC →</small></div>
+<div class="transfer-amount"><span id="payment-amount">Pending</span><small>Devnet USDC →</small></div>
 <div><div class="wallet-label">Merchant wallet</div><code id="payment-merchant">Loading recorded terms.</code></div>
 </div>
 <p><a id="payment-explorer" href="#">Open this transaction in Solana Explorer</a></p>

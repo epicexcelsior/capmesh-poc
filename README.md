@@ -1,44 +1,81 @@
 # FieldProof
 
-**Fresh device evidence for physical services machines rely on.**
+**Fresh physical proof for machine-to-machine commerce.**
 
-FieldProof asks whether a demo gate is open, buys a contact observation, checks its challenge and freshness, and returns `DISPATCH` or `WAIT`.
-The company hypothesis is machines buying and verifying services from infrastructure another operator owns.
-This prototype implements the observation purchase. Access permission, gate control, and completed-service verification remain future work.
-The attached ESP32-C6 samples GPIO9. Its BOOT button represents the gate contact. This is a real input measurement with a labeled physical stand-in.
-The product pivots from the original CapMesh LED marketplace. The `capmesh` Python package and BLE UUIDs remain compatible.
+Machines can pay online. Payment does not tell a visiting robot whether another operator's gate is open now.
+FieldProof purchases a contact observation on Solana and verifies the device's signed answer before a demo `DISPATCH` or `WAIT` recommendation.
 
-Start with [the illustrated founder guide](docs/HOW_IT_WORKS.html). It explains the story, radio links, demo commands, failure cases, and next-day priorities.
-The [documentation map](docs/README.md) routes deeper references.
-Watch the [2:30 signed-receipt walkthrough](docs/assets/fieldproof-signed-receipt.webm) for recorded payment evidence and browser checks. It has captions and no audio.
-The [verification record](docs/VERIFICATION.md) owns executed checks and remaining limits.
+**A confirmed payment and a valid signature can outlive the answer's useful window. The buyer must still check its age.**
+
+![The same paid, signed OPEN observation produces DISPATCH within ten seconds and WAIT at eleven seconds.](docs/assets/fieldproof-evidence-window.svg)
+
+## What works today
+
+```text
+Buyer asks a question and sets a 10-second age limit
+  → x402 quotes 0.001 Devnet USDC
+  → Solana settles payment
+  → ESP32 measures its contact and signs the answer
+  → buyer verifies the key, challenge, samples, and age
+  → fresh OPEN: DISPATCH · closed, stale, or rejected: WAIT
+```
+
+The October 5 purchase used real Devnet test USDC and a real ESP32-C6 input.
+The laptop and Seeker independently verified its payment and fresh receipt. Both changed to WAIT after expiry.
+See [the actual Solana transaction](https://explorer.solana.com/tx/5Rqq2o1GeAX2TXDYf7NXLFAxZnunkxqQz8tpnh5musVi5poZd6jhtDs1axpFy7EHuWh4h3EU4xchbkbNpXMoXttz?cluster=devnet) and [public buyer output](docs/evidence/device-signed-purchase-20261005.json).
+
+BOOT represents the gate contact. The signature authenticates the device's claim, not physical truth or safe passage.
+The device signs the question and answer. The gateway ledger associates that question with the purchase.
+Payment and delivery remain separate. This MVP controls no gate and moves no robot.
+The phone acts as a second browser verifier, not another sensor or payer.
+
+**Learn:** [illustrated guide](docs/HOW_IT_WORKS.html). **Record:** [one 150-second walkthrough](docs/REHEARSAL.md#record-one-150-second-walkthrough).
+**Submit:** [remaining human tasks](docs/SUBMISSION.md#required-fields-that-remain-incomplete).
+The [documentation map](docs/README.md) routes specific questions. The [verification record](docs/VERIFICATION.md) records executed checks and limits.
+
+## Where this goes
+
+The company hypothesis is one integration for fleets to transact with physical infrastructure another operator owns.
+Test one fleet and one authorized facility, then a second facility to measure integration reuse.
+Paid integration and support come first. Recurring software fees and service-transaction fees follow demonstrated demand.
+Customer demand, pricing, access control, completed-service evidence, and network effects remain unvalidated.
+See [the strategy and existing alternatives](docs/STRATEGY.md).
 
 ## Run without hardware
 
 Prerequisites: Python 3.10+, `uv`, and Node.js 22.13+ with `node:sqlite`.
 Start each command block at the repository root. Stop a running gateway with Ctrl+C before changing modes.
 
-After setup, run `python3 scripts/demo.py check`, then `python3 scripts/demo.py sim` for the shortest rehearsal.
-The launcher also provides `board`, `physical`, `cases`, and `guide`. It never pays, flashes, or drives a GPIO output.
-Use `python3 scripts/demo.py --help` for modes. The detailed commands below remain supported.
-
 ```bash
 uv sync --project host
-uv run --project host capmesh observe-demo --simulated
-uv run --project host capmesh observe-demo --simulated --closed
-uv run --project host capmesh corroborate-demo --scenario all
 npm --prefix gateway ci
-npm --prefix gateway run demo
+python3 scripts/demo.py sim
 ```
 
 Open `http://127.0.0.1:4022`. Select **Get payment quote**, then **Run simulation**.
 The simulator uses the real x402 resource-server SDK with a fake facilitator. It moves no funds.
-Run `npm --prefix gateway run demo -- --closed` to rehearse the closed-contact decision.
+Fresh OPEN produces DISPATCH. The same evidence expires to WAIT after its age limit.
+Open `/proof?present=1` for recorded hardware evidence, receipt attacks, and the independent Solana payment query.
+The authentic recorded receipt is expired today. Verification cannot refresh it.
 
-The CLI adversarial loop rejects a cheaper stale provider, a replayed answer, a changed answer, and a replayed device request.
-It records served and unmet demand in a local SQLite ledger.
-The pair rehearsal uses temporary signed fixtures. Both configured observers must report fresh, stable OPEN before DISPATCH.
-Missing, conflicting, stale, invalid, skewed, or replayed evidence produces WAIT. It uses no hardware and moves no funds.
+Run `python3 scripts/demo.py check` to verify prerequisites.
+The launcher also provides `board`, `physical`, `cases`, and `guide`. It never pays, flashes, or drives a GPIO output.
+The [demo runbook](docs/DEMO.md) owns the live payment procedure and recovery.
+
+<details>
+<summary>CLI attack checks and optional two-observer rehearsal</summary>
+
+```bash
+uv run --project host capmesh observe-demo --simulated
+uv run --project host capmesh observe-demo --simulated --closed
+uv run --project host capmesh corroborate-demo --scenario all
+```
+
+The CLI rejects stale providers, replayed answers, altered answers, and replayed device requests. It records local test demand.
+The pair rehearsal uses temporary signed fixtures. Missing, conflicting, stale, invalid, skewed, or replayed evidence produces WAIT.
+It uses no hardware and moves no funds. Run `npm --prefix gateway run demo -- --closed` for the closed-contact browser rehearsal.
+
+</details>
 
 ## Inspect the recorded physical purchase
 
@@ -173,5 +210,7 @@ Five matching samples do not establish calibrated confidence or independent corr
 The board retains up to 64 unexpired request nonces. It refuses new requests when that table is full.
 A reboot clears replay state and the clock anchor. The first authenticated request supplies the prototype time anchor.
 
-No production device provisioning, external gate sensor, peaq transaction, multi-observer aggregation, customer pilot, or public deployment exists yet.
+No production device provisioning, external gate sensor, peaq transaction, paired hardware verification, customer pilot, or public deployment exists yet.
 The local product and reports stay in this repository. No repository rename, publication, or submission occurs automatically.
+
+The original CapMesh package name and BLE UUIDs remain compatible. FieldProof replaces its earlier LED-marketplace direction.

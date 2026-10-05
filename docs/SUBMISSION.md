@@ -1,16 +1,17 @@
 # FieldProof submission preparation
 
-Status: public repository, draft submission. The project is not ready to submit.
-Public paid settlement and both human-controlled contact states pass. The repository is public. Presentation, Colosseum, and contact details remain incomplete.
-The current [2:30 signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) includes recorded verified payment evidence and browser attacks.
-It has captions and no audio. The founder presentation and public viewing links remain incomplete.
-Follow the [bounty execution plan](BOUNTY_PLAN.md) and [research decision](research/2026-10-02-fieldproof.md).
+Status: verified technical prototype, incomplete human submission.
+The public repository contains actual Devnet settlement and ESP32-signed evidence.
+Eligibility confirmation, founder narration, public viewing links, Colosseum registration, the project page, and contact details remain open.
+Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough), then complete the fields below.
+The [bounty execution plan](BOUNTY_PLAN.md) owns deadlines and acceptance gates.
 
 ## Verified requirements and deadlines
 
 Requirements and deadlines were checked again from both complete public `__NEXT_DATA__` listing payloads on October 4, 2026.
 Both listings specify Germany regional eligibility and `agentAccess: HUMAN_ONLY`. The founder must complete human submission.
 The earlier text-only retrieval omitted these details. This record supersedes that gap.
+The Germany listing details and official Colosseum FAQ were reread on October 5. Their video and Solana requirements match this plan.
 
 | Track | Deadline in UTC | Deadline in Europe/Berlin |
 |---|---|---|
@@ -34,12 +35,22 @@ Verify both deadlines again before submission. Eligibility and acceptance remain
 
 ## Project name and tagline
 
-**FieldProof — Fresh device evidence for physical services machines rely on.**
+**FieldProof**
+
+Fresh physical proof for machine-to-machine commerce.
 
 ## One-line description
 
-The prototype buys a fresh contact observation on Solana Devnet and independently checks the device's signed answer before DISPATCH or WAIT.
+FieldProof lets a machine buy a physical observation on Solana and verify the signed answer's identity, question, and age before acting.
 The [company hypothesis](STRATEGY.md#the-story-to-explain) is machines buying and verifying physical services from infrastructure another operator owns.
+
+## The point to demonstrate
+
+Payment does not tell a visiting robot whether another operator's gate is open now.
+The robot needs an answer from the selected device, for this question, within its useful-time limit.
+The demo shows a confirmed payment and valid device signature alongside expired evidence and WAIT.
+The ten-second limit is buyer policy, not a property of Solana or a guarantee that the gate remains open.
+The signature authenticates the device's claim. The gateway ledger associates its signed challenge with the purchase.
 
 ## Problem and buyer
 
@@ -54,7 +65,7 @@ Existing facility APIs and Open-RMF integrations remain alternatives. Customer d
 The MVP asks one question at `demo-gate`: is the contact closed?
 A flashed ESP32-C6 samples its GPIO9 input five times after authorization.
 Its BOOT button represents a gate contact.
-The buyer checks device identity, location, nonce, result authentication, sample agreement, and freshness.
+The buyer checks its pinned device key, configured location label, nonce, signature, sample agreement, and freshness.
 Fresh open evidence produces `DISPATCH`. Closed or expired evidence produces `WAIT`.
 
 The CLI rejects a cheaper stale provider before selecting fresh evidence.
@@ -102,41 +113,30 @@ Simulated payments and Devnet tokens do not establish real revenue.
 
 ## Judging walkthrough
 
-Open [the illustrated founder guide](HOW_IT_WORKS.html) to learn and rehearse one transaction.
-The exported package includes this guide beside the actual recorded-receipt verifier. The guide's interactive examples are teaching models.
-Run `python3 scripts/demo.py check`, then follow its simulation, real-board, and recorded-payment stages.
-Those launcher stages move no funds. They do not activate peaq or deploy a public product.
+Record one narrated 2–3 minute MVP walkthrough. Use the [recording route](REHEARSAL.md#record-one-150-second-walkthrough) in your own words.
+Show the problem, actual purchase, expiry, one attack, and the next pilot.
+The local start page links three recording frames and the continuous 32.8-second October 5 paid capture.
+Its public buyer output is [committed here](evidence/device-signed-purchase-20261005.json). The same saved answer is expired today.
+The Seeker is an independent browser verifier. It supplies no sensor data and signs no payment.
 
-Use the [current signed-receipt walkthrough](assets/fieldproof-signed-receipt.webm) for technical review.
-Its recorded paid scene does not execute another payment. Its browser scenes verify the real receipt and reject attacks.
-The October 4 version is 149.88 seconds, 1280 × 900, and passed full decoding and visual inspection.
-It labels the simulated unpaid quote separately from the recorded real Devnet purchase. It has captions and no audio.
-A separate founder presentation remains incomplete.
-The October 5 local kit adds a 75.64-second visual proof companion with an actual read-only Devnet query.
-It shows the payment, robot-and-gate illustration, receipt attacks, and recorded BOOT states. It includes captions and no audio.
-Use it as a short explanation or additional demo. It does not replace a required 2–3 minute presentation.
-The later October 5 capture adds a continuous 32.8-second actual paid physical run, without audio.
-Laptop and Seeker independently verified its transfer and fresh receipt, then changed to expired WAIT.
-The [public output](evidence/device-signed-purchase-20261005.json) preserves the original signed observation.
-Use this footage inside the founder explanation. The phone acts as a verifier, not a sensor or payer.
-The local review kit also contains a 159.88-second visual version: a ten-second flow picture followed by the unchanged technical walkthrough.
-It remains local and includes no audio. Its full decode, browser playback, opening picture, transition, and closing frame passed.
-The Germany MVP requires a walkthrough. The current technical video can serve that purpose once its public link works.
-The final Colosseum presentation requires the buyer and business explanation alongside the technical demonstration.
-Prepare that presentation after the MVP package.
-Use the [rehearsal](REHEARSAL.md) for technical explanation and the [strategy](STRATEGY.md) for the company hypothesis.
-Write final application answers and record the founder presentation in your own words.
+The [captioned 2:30 technical walkthrough](assets/fieldproof-signed-receipt.webm) remains the reproducible technical fallback. It has no audio.
+Its simulated quote and recorded real purchase are labeled separately. It passed decoding and visual review.
+The exported package includes the founder guide and recorded inspector. The guide's examples are teaching models.
+The simulator remains a complete no-funds purchase rehearsal. The inspector verifies recorded hardware evidence and reads payment data.
+The [guide](HOW_IT_WORKS.html) explains the loop. The [strategy](STRATEGY.md) explains the buyer and commercial hypothesis.
 
-The [older live walkthrough](assets/fieldproof-submission.webm), [composed presentation](assets/fieldproof-walkthrough.webm), and [69-second simulation](assets/fieldproof-demo.webm) remain historical artifacts.
-Their earlier pending-payment captions do not describe the current integration.
-Do not use them as current status evidence or relabel simulated scenes as real settlement.
+Colosseum separately requests a 2–3 minute presentation and a product demo of at most three minutes.
+Keep the buyer, alternatives, business test, and founder motivation in that presentation. [Colosseum submission guidance](https://colosseum.com/hackathon?year=fall2026)
+Write final application answers yourself. Supply accurate development history and contact details.
+Older videos and local intermediate captures remain historical material. Use the current recording route instead of reviewing every version.
 
 ## Required fields that remain incomplete
 
 | Field | Current state | Required next action |
 |---|---|---|
+| Germany eligibility | Founder reports an Earn location-change cooldown. No organizer exception is confirmed. | Ask Carlo to confirm eligibility and the submission route before the deadline |
 | Public repository | Public at `https://github.com/epicexcelsior/capmesh-poc` | Paste the link into the submission form |
-| Test access | Public repository with full setup instructions in `README.md` | Confirm the judge can follow the no-hardware path, or provide a reachable demo |
+| Test access | Reproducible simulator and exported recorded inspector. No verified public test URL. | Provide an accessible test/download link and clear instructions. Verify it while signed out |
 | Presentation link | Current captioned technical walkthrough ready locally. Founder presentation incomplete. | Record the founder presentation and provide public viewing links |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |

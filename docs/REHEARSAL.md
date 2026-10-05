@@ -104,22 +104,59 @@ Two signing keys establish distinct configured identities. They do not establish
 The [pair guide](CORROBORATION.md) explains expiry, recovery, and the remaining two-board collection gate.
 Keep this scene optional in the timed video. The main purchase still uses one board.
 
-## Rehearse a 150-second technical demonstration
+## Record one 150-second walkthrough
 
-Use these cues in your own words. They are demonstration prompts, not submission-field answers.
+Use this route for the Germany MVP. The local start page links three recording frames and the actual October 5 paid footage.
+Record your own voice and screen. These are cues, not final application answers.
+You need the existing ESP32, laptop, and optional Seeker. No new hardware is required.
+For a fresh checkout, use the [expiry illustration](assets/fieldproof-evidence-window.svg), [payment diagram](assets/fieldproof-payment-to-observation.svg), and [pilot plan](STRATEGY.md#validate-one-relationship).
+The founder's recording frames and paid capture stay local. The repository includes the public evidence and captioned technical fallback.
+
+Before recording:
+
+1. Resolve the reported Germany cooldown with Carlo and confirm the human submission route.
+2. Open the three recording frames from the local start page.
+3. Open the saved paid inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+4. Check VALID, VERIFIED TRANSFER, EXPIRED, and WAIT.
+5. Open the continuous 32.8-second paid capture and check playback.
+6. Enable microphone capture in your recorder and make a five-second voice test.
+
+The paid inspector reads saved output and queries Solana. Reloading sends no funds and does not refresh the evidence.
+If port 4021 is unavailable, use the exported inspector and import its October 5 public JSON.
+Follow the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) only when you need another actual purchase.
 
 | Time | Action | Point to explain |
 |---|---|---|
-| 0:00–0:20 | Describe a fleet and a facility that belong to separate operators | Target workflow: buy and verify a physical service. The implemented first step purchases an observation. No customer exists yet. |
-| 0:20–0:55 | Get the quote. Run simulation. Wait eleven seconds. | Machine-readable terms, simulated purchase, DISPATCH, then expired WAIT. |
-| 0:55–1:20 | Switch to the prepared receipt tab | Actual recorded test payment and real device signature. Payment verification cannot refresh evidence. |
-| 1:20–1:55 | Flip state. Change challenge. Use another key. Restore original. | Changed state fails its signature. Another nonce fails binding. Another key fails authentication. |
-| 1:55–2:10 | Show the two signed physical input rows | Held means CLOSED. Released means OPEN. These separate checks moved no funds. |
-| 2:10–2:30 | Explain the next buyer test and peaq status | Validate a missing fact, operator permission, useful lifetime, and real budget. peaq activation remains incomplete. |
+| 0:00–0:20 | Frame 1: robot and another operator's gate | Payment does not tell the robot whether the gate is open now. This is the buyer hypothesis, not a customer claim. |
+| 0:20–0:40 | Frame 2: follow the actual purchase order | Quote, Solana settlement, Bluetooth measurement, signed answer, buyer verification. The purchase buys an observation. |
+| 0:40–1:13 | Play the continuous October 5 paid capture | One actual 0.001 Devnet USDC purchase. Fresh OPEN produces DISPATCH, then expiry produces WAIT. The capture has no clock override. |
+| 1:13–1:45 | Show the current inspector. Point to payment, signature, age, and WAIT. Flip contact state. | The payment remains verified. The original signature remains valid. The answer expires. Altering it fails authentication. Restore the original. |
+| 1:45–2:05 | Show the ESP32 and optional Seeker verifier | BOOT represents a contact. The phone verifies the same receipt independently. It supplies no new sensor or payment. |
+| 2:05–2:30 | Frame 3: one fleet, one facility, then a second facility | Test integration reuse and a paid pilot. Integration/support first, recurring software next. Customer demand remains unvalidated. |
+
+Keep the current saved receipt expired. Never change its clock or timestamps for a recording.
+Use the continuous capture to show its actual fresh state and expiry. State that it is recorded footage.
+One attack is enough for this walkthrough. The repo tests cover the other rejection and recovery paths.
+
+If you add a new live BOOT reading, use the physical gateway and label its settlement as simulated.
+Keep the complete actual purchase capture as the Solana evidence.
+The [hardware plan](HARDWARE_NEXT.md#highest-value-with-almost-no-lab-time) owns optional ready-for-pickup contact parts.
+The next useful device expansion follows a buyer need and a separate sensing contract.
+
+### Visual direction
+
+Use the existing workshop palette: warm paper, dark ink, blue links, teal verified results, amber WAIT, and red rejection.
+Use plain type for explanations and monospace for time, amounts, and evidence.
+The evidence-age bar is the main visual device. It shows the signed measurement's age against the buyer's limit.
+Keep real verification and teaching examples visibly labeled. Use the same styles in the guide, inspector, and recording frames.
+The current diagrams cover the explanation. No generated artwork is required for this submission.
 
 Keep the startup presentation separate from this technical demonstration.
 Explain the buyer's existing alternative, your actual learning, the next commercial test, and your motivation.
 Colosseum requests a 2–3 minute presentation and a product demonstration of at most three minutes. [Official submission guidance](https://colosseum.com/hackathon?year=fall2026)
+
+For that later presentation, reuse the problem and pilot frames. Add your own motivation, customer learning, and distribution plan.
+The [submission checklist](SUBMISSION.md#required-fields-that-remain-incomplete) owns public links and human tasks. Verify each link while signed out.
 
 ## Explain these six answers without notes
 

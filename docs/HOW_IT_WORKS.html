@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FieldProof — How it works and how to run it</title>
+<title>FieldProof: How it works and how to run it</title>
 <style>
-:root{--fog:#eef4f8;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9;--dim:#39576b}
+:root{--fog:#f3f3ed;--ink:#183146;--sea:#146b8d;--teal:#067b65;--amber:#a35a10;--danger:#af3048;--line:#becfd9;--dim:#39576b}
 *{box-sizing:border-box}body{margin:0;background:var(--fog);color:var(--ink);font:17px/1.55 system-ui,sans-serif}
 header,main,footer{max-width:1180px;margin:auto;padding:24px}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px}
 .brand{font-weight:800;letter-spacing:-.03em;font-size:24px}.utility,code,pre,.label,.tag,th{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}.label{text-transform:uppercase;letter-spacing:.07em;color:var(--sea)}
@@ -47,7 +47,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <section>
 <div class="label">Physical services across operator boundaries</div>
 <h1>Pay for an answer.<br>Verify it before<br>you rely on it.</h1>
-<p class="lead">FieldProof tests how machines can buy and verify services from infrastructure another operator owns. The current prototype purchases one fresh contact observation.</p>
+<p class="lead">Fresh physical proof for machine-to-machine commerce. A confirmed payment and valid signature can outlive a physical answer's useful window.</p>
 <p><b>Start here.</b> Learn one transaction. Run the three rehearsal stages. Explain the result without notes.</p>
 <nav class="guide-nav" aria-label="Short guide"><a href="#understand">One story</a><a href="#transaction">Follow the transaction</a><a href="#run">Run the demo</a><a href="#radio">Understand the radios</a><a href="#cases">Explore failures</a><a href="#today">Your next day</a></nav>
 <div class="guide-nav"><a class="primary" href="assets/fieldproof-signed-receipt.webm">Watch the 2:30 technical demo</a><a href="http://127.0.0.1:4022/proof?present=1">Verify the recorded receipt</a></div>
@@ -57,7 +57,7 @@ footer{font-size:13px;color:var(--dim);border-top:1px solid var(--line);margin-t
 <section class="section" id="understand">
 <div class="label">The story to explain</div><h2>A visiting robot needs an answer from someone else's gate.</h2>
 <p>A fleet operates the robot. Another operator owns the facility. The robot needs a current contact answer before its next decision.</p>
-<p>Payment records money movement. A device signature authenticates the reported answer. The buyer's freshness limit determines whether that answer remains useful.</p>
+<p>Payment records money movement. A device signature authenticates the reported answer. The buyer's freshness limit determines whether that answer remains useful.</p><p><b>The demo moment:</b> the payment remains verified and the signature remains valid, but the observation expires. The buyer returns WAIT.</p>
 <div class="grid3" aria-label="Three responsibilities"><div class="radio-card"><h3>Solana: payment</h3><p>Did the buyer pay the quoted merchant?</p><span class="pill real">Actual Devnet transfer verified</span></div><div class="radio-card"><h3>FieldProof: evidence</h3><p>Does this signed answer match the buyer's question and useful-time limit?</p><span class="pill real">Actual ESP32 receipt verified</span></div><div class="radio-card"><h3>peaq: machine identity</h3><p>Who operates this machine, and what service does it register?</p><span class="pill sim">Planned registration · reads only today</span></div></div>
 <p><b>Current result:</b> a real Solana Devnet payment followed a quote and preceded a real ESP32-signed observation. Independent buyer checks accepted it.</p>
 <p>BOOT represents the contact. This prototype buys an observation. Access rights, gate control, safe robot motion, and completed-service evidence remain separate.</p>
@@ -252,17 +252,17 @@ python3 scripts/demo.py check</code></pre>
 <p>Prerequisites for every mode: <b>Python 3.10+</b>, <b>uv</b>, and <b>Node.js 22.13+</b> with built-in <code>node:sqlite</code>. Firmware work additionally needs <b>ESP-IDF 6.1</b> and <b>esptool 5.4</b>.</p>
 <div class="table-scroll"><table>
 <tr><th>Mode</th><th>Command</th><th>Port</th><th>Payment</th><th>Contact</th></tr>
-<tr><td>CLI adversarial loop</td><td><code>uv run --project host capmesh observe-demo --simulated</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
-<tr><td>CLI closed contact</td><td><code>uv run --project host capmesh observe-demo --simulated --closed</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
-<tr><td>Two-observer policy</td><td><code>uv run --project host capmesh corroborate-demo --scenario all</code></td><td>—</td><td>none</td><td><span class="pill sim">signed fixtures</span></td></tr>
-<tr><td>CLI real hardware</td><td><code>uv run --project host capmesh observe-demo</code></td><td>—</td><td><span class="pill sim">mock budget</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
+<tr><td>CLI adversarial loop</td><td><code>uv run --project host capmesh observe-demo --simulated</code></td><td>Not applicable</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>CLI closed contact</td><td><code>uv run --project host capmesh observe-demo --simulated --closed</code></td><td>Not applicable</td><td><span class="pill sim">mock budget</span></td><td><span class="pill sim">simulated</span></td></tr>
+<tr><td>Two-observer policy</td><td><code>uv run --project host capmesh corroborate-demo --scenario all</code></td><td>Not applicable</td><td>none</td><td><span class="pill sim">signed fixtures</span></td></tr>
+<tr><td>CLI real hardware</td><td><code>uv run --project host capmesh observe-demo</code></td><td>Not applicable</td><td><span class="pill sim">mock budget</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
 <tr><td>Browser simulator</td><td><code>cd gateway &amp;&amp; npm run demo</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill sim">simulated</span></td></tr>
 <tr><td>Browser + real contact</td><td><code>cd gateway &amp;&amp; npm run demo -- --physical</code></td><td>4022</td><td><span class="pill sim">fake facilitator</span></td><td><span class="pill real">ESP32 via BLE</span></td></tr>
 <tr><td>Real payment gateway</td><td><code>cd gateway &amp;&amp; npm start</code></td><td>4021</td><td><span class="pill real">Solana Devnet USDC</span></td><td><span class="pill real">ESP32 after settlement</span></td></tr>
 </table></div>
 <p class="note">Run one mode at a time for your rehearsal. The current signed-receipt walkthrough inspects recorded payment evidence and executes browser verification.</p>
 
-<h3>Step by step — no hardware</h3>
+<h3>Step by step: no hardware</h3>
 <p>Start at the repository root. Use a second terminal for tests while a gateway runs. Stop it with Ctrl+C before changing modes.</p>
 <ol class="steps">
 <li><b>Install the Python environment</b><code>uv sync --project host</code></li>
@@ -276,7 +276,7 @@ python3 scripts/demo.py check</code></pre>
 <li><b>Run every software test</b><code>uv run --project host pytest -q</code><code>npm --prefix gateway test</code></li>
 </ol>
 
-<h3>Step by step — with the ESP32</h3>
+<h3>Step by step: with the ESP32</h3>
 <p>Start at the repository root. The attached board already runs the verified firmware. Rehearsal needs no flash.</p>
 <p>For another board or a replaced key, complete <a href="RECEIPT_IDENTITY.md#provision-a-new-board">trusted identity provisioning</a> first. The checked-in pin identifies our demonstration board.</p>
 <ol class="steps">
@@ -291,7 +291,7 @@ python3 scripts/demo.py check</code></pre>
 </ol>
 <p class="note">Alternative transport: connect to the board's <code>CAPMESH_96A2</code> access point and pass <code>--http-url http://192.168.4.1</code>. On Linux with overlapping VPN routes, add <code>--http-interface</code> with your Wi-Fi interface name.</p>
 
-<h3>Step by step — real Devnet payment</h3>
+<h3>Step by step: real Devnet payment</h3>
 <p>Start at the repository root. Keep the gateway in one terminal and run the buyer in another.</p>
 <ol class="steps">
 <li><b>Start the Devnet gateway</b><code>npm --prefix gateway start</code><div class="branch">Binds to <code>127.0.0.1:4021</code>. Offers x402 V2 <code>exact</code> payment for 1,000 base units of Devnet USDC.</div></li>
@@ -492,7 +492,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <h3>What is real and what is simulated</h3>
 <div class="table-scroll"><table>
 <tr><th>Path</th><th>Settlement</th><th>Moves funds</th><th>Trust it as</th></tr>
-<tr><td><code>npm start</code></td><td>Public x402 facilitator on Solana Devnet</td><td>Yes — real Devnet USDC</td><td>On-chain integration result</td></tr>
+<tr><td><code>npm start</code></td><td>Public x402 facilitator on Solana Devnet</td><td>Yes: real Devnet USDC</td><td>On-chain integration result</td></tr>
 <tr><td><code>npm run demo</code></td><td>Fake facilitator through the real x402 SDK</td><td>No</td><td>Protocol rehearsal only</td></tr>
 <tr><td><code>capmesh observe-demo</code></td><td>Mock budget in process</td><td>No</td><td>Adversarial loop rehearsal only</td></tr>
 </table></div>
@@ -586,8 +586,8 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <h3>Human contact-state evidence</h3>
 <div class="table-scroll"><table>
 <tr><th>Human action</th><th>Contact</th><th>Agreement</th><th>Age</th><th>Decision</th></tr>
-<tr><td>Held BOOT</td><td><code>closed: true</code></td><td>5/5</td><td>5 s</td><td><code>WAIT</code> — gate contact is closed</td></tr>
-<tr><td>Released BOOT</td><td><code>closed: false</code></td><td>5/5</td><td>4 s</td><td><code>DISPATCH</code> — gate contact is open</td></tr>
+<tr><td>Held BOOT</td><td><code>closed: true</code></td><td>5/5</td><td>5 s</td><td><code>WAIT</code>: gate contact is closed</td></tr>
+<tr><td>Released BOOT</td><td><code>closed: false</code></td><td>5/5</td><td>4 s</td><td><code>DISPATCH</code>: gate contact is open</td></tr>
 </table></div>
 <p class="note">On October 2, separate BLE observations verified each state with the buyer-pinned P-256 key. No reset, output operation, or payment occurred.</p>
 <p><a href="evidence/device-signed-contact-states.json">Inspect both device-signed receipts</a>. The older <a href="evidence/contact-states.json">October 1 state checks</a> retain historical HMAC signatures.</p>
@@ -606,7 +606,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <section class="section" id="suite">
 <div class="label">09 · Tests</div>
 <h2>Test suites</h2>
-<h3>Python — <code>uv run --project host pytest -q</code></h3>
+<h3>Python: <code>uv run --project host pytest -q</code></h3>
 <p class="note">The default run skips ten hardware tests. <code>--hardware</code> requires the board. Exact executed results live in <a href="VERIFICATION.md">VERIFICATION.md</a>.</p>
 <div class="table-scroll"><table>
 <tr><th>File</th><th>Proves</th></tr>
@@ -617,7 +617,7 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td><code>test_network_http.py</code></td><td>The live HTTP transport. Requires a listening device.</td></tr>
 <tr><td><code>hardware_replay_capacity.py</code></td><td>The 64-entry nonce table under real BLE.</td></tr>
 </table></div>
-<h3>Node — <code>cd gateway &amp;&amp; npm test</code></h3>
+<h3>Node: <code>cd gateway &amp;&amp; npm test</code></h3>
 <p class="note">Current counts and executed results live in <a href="VERIFICATION.md">the verification record</a>.</p>
 <div class="table-scroll"><table>
 <tr><th>Group</th><th>Proves</th></tr>
@@ -758,9 +758,9 @@ metric|sensor|closed|stable_samples|total_samples|started_at|completed_at</pre>
 <tr><td>Payment evidence</td><td><code>docs/evidence/device-signed-purchase.json</code> records the current paid P-256 receipt.</td></tr>
 <tr><td>Contact-state evidence</td><td><code>docs/evidence/device-signed-contact-states.json</code> records both current device-signed states.</td></tr>
 <tr><td>Presentation link</td><td>Pending owner publication of the current technical walkthrough and recording of the founder presentation.</td></tr>
-<tr><td>Colosseum project</td><td>Missing — register under Germany and provide the link</td></tr>
-<tr><td>Team contact</td><td>Missing — supply it in the submission form</td></tr>
-<tr><td>peaq submission answer</td><td>Missing — answer truthfully at submission time</td></tr>
+<tr><td>Colosseum project</td><td>Missing: register under Germany and provide the link</td></tr>
+<tr><td>Team contact</td><td>Missing: supply it in the submission form</td></tr>
+<tr><td>peaq submission answer</td><td>Missing: answer truthfully at submission time</td></tr>
 </table></div>
 <div class="notice"><b>Open work.</b> The technical walkthrough and public inspector package are ready for review. Publication, registration, contact selection, and submission need owner action. Follow <a href="BOUNTY_PLAN.md">the bounty execution plan</a>.</div>
 </section>

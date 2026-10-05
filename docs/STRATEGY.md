@@ -66,6 +66,23 @@ The differentiated hypothesis is independent buyer acceptance of transaction-ass
 The receipt signs the challenge. The ledger supplies the purchase association. Neither proves physical truth or atomic service delivery.
 No source check establishes an uncrowded market. A real buyer workflow must establish the wedge.
 
+### The closest existing ideas
+
+These comparisons identify overlap. They do not establish unique technology, customer preference, or a commercial moat.
+
+| Existing work | Overlap | FieldProof's narrower test |
+|---|---|---|
+| [Open-RMF](https://www.open-rmf.org/) | Fleet and building-infrastructure interoperability | Add buyer acceptance and commercial recovery across independent operators. Reuse existing adapters where useful. |
+| [Auxin Automata](https://github.com/EdwinIsCoding/Auxin_Automata) | Robot wallets, machine payments, and telemetry logs | Verify a requested answer from an external operator's device before accepting it for a current decision. |
+| PreDataPool, recorded Frontier pitch | Freshness-limited data reuse and machine payments | Purchase a new challenge-specific observation. Reject that answer after the buyer's useful-time window. |
+| [robotic.sh](https://www.robotic.sh/) | A machine-service market | Test one buyer-provider relationship with explicit evidence terms before discovery or marketplace expansion. |
+
+The October 5 source check reread Open-RMF, Auxin's README, and robotic.sh. Their runtime behavior was not tested.
+PreDataPool's live page and README were unavailable in this check. Its comparison uses the October 2 Copilot record.
+The [research record](research/2026-10-02-fieldproof.md#the-useful-colosseum-precedents) owns the historical project evidence.
+The Superteam Idea Bank lists curated ideas. Its fetched page exposed no individual idea descriptions during this check.
+No overlap or uniqueness claim follows from that omission. [Superteam Idea Bank](https://superteam.fun/build/ideas)
+
 ### Validate one relationship
 
 1. Find one fleet decision that depends on infrastructure another operator controls.

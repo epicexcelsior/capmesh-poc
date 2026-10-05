@@ -21,6 +21,7 @@ ASSETS = {
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
     "assets/fieldproof-service-boundaries.svg": "docs/assets/fieldproof-service-boundaries.svg",
     "assets/fieldproof-payment-to-observation.svg": "docs/assets/fieldproof-payment-to-observation.svg",
+    "assets/fieldproof-evidence-window.svg": "docs/assets/fieldproof-evidence-window.svg",
 }
 
 

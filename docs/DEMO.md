@@ -247,6 +247,9 @@ adb -s PHONE_SERIAL shell am start -a android.intent.action.VIEW -d 'http://127.
 USB reverse forwards the phone's localhost port to the laptop's localhost port. It exposes no public gateway.
 The phone runs Web Crypto and its read-only Devnet RPC query independently. The public key still comes from the installed buyer configuration.
 If you disconnect USB, the forwarded gateway becomes unavailable. Use the standalone inspector as the recorded fallback.
+After reconnecting USB, run `adb -s PHONE_SERIAL reverse tcp:4021 tcp:4021` again, then reload the phone tab.
+Run `adb -s PHONE_SERIAL reverse --list` to verify the mapping before recording.
+An empty list and a reachable laptop gateway explain the phone's connection-refused error. Reconnection does not restore the mapping automatically.
 Remove the forwarding when you finish:
 
 ```bash
