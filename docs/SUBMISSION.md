@@ -116,6 +116,9 @@ Simulated payments and Devnet tokens do not establish real revenue.
 Record one narrated 2–3 minute MVP walkthrough. Use the [recording route](REHEARSAL.md#record-one-150-second-walkthrough) in your own words.
 The [recording script](RECORDING_SCRIPT.md) provides four separate clips, editable spoken text, and exact screen and hardware actions.
 Show the problem, actual purchase, expiry, one attack, and the next pilot.
+The [one-click paid demo](DEMO.md#pay-and-read-with-one-click) now shows an actual payment and fresh ESP32 reading together.
+Its [October 5 click output](evidence/device-signed-purchase-click-20261005.json) preserves the original signed answer.
+One actual click completed payment and receipt delivery in 15.288 seconds. The browser accepted the fresh answer, then rejected its age.
 The local start page links the script and a ten-second excerpt of the October 5 paid capture.
 The excerpt preserves the continuous fresh-to-expired transition at original speed. The complete 32.8-second capture remains available.
 Its public buyer output is [committed here](evidence/device-signed-purchase-20261005.json). The same saved answer is expired today.

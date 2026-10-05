@@ -63,6 +63,17 @@ Run `python3 scripts/demo.py check` to verify prerequisites.
 The launcher also provides `board`, `physical`, `cases`, and `guide`. It never pays, flashes, or drives a GPIO output.
 The [demo runbook](docs/DEMO.md) owns the live payment procedure and recovery.
 
+For one-click actual payment with the attached ESP32 and a funded disposable Devnet wallet:
+
+```bash
+node gateway/live-demo.js /path/to/disposable-devnet.keypair.json
+```
+
+Open `http://127.0.0.1:4026/proof?present=1`. Select **Pay 0.001 Devnet USDC and read**.
+The laptop signs once. The page shows the actual transfer, signed reading, elapsed time, and current evidence age.
+Simulation stays separate. See [setup, limits, and failure recovery](docs/DEMO.md#pay-and-read-with-one-click).
+The [verified October 5 click output](docs/evidence/device-signed-purchase-click-20261005.json) records an actual paid OPEN reading and its unchanged signature.
+
 <details>
 <summary>CLI attack checks and optional two-observer rehearsal</summary>
 
@@ -86,7 +97,7 @@ Select **Focus demo** for a compact presentation view. The same verifier and cur
 Select **Verify recorded payment** for an independent, read-only Solana Devnet transaction query.
 The chain check verifies the mint, payer, merchant, transfer instruction, and exact token balance changes.
 The inspector also verifies both recorded BOOT states against the same device pin. Those separate input checks moved no funds.
-No inspector button purchases evidence or invokes hardware. The authentic recorded receipt is expired and stays WAIT.
+The default inspector purchases no evidence and invokes no hardware. The authentic recorded receipt is expired and stays WAIT.
 Open `/proof#payment` to see buyer → 0.001 Devnet USDC → merchant. Select **Verify recorded payment** for a read-only current chain query.
 The simulator creates no Solana transaction. A new real transaction requires the configured Devnet gateway and independent paid buyer.
 

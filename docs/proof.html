@@ -39,6 +39,7 @@ body.presentation .age-readout strong{font:600 32px/1.2 ui-monospace,monospace}
 body.presentation .age-caption{font-size:12px}
 body.presentation .age-track{height:8px;border:0;background:#edf1f3}
 body.presentation #transaction{font-size:14px}
+.local-buyer{margin:16px 0;padding:16px 0;border-bottom:1px solid var(--line)}.local-buyer button{width:100%;margin:6px 0}.buyer-wallets{font:12px/1.5 ui-monospace,monospace;overflow-wrap:anywhere}.buyer-progress{font-size:14px;min-height:1.5em;margin:8px 0}.buyer-time{font:13px/1.5 ui-monospace,monospace;color:#39576b}body.local-buyer-enabled.presentation #experiment-label{display:none}
 @media(max-width:700px){body.presentation .workspace{grid-template-columns:1fr}body.presentation .checks{border-left:0;border-top:1px solid var(--line)}body.presentation .receipt,body.presentation .checks{padding:22px}body.presentation .stage-title h1{font-size:28px}}
 </style>
 </head>
@@ -53,7 +54,7 @@ body.presentation #transaction{font-size:14px}
 <p>Solana records payment. The device signs its answer. The buyer checks the signature, challenge, input, and age before its decision.</p>
 <p id="source-description">This prototype purchases one contact observation. This inspector uses recorded evidence.</p><p>Use the <a href="https://github.com/epicexcelsior/capmesh-poc#run-without-hardware">repository quick start</a> for a new simulated purchase.</p>
 <p id="wire-note" class="note">The signed contact describes the selected input. The buyer selects its acceptance policy.</p>
-<details><summary>Inspect a new paid buyer run</summary><p>Load the independent buyer's result JSON. Never load a wallet keypair. This browser never pays or measures hardware.</p><label for="run-file">Buyer output JSON</label> <input id="run-file" type="file" accept=".json,application/json" disabled><p><a id="watch-run" href="?live=1&amp;present=1">Watch one new buyer run from the configured local gateway</a></p><button id="use-recorded" class="secondary" disabled>Use October 1 recorded evidence</button><p id="source-status" role="status" aria-live="polite">Installed buyer pin remains the trust root.</p></details>
+<details><summary>Inspect a new paid buyer run</summary><p>Load the independent buyer's result JSON. Never load a wallet keypair. Loading a result creates no payment or measurement.</p><label for="run-file">Buyer output JSON</label> <input id="run-file" type="file" accept=".json,application/json" disabled><p><a id="watch-run" href="?live=1&amp;present=1">Watch one new buyer run from the configured local gateway</a></p><button id="use-recorded" class="secondary" disabled>Use October 1 recorded evidence</button><p id="source-status" role="status" aria-live="polite">Installed buyer pin remains the trust root.</p></details>
 </div>
 <div class="stage-title"><div id="stage-source" class="label">Recorded device evidence / actual Devnet test payment</div><h1 id="stage-heading">Is the answer still useful?</h1><p id="stage-note">Real ESP32 contact stand-in. Read-only inspection. No robot motion.</p></div>
 <div id="receipt" class="workspace">
@@ -81,6 +82,14 @@ body.presentation #transaction{font-size:14px}
 <figcaption id="scene-caption">Illustration follows the receipt claim and buyer decision. It shows no live gate and moves no robot.</figcaption>
 </figure>
 <div class="payment-strip"><span>Solana · <span id="proof-payment-amount">0.001 Devnet USDC</span></span><strong id="proof-payment-check">NOT QUERIED</strong></div>
+<section id="local-buyer" class="local-buyer" aria-label="Local Devnet buyer" hidden>
+<div class="buyer-wallets">Disposable buyer <a id="buyer-address" href="#">Loading</a> → merchant <a id="buyer-merchant" href="#">Loading</a></div>
+<button id="local-buy" type="button" disabled>Pay 0.001 Devnet USDC and read</button>
+<p id="buyer-progress" class="buyer-progress" role="status" aria-live="polite">Connecting the local buyer.</p>
+<div id="buyer-time" class="buyer-time">One click creates one new purchase.</div>
+<p class="note">Real Devnet payment. The laptop signs with a test wallet. BOOT only changes the input.</p>
+<p class="note"><a href="http://127.0.0.1:4023/?present=1">Practice with simulated payment</a></p>
+</section>
 <p id="experiment-label" class="experiment">Original recorded answer</p>
 
 <p id="path-note" class="note detail-note">Live path: x402 settlement, then a BLE contact observation. BOOT represents the contact.</p>

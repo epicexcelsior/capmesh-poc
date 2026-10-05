@@ -4,6 +4,37 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 one-click actual Devnet purchase
+
+Starting source: clean, pushed `24b490b` on `main`. The new optional server runs on loopback port 4026.
+The laptop holds the disposable buyer key. HTTP accepts no private key, recipient, amount, gateway, or output path.
+The ordinary gateway, static inspector, and practice server keep their existing behavior.
+No firmware, signed fields, request challenge, or acceptance policy changed.
+
+At 20:41 UTC, one browser click purchased a real GPIO9 observation for 0.001 Devnet USDC.
+Purchase ID: `5100683face84110`. Payment through receipt delivery took 15.288 seconds.
+[Actual transaction](https://explorer.solana.com/tx/pjpYW9TcGfJ6EfDeGULpF61zbxhDc3n35jdwvp3uv2TDTru1t9GBckzrREFm7fpP2aMffDQdwHdReQB63ogwj7e?cluster=devnet).
+[Original public buyer output](evidence/device-signed-purchase-click-20261005.json).
+
+The actual browser showed VERIFIED TRANSFER, VALID signature, OPEN, FRESH, and DISPATCH at age four seconds.
+At eleven seconds, the same reading showed EXPIRED and WAIT. Payment and signature remained valid.
+Changing the contact state produced REJECTED and WAIT. Restoring the original answer restored its valid signature.
+A page reload restored the result. Exactly one purchase POST occurred. No clock override or RPC fixture occurred.
+Progress showed request, x402 quote, payment submission, and verified receipt. No automatic paid retry occurred.
+
+`npm --prefix gateway test` passed all 56 tests, including five new local-buyer tests.
+They cover exclusive access, durable operation IDs, overlap rejection, restart behavior, failure blocking, purchase limits, and HTTP origin/token checks.
+The failure test preserves the purchase ID and hides private error details from the browser.
+Desktop widths 1280 and 1920, mobile width 390, and browser page-error checks passed.
+The fresh and expired desktop screens and mobile layout passed visual inspection.
+The existing receipt and buyer-run browser regressions passed. The focused simulator completed its no-funds purchase and original-clock expiry.
+The export and launcher suite passed all 15 tests. The local script matched all four canonical spoken blocks and 17 links responded.
+The updated standalone export verified 14 manifest entries and 15 ZIP members. It contains the new public receipt and no buyer wallet.
+ZIP SHA256: `cbb6c06e88062e779ceac75160ed59a17604de0bb8fb45703db2d50a04d42143`.
+This new paid click verifies OPEN only. Prior human-controlled tests separately verify the held CLOSED input.
+The updated recording script uses the same paid screen for hardware, payment, expiry, and tampering.
+The simulated-payment page remains available for practice. Founder voice and camera recording remain incomplete.
+
 ## October 5 simple recording screens and separate clips
 
 Starting source: clean, pushed `5e38902e15c1955f96d9475dceb4709a9c704bf7` on `main`.

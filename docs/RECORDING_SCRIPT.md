@@ -19,35 +19,36 @@ It does not detect a parcel. The unreliable foil contact stays out of this take.
 
 ## 2. Hardware / about 60 seconds
 
-**Record:** The screen at `http://127.0.0.1:4023/?present=1`.
+**Record:** The screen at `http://127.0.0.1:4026/proof?present=1`.
 Save this as `02-hardware-screen.mkv`.
 If you use the phone, film your hand and board at the same time. Save that as `02-hardware-phone.mp4`.
 Clap once to align these two recordings.
 
 1. Hold BOOT.
-2. Select **Get payment quote**.
-3. Select **Request observation**.
-4. Keep BOOT held until CLOSED and WAIT appear.
-5. Release BOOT.
-6. Select **Get payment quote** again.
-7. Select **Request observation** again.
-8. Point to OPEN, FRESH, and DISPATCH.
-9. Leave the answer alone until its age exceeds ten seconds.
-10. Point to EXPIRED and WAIT.
+2. Select **Pay 0.001 Devnet USDC and read** once.
+3. Keep BOOT held until CLOSED, VALID, and VERIFIED TRANSFER appear.
+4. Release BOOT.
+5. Select **Pay 0.001 Devnet USDC and read** again.
+6. Point to OPEN, FRESH, and DISPATCH.
+7. Leave the answer alone until its age exceeds ten seconds.
+8. Point to EXPIRED and WAIT.
 
 **Say:**
 
-> For this prototype, I use the ESP32 button as a test input. This live part uses simulated payment. I hold it and request a reading. CLOSED. I release it and request another. OPEN. The demo accepts that reading. Now I wait. After ten seconds, it expires, and the decision returns to WAIT.
+> For this prototype, I use the ESP32 button as a test input. Each click pays 0.001 test USDC on Solana, then the device signs a reading. I hold it: CLOSED. I release it and buy another reading: OPEN. Now I wait. After ten seconds, the reading expires. The payment and signature remain valid, but the decision returns to WAIT.
 
 Keep this hardware clip continuous from the button action through the result.
 You can record the spoken explanation afterward.
 Pressing the button alone does not update the page. Each state needs a new request.
 DISPATCH is the demo's decision label. No machine moves.
 If a request fails, preserve the error. Stop the take and diagnose the failure.
+Each paid request takes several seconds. Keep the board action and its result in the same continuous recording.
+Practice first at `http://127.0.0.1:4023/?present=1`. That page uses simulated payment and separate quote/request buttons.
+The paid server must run before the actual take. See [its one-click setup](DEMO.md#pay-and-read-with-one-click).
 
 ## 3. Actual payment / about 45 seconds
 
-**Record:** The saved inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+**Record:** Keep the same paid screen open after the reading expires.
 Save this as `03-payment-screen.mkv`.
 
 1. Wait for **VERIFIED TRANSFER** and **VALID**.
@@ -59,9 +60,11 @@ Save this as `03-payment-screen.mkv`.
 
 **Say:**
 
-> Here is an actual purchase: 0.001 Devnet USDC on Solana. After payment, the ESP32 signs the reading. The browser verifies the transfer and the device signature. The payment is confirmed, but this saved reading is expired. If I change what it says, the signature check fails.
+> Here is the Solana transaction for that reading. The laptop's test wallet signs the payment. The ESP32 signs its answer separately. The browser verifies both. If I change the answer, the signature check fails. Payment does not make a changed or expired answer usable.
 
-The saved inspector sends no payment and requests no measurement.
+Explorer and the tamper controls send no payment and request no measurement.
+If the paid flow fails, use `http://127.0.0.1:4021/proof?live=1&present=1` for the saved actual purchase.
+Label that fallback as recorded evidence. It creates no new payment or reading.
 If the chain query fails, state the failure. Use Explorer and the recorded result as historical evidence.
 The existing October 5 paid excerpt is optional supporting footage. Label it as recorded footage.
 Its original visuals remain unchanged. Do not imply that an old capture uses the new screen design.
@@ -120,8 +123,8 @@ Keep private wallets, terminals, notifications, and unrelated tabs outside both 
 ## Finish one take
 
 1. Watch the complete video with sound.
-2. Verify the live scene says simulated payment.
-3. Verify the paid scene says recorded actual Devnet purchase.
+2. Verify the paid scene shows the actual transfer and current signed reading.
+3. If you use practice or recorded fallback footage, label that footage accurately.
 4. Verify the button, state, age, and decision remain readable.
 5. Export the final MP4.
 6. Open the public video link while signed out before submission.

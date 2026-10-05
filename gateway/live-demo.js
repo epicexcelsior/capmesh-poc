@@ -1,0 +1,34 @@
+// Explicit opt-in: one local click authorizes one small Devnet purchase with a disposable buyer.
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { HTTPFacilitatorClient } from '@x402/core/server';
+import { createGateway, createPaymentServer, PAY_TO } from './server.js';
+import { buyObservation, loadBuyerSigner } from './buyer.js';
+import { PurchaseStore } from './store.js';
+import { createLocalBuyer, mountLocalBuyer } from './local-buyer.js';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
+const keyPath = process.argv[2];
+if (!keyPath || process.argv.length !== 3) throw new Error('Usage: node gateway/live-demo.js /path/to/disposable-devnet.keypair.json');
+const signer = await loadBuyerSigner(keyPath);
+const port = Number(process.env.CAPMESH_GATEWAY_PORT || 4026);
+if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Use a local port from 1024 to 65535');
+const origin = `http://127.0.0.1:${port}`;
+const paymentServer = await createPaymentServer(new HTTPFacilitatorClient({ url: 'https://x402.org/facilitator' }));
+const store = new PurchaseStore(resolve(root, '.local/purchases.sqlite'));
+const app = await createGateway({ paymentServer, store, origin });
+const directory = resolve(root, '.local/live-buyer', signer.address);
+const controller = createLocalBuyer({ directory, payer: signer.address, payTo: PAY_TO,
+  buy: onProgress => buyObservation(signer, origin, { onProgress }) });
+mountLocalBuyer(app, controller, origin);
+const server = app.listen(port, '127.0.0.1', () => {
+  console.log(`FieldProof real Devnet buyer: ${origin}/proof?present=1`);
+  console.log(`Buyer ${signer.address}. Each click pays up to 0.001 Devnet USDC. Maximum 10 purchases.`);
+  console.log('The private key remains in this process. No purchase starts until the local button is selected.');
+});
+server.on('error', error => { controller.close(); throw error; });
+for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => {
+  server.close();
+  if (!controller.close()) console.error('Purchase still active. Preserve its pending record and directory lock for review.');
+  process.exit(0);
+});

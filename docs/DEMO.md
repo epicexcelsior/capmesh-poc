@@ -4,6 +4,42 @@ Use the local simulator for reviewers without hardware. Use BLE when the ESP32 i
 Run commands from the repository root unless a step changes directories.
 Start with the [short rehearsal and explanation questions](REHEARSAL.md).
 
+## Pay and read with one click
+
+Use this optional local server for an actual Devnet purchase. Use a disposable wallet with test USDC.
+The provisioned ESP32 must be connected. Stop other Bluetooth tests before the purchase.
+
+```bash
+node gateway/live-demo.js /path/to/disposable-devnet.keypair.json
+```
+
+1. Open `http://127.0.0.1:4026/proof?present=1`.
+2. Hold BOOT for CLOSED, or release BOOT for OPEN.
+3. Select **Pay 0.001 Devnet USDC and read** once.
+4. Keep the input unchanged until the signed reading appears.
+5. Verify **VERIFIED TRANSFER**, **VALID**, and the reading's age.
+6. Leave a fresh OPEN reading alone until **EXPIRED** and **WAIT** appear.
+7. Open **Inspect the Devnet transaction** to see the actual transfer.
+
+The laptop signs the Solana payment with the local test wallet. No Phantom approval or browser key is required.
+x402 quotes the price, settles payment, then authorizes the ESP32 observation.
+The ESP32 signs its observation. The browser independently verifies that signature and the transfer.
+BOOT changes only the input. Each click purchases a new reading. Reloading restores the last result without payment.
+The displayed duration measures purchase through receipt delivery. It is not Solana confirmation latency alone.
+
+Practice without funds at `http://127.0.0.1:4023/?present=1` after `python3 scripts/demo.py physical`.
+That separate page uses the same physical input with simulated payment.
+
+The signing server accepts only loopback requests with its exact origin and session token.
+It fixes the recipient, Devnet mint, and price limit. It allows ten purchases, totaling at most 0.01 test USDC.
+It preserves operation records in ignored `.local/live-buyer/<public-address>/`. A directory lock prevents a second signer process.
+Failures and unresolved records block another purchase. No automatic paid retry or refund exists.
+If an operation fails, preserve its operation ID, purchase ID, local log, and ledger. Review the chain before recovery.
+Do not delete a pending record or lock to bypass review. Normal shutdown removes the lock only when no purchase runs.
+
+The ordinary inspector and standalone inspector remain read-only. Their servers contain no buyer-signing endpoint or private wallet.
+`CAPMESH_GATEWAY_PORT` selects another free port for this explicit signing-server command.
+
 ## Use the rehearsal launcher
 
 Run commands from the repository root. The launcher never pays, flashes firmware, or drives a GPIO output.

@@ -21,6 +21,7 @@ if (packageView) {
 let recorded, pin, differentKey;
 let running = false;
 let loadedRun = false, paymentVerified = false, lastChecks = null, sourceRevision = 0, watchCycle = 0;
+let localBuyer = null;
 
 function focusDemo(enabled) {
   document.body.classList.toggle('presentation', enabled);
@@ -28,7 +29,9 @@ function focusDemo(enabled) {
   el('focus').textContent = enabled ? 'Show full page' : 'Focus demo';
   el('receipt-question').textContent = enabled ? 'Signed physical reading'
     : packageView ? 'Is the package at the pickup point?' : 'Is the gate open?';
-  if (enabled) el('stage-note').textContent = 'Saved physical reading. This page creates no payment.';
+  if (enabled) el('stage-note').textContent = localBuyer
+    ? 'One click pays on Devnet and requests a new ESP32 reading.'
+    : 'Saved physical reading. This page creates no payment.';
 }
 el('focus').onclick = () => focusDemo(!document.body.classList.contains('presentation'));
 focusDemo(new URL(location.href).searchParams.get('present') === '1');
@@ -62,6 +65,81 @@ function renderAge(age, limit = 10, fresh = false) {
   el('age-track').setAttribute('aria-valuemax', String(limit));
   el('age-track').setAttribute('aria-valuenow', String(bounded));
   el('age-track').setAttribute('aria-valuetext', `${text}. Maximum age ${limit} seconds.`);
+}
+
+async function showLocalOperation(id) {
+  el('local-buy').disabled = true;
+  let result;
+  const deadline = Date.now() + 70000;
+  while (Date.now() < deadline) {
+    const response = await fetch(`/local-buyer/purchase/${encodeURIComponent(id)}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Buyer status is unavailable. Preserve the operation ID: ' + id);
+    result = await response.json();
+    const phases = new Set(result.events.map(event => event.phase));
+    el('buyer-progress').textContent = result.status === 'done' ? 'Payment response and signed reading received.'
+      : result.status === 'review' ? result.error
+        : phases.has('paying') ? 'Payment submitted. Waiting for settlement and the ESP32 reading.'
+          : phases.has('quote') ? 'x402 quote received. Signing the test payment.' : 'Creating one observation request.';
+    el('buyer-time').textContent = `Purchase + reading: ${(result.elapsed_ms / 1000).toFixed(1)}s`;
+    if (result.status === 'done') {
+      ++watchCycle;
+      await showPurchase(result.run, true, true);
+      await verifyPayment();
+      const configuration = await fetch('/local-buyer/config', { cache: 'no-store' });
+      if (!configuration.ok) throw new Error('Purchase completed. Reload the page before another purchase.');
+      localBuyer = await configuration.json();
+      el('local-buy').disabled = localBuyer.blocked || localBuyer.busy || localBuyer.remaining <= 0;
+      if (localBuyer.remaining <= 0) el('buyer-progress').textContent = 'Local purchase limit reached. This paid result remains available.';
+      return;
+    }
+    if (result.status === 'review') throw new Error(result.error + (result.purchase_id ? ` Purchase ID: ${result.purchase_id}` : ''));
+    await new Promise(resolve => setTimeout(resolve, 250));
+  }
+  throw new Error('The operation is still unresolved. Preserve operation ID ' + id + '. No automatic paid retry.');
+}
+
+async function initLocalBuyer() {
+  const response = await fetch('/local-buyer/config', { cache: 'no-store' });
+  if (response.status === 404) return; // The read-only inspector has no signer or purchase control.
+  if (!response.ok) throw new Error('The local buyer is unavailable.');
+  localBuyer = await response.json();
+  if (localBuyer.price_usdc !== '0.001') throw new Error('The local buyer has unexpected payment terms.');
+  document.body.classList.add('local-buyer-enabled');
+  el('local-buyer').hidden = false;
+  el('stage-note').textContent = 'One click pays on Devnet and requests a new ESP32 reading.';
+  for (const [id, value] of [['buyer-address', localBuyer.payer], ['buyer-merchant', localBuyer.payTo]]) {
+    el(id).textContent = value.slice(0, 6) + '…' + value.slice(-4);
+    el(id).title = value;
+    el(id).href = 'https://explorer.solana.com/address/' + encodeURIComponent(value) + '?cluster=devnet';
+  }
+  el('buyer-progress').textContent = localBuyer.blocked ? 'An earlier purchase requires review. No new payment can start.'
+    : 'Ready. Each click pays once and requests a new physical reading.';
+  el('local-buy').disabled = localBuyer.blocked || localBuyer.busy || localBuyer.remaining <= 0;
+  el('local-buy').onclick = async () => {
+    el('local-buy').disabled = true;
+    ++watchCycle;
+    clearSource('Waiting for this new paid observation.');
+    const operation_id = crypto.randomUUID();
+    try {
+      const response = await fetch('/local-buyer/purchase', { method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-FieldProof-Buyer-Token': localBuyer.token },
+        body: JSON.stringify({ operation_id }) });
+      const value = await response.json();
+      if (!response.ok) throw new Error(value.error || 'The local purchase did not start.');
+      await showLocalOperation(operation_id);
+    } catch (error) {
+      el('buyer-progress').textContent = error.message;
+      el('reason').textContent = 'Purchase requires review. No automatic paid retry.';
+    }
+  };
+  const previous = localBuyer.active_operation_id ?? localBuyer.last_operation_id;
+  if (previous && !localBuyer.blocked) {
+    try { await showLocalOperation(previous); }
+    catch (error) { el('buyer-progress').textContent = error.message; }
+  } else {
+    clearSource(localBuyer.blocked ? 'An earlier purchase requires review.' : 'Select Pay to request one fresh signed reading.');
+    el('proof-payment-amount').textContent = '0.001 Devnet USDC';
+  }
 }
 
 function message(r) {
@@ -212,7 +290,7 @@ function clearSource(reason) {
   el('chain-summary').textContent = 'No current transfer check.'; el('chain-result').textContent = 'No network query yet.';
 }
 
-async function showPurchase(input, buyer = false) {
+async function showPurchase(input, buyer = false, localPurchase = false) {
   const next = publicBuyerRun(input, purpose);
   clearSource('Verifying this buyer output.');
   recorded = next; loadedRun = buyer;
@@ -224,6 +302,11 @@ async function showPurchase(input, buyer = false) {
   el('stage-heading').textContent = 'Is this reading still fresh?';
   el('payment-source').textContent = buyer ? 'Loaded buyer settlement / verify it against Solana / no browser payment' : 'Actual recorded test payment · October 1 · No new payment here';
   el('source-status').textContent = buyer ? 'Loaded buyer output. The file supplies its challenge. The installed public pin verifies the device. Chain verification remains separate.' : 'Installed buyer pin remains the trust root.';
+  if (localPurchase) {
+    el('stage-source').textContent = `Local paid purchase ${next.purchase_id} / laptop signs the payment`;
+    el('payment-source').textContent = 'Actual Devnet purchase from the local disposable buyer';
+    el('source-status').textContent = 'The local buyer selects the challenge. The installed public pin verifies the device. Chain verification remains separate.';
+  }
   el('measured').textContent = new Date(next.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');
   el('transaction').href = 'https://explorer.solana.com/tx/' + encodeURIComponent(next.settlement.transaction) + '?cluster=devnet';
   const payment = recordedPaymentDetails(next);
@@ -337,6 +420,7 @@ async function init() {
     el('contact-results').replaceChildren();
     el('contact-status').textContent = 'GPIO9 button records belong to the gate demo. This view requires a new GPIO20 buyer output.';
   }
+  if (!packageView) await initLocalBuyer();
 }
 
 init().catch(error => {
