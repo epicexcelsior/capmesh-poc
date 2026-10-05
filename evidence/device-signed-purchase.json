@@ -1,0 +1,67 @@
+{
+  "method": "Actual public x402 facilitator settlement, then real ESP32-C6 BLE measurement. Independent buyer verification uses the USB-provisioned P-256 pin. RPC confirmed exact USDC token changes.",
+  "payment_mode": "Solana Devnet USDC; test funds",
+  "purchase": {
+    "purchase_id": "3e063c69ce654ed1",
+    "challenge": {
+      "id": "3e063c69ce654ed1",
+      "nonce": 1329448120,
+      "created_at": 1790881722,
+      "location": "demo-gate",
+      "max_age_seconds": 10
+    },
+    "settlement": {
+      "success": true,
+      "payer": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+      "transaction": "4XSokajCzpoKy7bEQGF6NPpsvVLjo4Q5bSuH73hiuiXP23PbhuHN8pWeJ9fBxwjGk58iiv1Xqu5MTTmwQGggnBLw",
+      "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
+    },
+    "decision": "DISPATCH",
+    "evidence_age_seconds": 7,
+    "receipt_identity": "pinned-device-p256",
+    "receipt": {
+      "protocol": "capmesh/0.1",
+      "request_id": "3e063c69ce654ed1",
+      "status": "success",
+      "provider": "esp32-c6-96a2",
+      "capability": "state.observe",
+      "parameters": {
+        "location": "demo-gate"
+      },
+      "result": {
+        "metric": "gate.closed",
+        "sensor": "gpio9-contact",
+        "closed": false,
+        "stable_samples": 5,
+        "total_samples": 5
+      },
+      "started_at": 1790881734,
+      "completed_at": 1790881734,
+      "delivery_proof": null,
+      "authorization_ref": null,
+      "receipt_signature": "v3:vYhCK5GpQGZyRMva9LRWXLqEiagFzksnj6LF8XMfJS33I4qHO9kQTnJOE0DY3XGgrqvOSXPwjptYwGvnmQqaaA==",
+      "error": null,
+      "nonce": 1329448120
+    }
+  },
+  "chain_check": {
+    "slot": 506374923,
+    "block_time": 1790881722,
+    "transaction_error": null,
+    "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+    "token_changes": [
+      {
+        "owner": "CaQAKBcwf7G5vXeu2RNuNGJafnJ8724Uj4wv9ivfxfQA",
+        "account_index": 2,
+        "delta_base_units": 1000,
+        "decimals": 6
+      },
+      {
+        "owner": "2U7Bz5u4bVMsUtNcF4b4xdWG7K3N7WmbsGCqMQmjevMf",
+        "account_index": 3,
+        "delta_base_units": -1000,
+        "decimals": 6
+      }
+    ]
+  }
+}

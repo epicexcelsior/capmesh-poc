@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" role="img" aria-labelledby="title desc">
+<title id="title">Where Solana payment meets the ESP32 observation</title>
+<desc id="desc">The buyer transfers 0.001 Devnet USDC to the merchant on Solana through x402. After settlement, laptop gateway software requests GPIO9 input over Bluetooth. The ESP32 returns a signed answer. The buyer accepts only the correct fresh answer. BOOT represents the gate contact. This diagram executes no payment or device request.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M0 0L9 5L0 10" fill="#146b8d"/></marker><marker id="money" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L9 5L0 10" fill="#067b65"/></marker></defs>
+<rect width="1100" height="560" fill="#eef4f8"/>
+<g font-family="system-ui,sans-serif" fill="#183146">
+<text x="30" y="34" font-size="13" letter-spacing="1">FLOW EXPLANATION · NO LIVE TRANSACTION</text>
+<text x="30" y="72" font-size="29" font-weight="750">Money goes to the merchant. The board signs the answer.</text>
+<text x="30" y="112" font-size="16" font-weight="700" fill="#067b65">1 · PAYMENT / INTERNET</text>
+<g fill="white" stroke="#becfd9" stroke-width="2"><rect x="30" y="138" width="260" height="104" rx="7"/><rect x="420" y="138" width="260" height="104" rx="7"/><rect x="810" y="138" width="260" height="104" rx="7"/></g>
+<text x="52" y="174" font-size="21" font-weight="700">Buyer wallet</text><text x="52" y="203" font-size="17">Pays for one observation</text><text x="52" y="226" font-size="14">Test funds, not real revenue</text>
+<text x="442" y="174" font-size="21" font-weight="700">Solana Devnet</text><text x="442" y="203" font-size="17">Records the USDC transfer</text><text x="442" y="226" font-size="14">x402 facilitator submits it</text>
+<text x="832" y="174" font-size="21" font-weight="700">Merchant wallet</text><text x="832" y="203" font-size="17">Receives 0.001 USDC</text><text x="832" y="226" font-size="14">Gateway tracks the purchase</text>
+<g stroke="#067b65" stroke-width="3" marker-end="url(#money)"><path d="M300 195H410"/><path d="M690 195H800"/></g>
+<text x="302" y="164" font-size="15" fill="#067b65">0.001 USDC</text><text x="698" y="164" font-size="15" fill="#067b65">test transfer</text>
+<text x="30" y="292" font-size="16" font-weight="700" fill="#146b8d">2 · OBSERVATION / BLUETOOTH</text>
+<path d="M940 251V326" stroke="#146b8d" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
+<text x="672" y="272" font-size="15">After settlement, the gateway requests input.</text>
+<g fill="white" stroke="#becfd9" stroke-width="2"><rect x="30" y="332" width="260" height="132" rx="7"/><rect x="810" y="332" width="260" height="132" rx="7"/></g>
+<text x="52" y="369" font-size="21" font-weight="700">Laptop software</text><text x="52" y="399" font-size="17">Gateway requests the answer</text><text x="52" y="425" font-size="17">Buyer verifies the receipt</text><text x="52" y="450" font-size="14">Trusted key + nonce + age</text>
+<text x="832" y="369" font-size="21" font-weight="700">ESP32-C6</text><text x="832" y="399" font-size="17">Reads GPIO9 five times</text><text x="832" y="425" font-size="17">Signs its reported input</text><text x="832" y="450" font-size="14">BOOT represents the contact</text>
+<g stroke="#146b8d" stroke-width="3" marker-end="url(#arrow)"><path d="M302 360H796"/><path d="M798 433H305"/></g>
+<text x="421" y="348" font-size="18" fill="#146b8d">Request + new nonce →</text><text x="406" y="420" font-size="18" fill="#146b8d">← Device-signed answer</text>
+<text x="360" y="502" font-size="20" font-weight="700" fill="#067b65">Fresh OPEN → demo DISPATCH</text>
+<text x="360" y="532" font-size="19" fill="#a35a10">Closed, stale, or altered → WAIT</text>
+<text x="30" y="518" font-size="14">No access rights</text><text x="30" y="540" font-size="14">or robot movement granted</text>
+</g>
+</svg>

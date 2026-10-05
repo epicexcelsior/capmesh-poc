@@ -1,0 +1,23 @@
+FieldProof: inspect recorded physical evidence
+
+1. Serve this directory on localhost or HTTPS.
+   python3 -m http.server 8787 --bind 127.0.0.1
+2. Open http://127.0.0.1:8787/guide.html for the story, radio explanation, and rehearsal.
+   Open http://127.0.0.1:8787 for actual recorded-receipt verification.
+3. Verify the original receipt, then alter its state, challenge, or public key.
+4. Select Verify recorded payment for a read-only Solana Devnet RPC query.
+5. Inspect the separately signed BOOT held/released input pair. Those checks moved no funds.
+6. Watch assets/fieldproof-signed-receipt.webm.
+
+For the October 5 real purchase, open Inspect a new paid buyer run.
+Select evidence/device-signed-purchase-20261005.json, then Verify buyer payment.
+The later one-click purchase is evidence/device-signed-purchase-click-20261005.json.
+The faster one-click purchase is evidence/device-signed-purchase-fast-20261005.json.
+Its authentic evidence is expired now. No new payment occurs.
+
+This package contains recorded evidence, public verification keys, and browser code.
+It contains no wallet, backend, private key, physical gateway, or payment endpoint.
+It never charges funds or measures hardware. Authentic expired evidence remains WAIT.
+The optional RPC check needs internet access and trusts api.devnet.solana.com.
+The installed code and public pin are the buyer configuration trust root.
+Use the repository README for the complete live MVP and simulated purchase rehearsal.

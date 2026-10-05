@@ -1,0 +1,17 @@
+{
+  "README.txt": "bb584c08b80b048925ab19cafe300ec034c2560df145f922229162fc8a13cc80",
+  "assets/fieldproof-evidence-window.svg": "377b10402bb13bd2787cec33a72c8509e7e4615f282d0a582d909732aab476e9",
+  "assets/fieldproof-payment-to-observation.svg": "faa42577ef796bc09332a848ac0d3d380e06c74eaf1fd0c77ec2d4e874b5034e",
+  "assets/fieldproof-service-boundaries.svg": "62648320848115a211c6a4affe9ee2d3aa46df184f005164457d45f05102a3d5",
+  "assets/fieldproof-signed-receipt.webm": "42e7ec97daacd0cb04d5af39d50ebae1c9dc127d6e552f47aa9219b49357159b",
+  "evidence/device-signed-contact-states.json": "b4d541240fa2423cca36bb79f38c8cce4dab26f205269c51e693bff4383de863",
+  "evidence/device-signed-purchase-20261005.json": "30e656d8c7e4d08f84cde6bc4ee31b90d481627b067ec848e7fdb05cdb6afd61",
+  "evidence/device-signed-purchase-click-20261005.json": "8875428bd7001ce4680a8f816f5a81542acb455ff9da28d658e86ced46fe35da",
+  "evidence/device-signed-purchase-fast-20261005.json": "1c80d52f9d48949e9bae70ed8f259f627a12741846115e7a235deb9cd5b5845e",
+  "evidence/device-signed-purchase.json": "a41601211bd21b9bc7abd48fdba621c794e895c22ba9cdac8ce01e76baf2f467",
+  "guide.html": "290f54a9c5944aae431b3a7c6a04584b26662e7c85a05e4163c7f30faba17e80",
+  "index.html": "a82bd90ccc8be4d71de18e36cee9a292b289acc614c7f2138a2ea5231ea98082",
+  "proof.js": "f32092eeed47e0dd39fdc6b0a44a341e64fb04057a519b50fa4765f186de4ad1",
+  "receipt-keys.json": "0eb12edac38603bb3e7657147613037904f610fec7b3b5fda31322c65bed6662",
+  "settlement.mjs": "144e5dac218d6644db90277f6ab5fcd9a771a93e01951115cb4b56ac3409000d"
+}

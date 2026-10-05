@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 400" role="img" aria-labelledby="title desc">
+<title id="title">The same paid, signed observation expires</title>
+<desc id="desc">Example of the ten-second buyer policy. Within ten seconds, acceptable OPEN evidence produces DISPATCH. At eleven seconds, the payment remains confirmed and the signature remains valid, but expired evidence produces WAIT.</desc>
+<rect width="1100" height="400" fill="#f3f3ed"/>
+<g font-family="system-ui,sans-serif" fill="#183146">
+<text x="34" y="43" font-size="13" letter-spacing="1.4">FIELDPROOF / TEN-SECOND BUYER POLICY</text>
+<text x="34" y="88" font-size="32" font-weight="700">Payment remains confirmed. The answer expires.</text>
+<text x="34" y="122" font-size="18">The buyer verifies the device's claim, then checks whether its age permits the next decision.</text>
+<path d="M34 150H1066" stroke="#becfd9"/>
+<text x="390" y="188" font-size="19" font-weight="700">Within 10 seconds</text>
+<text x="760" y="188" font-size="19" font-weight="700">11 seconds old</text>
+<g font-size="19">
+<text x="34" y="226">Solana payment</text><text x="390" y="226" fill="#067b65">CONFIRMED</text><text x="760" y="226" fill="#067b65">CONFIRMED</text>
+<text x="34" y="265">Device signature</text><text x="390" y="265" fill="#067b65">VALID</text><text x="760" y="265" fill="#067b65">VALID</text>
+<text x="34" y="304">OPEN evidence</text><text x="390" y="304" fill="#067b65">FRESH</text><text x="760" y="304" fill="#a35a10">EXPIRED</text>
+<text x="34" y="349">Buyer recommendation</text>
+</g>
+<text x="390" y="350" font-size="30" font-weight="800" fill="#067b65">DISPATCH</text><text x="760" y="350" font-size="30" font-weight="800" fill="#a35a10">WAIT</text>
+<text x="34" y="383" font-size="13" fill="#39576b">Policy illustration. Other checks must pass. A signed contact claim does not prove safe passage or authorize robot motion.</text>
+</g>
+</svg>
