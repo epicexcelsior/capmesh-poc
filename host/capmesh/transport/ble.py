@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import re
 from typing import List, Optional, Dict
 from bleak import BleakScanner, BleakClient
 from bleak.backends.device import BLEDevice
@@ -88,31 +89,43 @@ class BLETransportAdapter(TransportAdapter):
         cached = self._device_cache.get(address.upper())
         device = cached[1] if cached and cached[0] is asyncio.get_running_loop() else address
         async with BleakClient(device, timeout=8.0) as client:
-            receipt_received = asyncio.Event()
-            receipt_raw_bytes = bytearray()
+            return await self._invoke_connected(client, request, timeout)
 
-            def on_receipt_notify(sender, data: bytearray):
-                nonlocal receipt_raw_bytes
-                receipt_raw_bytes = data
-                receipt_received.set()
+    async def invoke_at_address(self, address, provider, request_factory, timeout=12.0):
+        """Use one connection for a configured board. Its address is not an identity pin."""
+        if not isinstance(address, str) or not re.fullmatch(r"(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}", address):
+            raise ValueError("Use the configured board's Bluetooth MAC address")
+        device = await BleakScanner.find_device_by_address(address, timeout=4.0)
+        if device is None:
+            raise RuntimeError("The configured Bluetooth board is unavailable")
+        async with BleakClient(device, timeout=8.0) as client:
+            manifest = Manifest.from_dict(json.loads((await client.read_gatt_char(MANIFEST_UUID)).decode("utf-8")))
+            if manifest.protocol != "capmesh/0.1" or manifest.device_id != provider:
+                raise ValueError("The configured Bluetooth board reports another provider")
+            # Anchor time after connection, just before sampling. Keep the buyer's ID and nonce.
+            request = request_factory()
+            if request.device_id != provider or not any(c.id == request.capability for c in manifest.capabilities):
+                raise ValueError("The configured Bluetooth board lacks the selected capability")
+            return request, await self._invoke_connected(client, request, timeout)
 
-            try:
-                await client.start_notify(RECEIPT_UUID, on_receipt_notify)
-            except Exception:
-                pass  # Fall back to polling read if notify setup fails
+    async def _invoke_connected(self, client, request, timeout):
+        receipt_received = asyncio.Event()
 
-            # Send invocation JSON
-            payload = request.to_json().encode("utf-8")
-            await client.write_gatt_char(INVOKE_UUID, payload, response=True)
+        def on_receipt_notify(sender, data: bytearray):
+            receipt_received.set()
 
-            # Wait for completion notification or fallback to reading receipt char
-            try:
-                await asyncio.wait_for(receipt_received.wait(), timeout=timeout)
-            except asyncio.TimeoutError:
-                pass
+        try:
+            await client.start_notify(RECEIPT_UUID, on_receipt_notify)
+        except Exception:
+            pass  # Fall back to polling read if notify setup fails
 
-            # Always perform a full read of RECEIPT_UUID to guarantee complete blob
-            final_receipt_bytes = await client.read_gatt_char(RECEIPT_UUID)
-            receipt_str = final_receipt_bytes.decode("utf-8")
-            receipt_dict = json.loads(receipt_str)
-            return InvocationReceipt.from_dict(receipt_dict)
+        payload = request.to_json().encode("utf-8")
+        await client.write_gatt_char(INVOKE_UUID, payload, response=True)
+        try:
+            await asyncio.wait_for(receipt_received.wait(), timeout=timeout)
+        except asyncio.TimeoutError:
+            pass
+
+        # Always read the full receipt. Notifications only signal completion.
+        final_receipt_bytes = await client.read_gatt_char(RECEIPT_UUID)
+        return InvocationReceipt.from_dict(json.loads(final_receipt_bytes.decode("utf-8")))

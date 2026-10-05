@@ -18,7 +18,7 @@ function replacePrivate(path, value) {
   renameSync(temporary, path);
 }
 
-export function createLocalBuyer({ directory, payer, payTo, buy, maximum = 10 }) {
+export function createLocalBuyer({ directory, payer, payTo, buy, maximum = 10, readPurchaseState }) {
   if (!Number.isInteger(maximum) || maximum < 1 || maximum > 20) throw new Error('Use a maximum from 1 to 20 test purchases');
   mkdirSync(directory, { recursive: true, mode: 0o700 });
   const lock = join(directory, '.lock');
@@ -44,7 +44,14 @@ export function createLocalBuyer({ directory, payer, payTo, buy, maximum = 10 })
       busy: !!active, blocked: !active && needsReview(), active_operation_id: active?.operation_id ?? null,
       last_operation_id: lastId() }),
     status(id) {
-      if (active?.operation_id === id) return publicStatus({ ...active, elapsed_ms: Date.now() - active.started_ms });
+      if (active?.operation_id === id) {
+        if (active.purchase_id && ['measuring', 'delivered'].includes(readPurchaseState?.(active.purchase_id)) &&
+            !active.events.some(event => event.phase === 'settled')) {
+          active.events.push({ phase: 'settled', elapsed_ms: Date.now() - active.started_ms });
+          replacePrivate(join(directory, id + '.json'), active);
+        }
+        return publicStatus({ ...active, elapsed_ms: Date.now() - active.started_ms });
+      }
       const record = read(id);
       // A pending record without a live operation means its outcome needs manual review.
       return record ? publicStatus(record.status === 'done' ? record : { ...record, status: 'review' }) : null;

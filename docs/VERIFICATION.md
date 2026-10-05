@@ -4,6 +4,48 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 compact paid screen and targeted Bluetooth
+
+Starting source: clean, pushed `dc13c33` on `main`.
+The paid recording view now shows the input, payment result, signature, age, decision, and compact event log.
+Quote → Pay → Read → Verify follows actual events. Reduced-motion mode removes pulse and age transitions.
+Failure messages remain visible. **Details** retains the full inspector and manual read-only transfer retry.
+
+An unpaid baseline took 12.193 seconds: discovery and manifest read took 8.191 seconds, then invocation took 3.997 seconds.
+The optional configured-address path took 5.412 seconds for another real signed observation.
+It resolves the selected Bluetooth address, reads the manifest, and invokes the device within one connection.
+It creates the observation challenge after connection, with the same purchase ID and nonce.
+The existing signature, sensor, sample count, and freshness verification remain active.
+An absent or mismatched board fails. Its address supplies routing. The provisioned public key authenticates its answer.
+
+One actual paid run completed payment through receipt delivery in 7.200 seconds. The earlier click took 15.288 seconds.
+[Faster actual transaction](https://explorer.solana.com/tx/543xTGxwtoZvzZV4rp1rV8bryDqHNN2ja4XNKdyjFatGDzNCbnJjoC3HfqJCkw2dsGRsMsYnr1QfiBVmpj6JxAzL?cluster=devnet).
+The browser verified the transfer and P-256 signature. Its fresh CLOSED reading correctly produced WAIT at age five seconds.
+The recorder expected OPEN and stopped on that mismatch. No automatic paid retry occurred. The failed expectation remains in its local log.
+After the operator confirmed release, a separate paid run completed in 6.897 seconds.
+Purchase ID: `edb5d17a90af4855`.
+[Actual OPEN transaction](https://explorer.solana.com/tx/5nbMNrm33JAEP3t5DiMZjtC4NZv79HqwiD8AAMyoZSfdL8ffSJUPYntPHjHvp13WvMQxaD4Zv9qVvLRNegQbf9Kk?cluster=devnet).
+[Original public buyer output](evidence/device-signed-purchase-fast-20261005.json).
+The browser verified the transfer and signature, then showed fresh OPEN and DISPATCH at age four seconds.
+The same answer showed EXPIRED and WAIT at eleven seconds. Payment and signature remained valid.
+Tampering produced REJECTED and WAIT. Restoring the original answer restored its valid signature.
+Reload restored the result without another payment. Exactly one purchase POST occurred.
+The actual event log showed the quote, signed payment, settlement, verified receipt, and independent transfer verification.
+No clock override or RPC fixture occurred. Both paid outcomes remain in separate local logs.
+These timings are individual observations, not a latency guarantee.
+
+`uv run --project host pytest -q` passed 208 tests with 10 skipped. `npm --prefix gateway test` passed all 57 tests.
+New tests verify one connection, challenge timing, provider/capability rejection, absent-board failure, purchase binding, and ledger-backed settlement events.
+The physical device firmware and Solana settlement flow remain unchanged.
+The local-buyer browser fixtures passed progress rendering, reduced motion, RPC failure, visible review failure, and no automatic retry.
+The existing receipt and buyer-run browser regressions passed. These fixture checks claim no funds or hardware result.
+The actual paid browser passed desktop widths 1280 and 1920, mobile width 390, and no page errors.
+The fresh, expired, and mobile screens passed visual inspection.
+The local recording materials matched all four canonical spoken blocks. All 17 links responded.
+The export and launcher suite passed all 15 tests. The new standalone export verified 15 manifest entries and 16 ZIP members.
+ZIP integrity and current-source checks passed. The package contains no buyer wallet or backend.
+ZIP SHA256: `99d6a5565f4068776683ddbdaaab213dea2358855d80ddf67026acf303a5f1b0`.
+
 ## October 5 one-click actual Devnet purchase
 
 Starting source: clean, pushed `24b490b` on `main`. The new optional server runs on loopback port 4026.

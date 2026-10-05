@@ -69,10 +69,10 @@ For one-click actual payment with the attached ESP32 and a funded disposable Dev
 node gateway/live-demo.js /path/to/disposable-devnet.keypair.json
 ```
 
-Open `http://127.0.0.1:4026/proof?present=1`. Select **Pay 0.001 Devnet USDC and read**.
+Open `http://127.0.0.1:4026/proof?present=1`. Select **Pay 0.001 USDC**.
 The laptop signs once. The page shows the actual transfer, signed reading, elapsed time, and current evidence age.
 Simulation stays separate. See [setup, limits, and failure recovery](docs/DEMO.md#pay-and-read-with-one-click).
-The [verified October 5 click output](docs/evidence/device-signed-purchase-click-20261005.json) records an actual paid OPEN reading and its unchanged signature.
+The [latest verified October 5 click output](docs/evidence/device-signed-purchase-fast-20261005.json) records an actual paid OPEN reading and its unchanged signature.
 
 <details>
 <summary>CLI attack checks and optional two-observer rehearsal</summary>

@@ -12,10 +12,10 @@ import { PAY_TO } from '../server.js';
 
 const run = JSON.parse(readFileSync(new URL('../../docs/evidence/device-signed-purchase.json', import.meta.url), 'utf8')).purchase;
 const payer = run.settlement.payer;
-function fixture(t, buy, maximum = 10) {
+function fixture(t, buy, maximum = 10, readPurchaseState) {
   const directory = mkdtempSync(join(tmpdir(), 'fieldproof-buyer-'));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
-  const options = { directory, payer, payTo: PAY_TO, buy, maximum };
+  const options = { directory, payer, payTo: PAY_TO, buy, maximum, readPurchaseState };
   return { directory, options, controller: createLocalBuyer(options) };
 }
 async function finish(controller, id) {
@@ -26,6 +26,25 @@ async function finish(controller, id) {
   }
   assert.fail('The operation did not finish');
 }
+
+test('the event log marks settlement only after the purchase ledger records it', async t => {
+  let state = 'quoted', release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const { controller } = fixture(t, async progress => {
+    progress({ phase: 'request', purchase_id: run.purchase_id });
+    await gate;
+    return run;
+  }, 10, id => { assert.equal(id, run.purchase_id); return state; });
+  const id = randomUUID();
+  controller.start(id);
+  assert.equal(controller.status(id).events.some(e => e.phase === 'settled'), false);
+  state = 'measuring';
+  assert.equal(controller.status(id).events.filter(e => e.phase === 'settled').length, 1);
+  assert.equal(controller.status(id).events.filter(e => e.phase === 'settled').length, 1);
+  release();
+  assert.equal((await finish(controller, id)).status, 'done');
+  controller.close();
+});
 
 test('one explicit operation spends once, rejects overlap, and stays idempotent after restart', async t => {
   let calls = 0, release;

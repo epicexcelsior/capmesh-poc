@@ -1,6 +1,7 @@
 // Explicit opt-in: one local click authorizes one small Devnet purchase with a disposable buyer.
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { createGateway, createPaymentServer, PAY_TO } from './server.js';
 import { buyObservation, loadBuyerSigner } from './buyer.js';
@@ -8,8 +9,14 @@ import { PurchaseStore } from './store.js';
 import { createLocalBuyer, mountLocalBuyer } from './local-buyer.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const keyPath = process.argv[2];
-if (!keyPath || process.argv.length !== 3) throw new Error('Usage: node gateway/live-demo.js /path/to/disposable-devnet.keypair.json');
+const { positionals, values } = parseArgs({ allowPositionals: true, options: { 'ble-address': { type: 'string' } } });
+const [keyPath] = positionals;
+if (!keyPath || positionals.length !== 1) throw new Error('Usage: node gateway/live-demo.js /path/to/disposable-devnet.keypair.json [--ble-address AA:BB:CC:DD:EE:FF]');
+const bleAddress = values['ble-address'] ?? process.env.FIELDPROOF_BLE_ADDRESS;
+if (bleAddress !== undefined) {
+  if (!/^(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/.test(bleAddress)) throw new Error('Use the configured board Bluetooth MAC address');
+  process.env.FIELDPROOF_BLE_ADDRESS = bleAddress;
+}
 const signer = await loadBuyerSigner(keyPath);
 const port = Number(process.env.CAPMESH_GATEWAY_PORT || 4026);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Use a local port from 1024 to 65535');
@@ -19,6 +26,7 @@ const store = new PurchaseStore(resolve(root, '.local/purchases.sqlite'));
 const app = await createGateway({ paymentServer, store, origin });
 const directory = resolve(root, '.local/live-buyer', signer.address);
 const controller = createLocalBuyer({ directory, payer: signer.address, payTo: PAY_TO,
+  readPurchaseState: id => store.get(id)?.state,
   buy: onProgress => buyObservation(signer, origin, { onProgress }) });
 mountLocalBuyer(app, controller, origin);
 const server = app.listen(port, '127.0.0.1', () => {

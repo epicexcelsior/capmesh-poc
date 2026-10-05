@@ -163,6 +163,33 @@ async def test_bridge_uses_the_persisted_public_pin_and_exact_external_contract(
 
 
 @pytest.mark.asyncio
+async def test_configured_address_bridge_retains_purchase_binding_and_pin_verification(monkeypatch):
+    bridge = load_bridge()
+    requests = []
+    class FakeBLE:
+        async def invoke_at_address(self, address, provider, build_request):
+            assert address == "AA:BB:CC:DD:EE:FF"
+            assert provider == "second-observer"
+            request = build_request()
+            requests.append(request)
+            return request, signed_receipt(request)
+    monkeypatch.setattr(bridge, "BLETransportAdapter", FakeBLE)
+    monkeypatch.setenv("FIELDPROOF_BLE_ADDRESS", "AA:BB:CC:DD:EE:FF")
+    purchase = {"id": "0123456789abcdef", "nonce": 123, "location": "demo-gate", "max_age_seconds": 10,
+                "contact": {"provider": "second-observer", "sensor": "gpio18-contact"},
+                "receipt_public_key": key_pin()[1].sec1_hex, "simulated": False}
+    result = await bridge.run(purchase)
+    assert result["receipt"]["request_id"] == purchase["id"]
+    assert result["receipt"]["nonce"] == purchase["nonce"]
+    assert result["decision"]["receipt_identity"] == "pinned-device-p256"
+    assert requests[0].device_id == "second-observer"
+    purchase["receipt_public_key"] = "04" + "00" * 64
+    with pytest.raises(ValueError):
+        await bridge.run(purchase)
+    assert len(requests) == 1
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("change", [{"receipt_public_key": "04" + "00" * 64}, {"simulated": True},
     {"contact": {"provider": "second-observer", "sensor": "simulated-contact"}}])
 async def test_invalid_bridge_terms_fail_before_bluetooth(monkeypatch, change):

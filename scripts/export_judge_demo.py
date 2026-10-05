@@ -18,6 +18,7 @@ ASSETS = {
     "evidence/device-signed-purchase.json": "docs/evidence/device-signed-purchase.json",
     "evidence/device-signed-purchase-20261005.json": "docs/evidence/device-signed-purchase-20261005.json",
     "evidence/device-signed-purchase-click-20261005.json": "docs/evidence/device-signed-purchase-click-20261005.json",
+    "evidence/device-signed-purchase-fast-20261005.json": "docs/evidence/device-signed-purchase-fast-20261005.json",
     "evidence/device-signed-contact-states.json": "docs/evidence/device-signed-contact-states.json",
     "assets/fieldproof-signed-receipt.webm": "docs/assets/fieldproof-signed-receipt.webm",
     "assets/fieldproof-service-boundaries.svg": "docs/assets/fieldproof-service-boundaries.svg",
@@ -78,6 +79,7 @@ def export(output):
             "For the October 5 real purchase, open Inspect a new paid buyer run.\n"
             "Select evidence/device-signed-purchase-20261005.json, then Verify buyer payment.\n"
             "The later one-click purchase is evidence/device-signed-purchase-click-20261005.json.\n"
+            "The faster one-click purchase is evidence/device-signed-purchase-fast-20261005.json.\n"
             "Its authentic evidence is expired now. No new payment occurs.\n\n"
             "This package contains recorded evidence, public verification keys, and browser code.\n"
             "It contains no wallet, backend, private key, physical gateway, or payment endpoint.\n"

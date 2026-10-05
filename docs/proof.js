@@ -22,12 +22,42 @@ let recorded, pin, differentKey;
 let running = false;
 let loadedRun = false, paymentVerified = false, lastChecks = null, sourceRevision = 0, watchCycle = 0;
 let localBuyer = null;
+let liveOperation = null;
+
+function renderBuyerEvents(operation, chainChecked) {
+  liveOperation = operation;
+  const labels = { request: 'Request created', quote: 'HTTP 402 · quote', paying: 'Buyer signed',
+    settled: 'Solana settled', verified: 'ESP32 verified' };
+  const rows = operation.events.map(event => ({ text: labels[event.phase], elapsed_ms: event.elapsed_ms })).filter(row => row.text);
+  if (typeof chainChecked === 'boolean') rows.push({ text: chainChecked ? 'Transfer verified' : 'Transfer unverified', elapsed_ms: null });
+  const signature = JSON.stringify(rows);
+  if (el('buyer-events').dataset.rows !== signature) {
+    el('buyer-events').dataset.rows = signature;
+    el('buyer-events').replaceChildren(...rows.map(row => {
+      const li = document.createElement('li'), time = document.createElement('time'), text = document.createElement('span');
+      time.textContent = row.elapsed_ms === null ? 'RPC' : `${(row.elapsed_ms / 1000).toFixed(1)}s`;
+      text.textContent = row.text;
+      li.append(time, text);
+      return li;
+    }));
+  }
+  el('buyer-time').textContent = `${(operation.elapsed_ms / 1000).toFixed(1)}s`;
+  const phases = new Set(operation.events.map(event => event.phase));
+  for (const [id, done, active] of [
+    ['quote', phases.has('paying'), !phases.has('paying')],
+    ['pay', phases.has('settled') || phases.has('verified'), phases.has('paying')],
+    ['read', phases.has('verified'), phases.has('settled')],
+    ['check', chainChecked, phases.has('verified')],
+  ]) el('flow-' + id).dataset.state = done ? 'done' : active ? 'active' : 'idle';
+  if (chainChecked === false) el('flow-check').dataset.state = 'fail';
+}
 
 function focusDemo(enabled) {
   document.body.classList.toggle('presentation', enabled);
   el('focus').setAttribute('aria-pressed', String(enabled));
   el('focus').textContent = enabled ? 'Show full page' : 'Focus demo';
-  el('receipt-question').textContent = enabled ? 'Signed physical reading'
+  if (localBuyer && enabled) el('focus').textContent = 'Details';
+  el('receipt-question').textContent = enabled ? (localBuyer ? 'Input' : 'Signed physical reading')
     : packageView ? 'Is the package at the pickup point?' : 'Is the gate open?';
   if (enabled) el('stage-note').textContent = localBuyer
     ? 'One click pays on Devnet and requests a new ESP32 reading.'
@@ -57,8 +87,12 @@ function renderAge(age, limit = 10, fresh = false) {
         : age < 86400 ? `${Math.floor(age / 3600)}h ${Math.floor(age % 3600 / 60)}m old`
           : `${Math.floor(age / 86400)}d ${Math.floor(age % 86400 / 3600)}h old`;
   el('evidence-age').textContent = text;
-  el('evidence-age').title = available ? `${age} seconds since the signed measurement` : text;
   el('age-limit').textContent = `Maximum age ${limit}s`;
+  if (localBuyer && document.body.classList.contains('presentation') && available) {
+    el('evidence-age').textContent = text.replace(' old', '');
+    el('age-limit').textContent = `/ ${limit}s`;
+  }
+  el('evidence-age').title = available ? `${age} seconds since the signed measurement` : text;
   const bounded = available ? Math.max(0, Math.min(limit, age)) : 0;
   el('age-fill').style.width = `${bounded / limit * 100}%`;
   el('age-track').dataset.fresh = String(fresh);
@@ -75,24 +109,33 @@ async function showLocalOperation(id) {
     const response = await fetch(`/local-buyer/purchase/${encodeURIComponent(id)}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Buyer status is unavailable. Preserve the operation ID: ' + id);
     result = await response.json();
+    renderBuyerEvents(result);
     const phases = new Set(result.events.map(event => event.phase));
     el('buyer-progress').textContent = result.status === 'done' ? 'Payment response and signed reading received.'
       : result.status === 'review' ? result.error
         : phases.has('paying') ? 'Payment submitted. Waiting for settlement and the ESP32 reading.'
           : phases.has('quote') ? 'x402 quote received. Signing the test payment.' : 'Creating one observation request.';
-    el('buyer-time').textContent = `Purchase + reading: ${(result.elapsed_ms / 1000).toFixed(1)}s`;
+    el('buyer-time').textContent = `${(result.elapsed_ms / 1000).toFixed(1)}s`;
     if (result.status === 'done') {
       ++watchCycle;
       await showPurchase(result.run, true, true);
       await verifyPayment();
+      renderBuyerEvents(result, paymentVerified);
+      refreshDecision();
       const configuration = await fetch('/local-buyer/config', { cache: 'no-store' });
       if (!configuration.ok) throw new Error('Purchase completed. Reload the page before another purchase.');
       localBuyer = await configuration.json();
       el('local-buy').disabled = localBuyer.blocked || localBuyer.busy || localBuyer.remaining <= 0;
-      if (localBuyer.remaining <= 0) el('buyer-progress').textContent = 'Local purchase limit reached. This paid result remains available.';
+      if (localBuyer.remaining <= 0) {
+        el('buyer-progress').dataset.error = 'true';
+        el('buyer-progress').textContent = 'Local purchase limit reached. This paid result remains available.';
+      }
       return;
     }
-    if (result.status === 'review') throw new Error(result.error + (result.purchase_id ? ` Purchase ID: ${result.purchase_id}` : ''));
+    if (result.status === 'review') {
+      el('buyer-progress').dataset.error = 'true';
+      throw new Error(result.error + (result.purchase_id ? ` Purchase ID: ${result.purchase_id}` : ''));
+    }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
   throw new Error('The operation is still unresolved. Preserve operation ID ' + id + '. No automatic paid retry.');
@@ -106,6 +149,14 @@ async function initLocalBuyer() {
   if (localBuyer.price_usdc !== '0.001') throw new Error('The local buyer has unexpected payment terms.');
   document.body.classList.add('local-buyer-enabled');
   el('local-buyer').hidden = false;
+  el('local-buy').textContent = 'Pay 0.001 USDC';
+  el('signature').previousElementSibling.textContent = 'Signature';
+  el('freshness').previousElementSibling.textContent = 'Freshness';
+  el('transaction').textContent = 'Transaction ↗';
+  el('tamper').textContent = 'Alter';
+  el('original').textContent = 'Original';
+  focusDemo(document.body.classList.contains('presentation'));
+  el('receipt-question').textContent = 'Input';
   el('stage-note').textContent = 'One click pays on Devnet and requests a new ESP32 reading.';
   for (const [id, value] of [['buyer-address', localBuyer.payer], ['buyer-merchant', localBuyer.payTo]]) {
     el(id).textContent = value.slice(0, 6) + '…' + value.slice(-4);
@@ -119,6 +170,11 @@ async function initLocalBuyer() {
     el('local-buy').disabled = true;
     ++watchCycle;
     clearSource('Waiting for this new paid observation.');
+    liveOperation = null;
+    el('buyer-progress').dataset.error = 'false';
+    el('buyer-events').replaceChildren();
+    el('buyer-events').dataset.rows = '';
+    for (const id of ['quote', 'pay', 'read', 'check']) el('flow-' + id).dataset.state = id === 'quote' ? 'active' : 'idle';
     const operation_id = crypto.randomUUID();
     try {
       const response = await fetch('/local-buyer/purchase', { method: 'POST',
@@ -128,6 +184,7 @@ async function initLocalBuyer() {
       if (!response.ok) throw new Error(value.error || 'The local purchase did not start.');
       await showLocalOperation(operation_id);
     } catch (error) {
+      el('buyer-progress').dataset.error = 'true';
       el('buyer-progress').textContent = error.message;
       el('reason').textContent = 'Purchase requires review. No automatic paid retry.';
     }
@@ -135,10 +192,14 @@ async function initLocalBuyer() {
   const previous = localBuyer.active_operation_id ?? localBuyer.last_operation_id;
   if (previous && !localBuyer.blocked) {
     try { await showLocalOperation(previous); }
-    catch (error) { el('buyer-progress').textContent = error.message; }
+    catch (error) { el('buyer-progress').dataset.error = 'true'; el('buyer-progress').textContent = error.message; }
   } else {
     clearSource(localBuyer.blocked ? 'An earlier purchase requires review.' : 'Select Pay to request one fresh signed reading.');
     el('proof-payment-amount').textContent = '0.001 Devnet USDC';
+    if (localBuyer.blocked) {
+      el('buyer-progress').dataset.error = 'true';
+      el('buyer-progress').textContent = `An earlier purchase requires review. Operation ID: ${previous ?? 'unavailable'}. No new payment started.`;
+    }
   }
 }
 
@@ -208,6 +269,9 @@ function refreshDecision() {
   el('decision').textContent = decision;
   el('decision').className = `decision ${decision === 'DISPATCH' ? 'pass' : 'expired'}`;
   renderScene(s.closed, el('decision').textContent);
+  if (localBuyer && liveOperation && paymentVerified) {
+    el('flow-check').dataset.state = !authentic || !bound || !contract ? 'fail' : fresh ? 'done' : 'expired';
+  }
   el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
     : !bound ? 'This receipt cannot answer a different buyer challenge.'
       : !contract ? 'The contact does not satisfy the buyer contract.'
@@ -344,7 +408,11 @@ async function verifyPayment() {
     el('chain-result').textContent = error.name === 'TimeoutError' ? 'The Devnet RPC query timed out after 15 seconds. Try again.' : error.message;
     el('chain-summary').textContent = el('chain-result').textContent;
   } finally {
-    if (revision === sourceRevision) { el('chain-query').disabled = false; refreshDecision(); }
+    if (revision === sourceRevision) {
+      el('chain-query').disabled = false;
+      if (localBuyer && liveOperation?.purchase_id === target.purchase_id) renderBuyerEvents(liveOperation, paymentVerified);
+      refreshDecision();
+    }
   }
 }
 
@@ -425,4 +493,8 @@ async function init() {
 
 init().catch(error => {
   clearSource(error.message);
+  if (localBuyer) {
+    el('buyer-progress').dataset.error = 'true';
+    el('buyer-progress').textContent = error.message;
+  }
 });

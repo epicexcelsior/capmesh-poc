@@ -25,10 +25,10 @@ If you use the phone, film your hand and board at the same time. Save that as `0
 Clap once to align these two recordings.
 
 1. Hold BOOT.
-2. Select **Pay 0.001 Devnet USDC and read** once.
+2. Select **Pay 0.001 USDC** once.
 3. Keep BOOT held until CLOSED, VALID, and VERIFIED TRANSFER appear.
 4. Release BOOT.
-5. Select **Pay 0.001 Devnet USDC and read** again.
+5. Select **Pay 0.001 USDC** again.
 6. Point to OPEN, FRESH, and DISPATCH.
 7. Leave the answer alone until its age exceeds ten seconds.
 8. Point to EXPIRED and WAIT.
@@ -53,9 +53,9 @@ Save this as `03-payment-screen.mkv`.
 
 1. Wait for **VERIFIED TRANSFER** and **VALID**.
 2. Point to EXPIRED and WAIT.
-3. Open **Inspect the Devnet transaction** if you want to show Explorer.
+3. Open **Transaction ↗** to show Explorer.
 4. Return to the inspector.
-5. Select **Flip contact state**.
+5. Select **Alter**.
 6. Point to REJECTED and WAIT.
 
 **Say:**

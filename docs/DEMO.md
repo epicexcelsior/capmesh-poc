@@ -15,11 +15,11 @@ node gateway/live-demo.js /path/to/disposable-devnet.keypair.json
 
 1. Open `http://127.0.0.1:4026/proof?present=1`.
 2. Hold BOOT for CLOSED, or release BOOT for OPEN.
-3. Select **Pay 0.001 Devnet USDC and read** once.
+3. Select **Pay 0.001 USDC** once.
 4. Keep the input unchanged until the signed reading appears.
 5. Verify **VERIFIED TRANSFER**, **VALID**, and the reading's age.
 6. Leave a fresh OPEN reading alone until **EXPIRED** and **WAIT** appear.
-7. Open **Inspect the Devnet transaction** to see the actual transfer.
+7. Open **Transaction ↗** to see the actual transfer.
 
 The laptop signs the Solana payment with the local test wallet. No Phantom approval or browser key is required.
 x402 quotes the price, settles payment, then authorizes the ESP32 observation.
@@ -39,6 +39,15 @@ Do not delete a pending record or lock to bypass review. Normal shutdown removes
 
 The ordinary inspector and standalone inspector remain read-only. Their servers contain no buyer-signing endpoint or private wallet.
 `CAPMESH_GATEWAY_PORT` selects another free port for this explicit signing-server command.
+
+For a board with a known Bluetooth MAC address, add `--ble-address AA:BB:CC:DD:EE:FF`.
+Use the actual address from trusted local setup. This path uses one connection for its manifest and observation.
+The trusted signing key still authenticates the answer. The buyer still verifies its challenge, samples, and age.
+An unavailable board or different provider causes failure. The ordinary discovery path remains the default.
+The compact screen shows Quote → Pay → Read → Verify and a timestamped event log.
+The settlement event comes from the gateway ledger. Transfer verification comes from the browser's separate Devnet query.
+Dots follow actual progress. Age animation follows the signed time and current browser clock.
+Select **Details** for addresses, the full receipt, and a manual transfer-query retry.
 
 ## Use the rehearsal launcher
 

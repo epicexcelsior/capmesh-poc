@@ -2,6 +2,7 @@
 import asyncio
 from dataclasses import asdict
 import json
+import os
 import re
 import sys
 from capmesh.observations import ObservationContract, ObservationVerifier, observation_request
@@ -23,11 +24,16 @@ async def run(purchase):
     # A file change after settlement cannot replace the selected pin in this worker.
     keys = {provider: DEFAULT_SECRET if simulated else ReceiptPublicKey(purchase['receipt_public_key'])}
     transport = SimulatedContactProvider(provider, closed=purchase.get('closed') is True) if simulated else BLETransportAdapter()
-    manifests = await transport.discover(timeout=4)
-    if not any(m.device_id == provider and any(c.id == 'state.observe' for c in m.capabilities) for m in manifests):
-        raise RuntimeError('The provisioned contact provider is unavailable')
-    request = observation_request(provider, contract, request_id=purchase['id'], nonce=purchase['nonce'])
-    receipt = await transport.invoke(provider, request)
+    build_request = lambda: observation_request(provider, contract, request_id=purchase['id'], nonce=purchase['nonce'])
+    address = os.environ.get('FIELDPROOF_BLE_ADDRESS') if not simulated else None
+    if address:
+        request, receipt = await transport.invoke_at_address(address, provider, build_request)
+    else:
+        manifests = await transport.discover(timeout=4)
+        if not any(m.device_id == provider and any(c.id == 'state.observe' for c in m.capabilities) for m in manifests):
+            raise RuntimeError('The provisioned contact provider is unavailable')
+        request = build_request()
+        receipt = await transport.invoke(provider, request)
     decision = ObservationVerifier(keys).verify(receipt, request, contract)
     return {'receipt': asdict(receipt), 'decision': decision,
             'challenge': {'request_id': request.request_id, 'nonce': request.nonce,
