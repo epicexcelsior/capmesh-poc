@@ -4,6 +4,26 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 submission graphics and upload checklist
+
+Starting source: clean `a189233d4faa1c4034a9ee3438a4a3f5427955d9` on `main`.
+This continuation adds a video cover, a square project graphic, and one materials section in the existing submission checklist.
+The local start page groups the PNG downloads with the existing inspector package. The cover is a policy illustration.
+
+| Check | Observed result |
+|---|---|
+| Graphic rendering | Chromium rendered the self-contained SVG sources through two local GET requests. PNG dimensions are 1280 × 720 and 1024 × 1024. Text bounds remained inside both canvases. No page error or external request occurred. |
+| Initial local checks | The render helper resolved its repository root one directory too high. Correcting the root restored rendering. Its misplaced generated PNG and empty directories were removed. The page helper then assumed a same-fragment navigation returned an HTTP response. Loading once before both viewport checks corrected that assertion. Neither defect changed product code. |
+| Download page | At 1280 and 390 pixels, the start page loaded all three images without horizontal overflow. All eleven distinct local link paths returned HTTP 200. Both PNG and SVG download copies matched the repository assets byte for byte. |
+| Visual review | Both full-size graphics, the 320-pixel video thumbnail, the 64-pixel project mark, and the mobile download section were inspected. The main headline and WAIT remain readable at thumbnail size. |
+| Asset and source checks | SVG sources contain no scripts, external images, or links. PNGs contain no text or EXIF metadata. Twenty local submission references resolved. Helper syntax and `git diff --check` passed. |
+| Scope review | Primary review checked the complete text and graphic changes, truthful illustration labels, explicit paths, and publication boundaries. No independent review ran. No runtime code changed, so gateway, host, firmware, and payment suites were not repeated. |
+
+PNG SHA256 values: cover `e1168e1e403c2393ff98147480bfca05129dbbc46d56df03ce00118a8f16d7e6`, project graphic `e5dee407b2cee4921c79b1211552daf65ed1de91291f57af014045f90a2c0fd7`.
+The local render and download-check helpers preserve commands and reports. The inspector ZIP remains byte-for-byte unchanged.
+No payment, hardware request, firmware change, peaq write, hosting deployment, outreach, registration, or submission occurred.
+Founder narration, public links, eligibility confirmation, project registration, and human submission remain incomplete.
+
 ## October 5 evidence-age display and recording route
 
 Starting source: clean `4c3948ea0aeb7ebfd3cd1b1f6d1d27f8ae2afafa` on `main`.

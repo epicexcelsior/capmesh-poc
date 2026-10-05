@@ -130,6 +130,26 @@ Keep the buyer, alternatives, business test, and founder motivation in that pres
 Write final application answers yourself. Supply accurate development history and contact details.
 Older videos and local intermediate captures remain historical material. Use the current recording route instead of reviewing every version.
 
+## Ready-to-use visual materials
+
+Use one consistent visual direction: paper background, dark ink, blue labels, teal acceptance, and amber expiry.
+
+| Material | Use |
+|---|---|
+| [Video cover, 1280 × 720 PNG](assets/fieldproof-video-cover.png) | Upload as the walkthrough thumbnail. It illustrates the policy, not a new measurement. |
+| [Project graphic, 1024 × 1024 PNG](assets/fieldproof-project.png) | Use in the project page's logo or graphic field. |
+| [Payment and radio diagram](assets/fieldproof-payment-to-observation.svg) | Explain where Solana payment and Bluetooth communication occur. |
+| [Evidence-age diagram](assets/fieldproof-evidence-window.svg) | Explain why the buyer waits after an authentic observation expires. |
+
+Editable sources: [video cover SVG](assets/fieldproof-video-cover.svg) and [project graphic SVG](assets/fieldproof-project.svg).
+The local start page groups these downloads with the current inspector package and recording route.
+Keep the video focused on one transaction. A separate slide deck is optional for this MVP walkthrough.
+
+Before submission, verify the final video once with sound and once while signed out.
+Verify the public test link, repository, and exact Devnet transaction from a signed-out browser.
+State which test path uses simulation and which path inspects recorded physical evidence.
+Complete the human form. Save its receipt or confirmation page.
+
 ## Required fields that remain incomplete
 
 | Field | Current state | Required next action |
