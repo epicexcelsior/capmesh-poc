@@ -4,6 +4,36 @@ Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
 
+## October 5 simple recording screens and separate clips
+
+Starting source: clean, pushed `5e38902e15c1955f96d9475dceb4709a9c704bf7` on `main`.
+The current hardware remains GPIO9 BOOT. No firmware, payment, signature, challenge, or acceptance policy changed.
+The focused input and receipt screens remove robot and gate drawings.
+The input screen shows the contact state, age, signature source, and current freshness.
+Its age bar follows the actual clock. Reduced-motion mode removes its transition.
+The saved inspector shows the signed state, actual transfer result, signature, age, and demo decision.
+Its full view retains the detailed checks.
+
+The canonical script now has four separate clips and 175 suggested spoken words.
+The founder records the opening and ending on camera. The hardware action and result stay together within their clip.
+Parcel pickup is a possible application. BOOT remains a test input, not a package detector.
+The local spoken paragraphs support editing, browser reload, text download, and starter-text restoration.
+The canonical Markdown remains the repository source. Personal browser edits do not alter it.
+
+| Check | Observed result |
+|---|---|
+| Export and launcher suite | `uv run --project host pytest -q tests/test_judge_export.py tests/test_demo_launcher.py`: 15 passed in 0.24 seconds. |
+| Full and focused simulator | Both browser runs passed configured terms, OPEN/DISPATCH, a new quote reset, and actual-clock expiry to WAIT. Focused freshness and reduced-motion checks passed. Both desktop sizes fit. Mobile width passed. No funds or hardware. |
+| Local materials | Four canonical spoken blocks, fourteen local links, desktop/mobile width, and no page errors passed. |
+| Actual saved payment | A read-only query verified the October 5 transfer at slot 507676124. VALID signature, EXPIRED age, WAIT, alteration rejection, and original recovery passed. No RPC fixture or clock override. |
+| Receipt and buyer-run regressions | All three existing browser scripts passed. They cover challenge/key/state rejection, ten/eleven-second expiry, output replacement, RPC error recovery, and the optional package policy. Their fixed-clock and RPC fixtures prove browser behavior, not hardware or live chain results. |
+| Spoken-text editor | Edited text survived a page reload. The downloaded text contained the edit. Starter restoration and its next reload passed. |
+| Inspector export | Thirteen manifest entries and fourteen ZIP members verified. ZIP integrity passed. SHA256: `bebe578f554d1d60e6837ab716c225e0c17fde72bd876f034fc6de731d1705a5`. |
+| Visual review | The simplified desktop input and paid inspector were inspected. JavaScript syntax and whitespace checks passed. |
+
+All five local recording services responded successfully. OBS is open. Microphone quality and the founder recording remain unverified.
+No new hardware observation or payment occurred in this change.
+
 ## October 5 BOOT application restore
 
 Starting source: clean, pushed `c3f8cd8b936e9c980dab39cb4b4a61f37679a8c6` on `main`.

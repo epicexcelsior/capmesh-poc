@@ -26,6 +26,9 @@ function focusDemo(enabled) {
   document.body.classList.toggle('presentation', enabled);
   el('focus').setAttribute('aria-pressed', String(enabled));
   el('focus').textContent = enabled ? 'Show full page' : 'Focus demo';
+  el('receipt-question').textContent = enabled ? 'Signed physical reading'
+    : packageView ? 'Is the package at the pickup point?' : 'Is the gate open?';
+  if (enabled) el('stage-note').textContent = 'Saved physical reading. This page creates no payment.';
 }
 el('focus').onclick = () => focusDemo(!document.body.classList.contains('presentation'));
 focusDemo(new URL(location.href).searchParams.get('present') === '1');
@@ -130,7 +133,7 @@ function refreshDecision() {
   el('reason').textContent = !authentic ? 'The receipt does not match the pinned signing key.'
     : !bound ? 'This receipt cannot answer a different buyer challenge.'
       : !contract ? 'The contact does not satisfy the buyer contract.'
-        : !fresh ? 'The original signature is valid. The observation is too old for dispatch.'
+        : !fresh ? 'The signature is valid. The reading is too old to use.'
           : loadedRun && !paymentVerified ? 'Fresh signed answer. Verify its reported payment before the combined demo decision.'
             : packageView ? (s.closed ? 'Fresh contact evidence says PACKAGE_PRESENT.' : 'Fresh contact evidence says PACKAGE_ABSENT. Wait for a package.')
               : s.closed ? 'Fresh contact evidence says closed.' : 'Fresh contact evidence says open.';
@@ -146,7 +149,7 @@ async function experiment(mode = 'original') {
   el('decision').className = 'decision expired';
   renderScene(undefined, 'WAIT');
   controls.forEach(id => { el(id).disabled = true; });
-  const labels = { original: loadedRun ? 'Original buyer answer' : 'Original recorded answer', tamper: 'Altered contact state',
+  const labels = { original: 'Original reading', tamper: 'Altered reading',
     challenge: 'Another buyer challenge', identity: 'Untrusted verification key' };
   el('experiment-label').textContent = labels[mode];
   controls.forEach(id => { el(id).setAttribute('aria-pressed', String(id === mode)); });
@@ -218,7 +221,7 @@ async function showPurchase(input, buyer = false) {
   el('source-description').textContent = buyer ? 'This prototype purchases one contact observation. This inspector verifies the selected buyer output.' : 'This prototype purchases one contact observation. This inspector uses recorded evidence.';
   el('receipt-source').textContent = buyer ? `Buyer run ${next.purchase_id} / ${packageView ? 'prototype pickup' : 'demo-gate'}` : 'Recorded purchase / demo-gate';
   el('stage-source').textContent = buyer ? `Buyer run ${next.purchase_id} / browser sends no funds` : 'Recorded device evidence / actual Devnet test payment';
-  el('stage-heading').textContent = 'Is the answer still useful?';
+  el('stage-heading').textContent = 'Is this reading still fresh?';
   el('payment-source').textContent = buyer ? 'Loaded buyer settlement / verify it against Solana / no browser payment' : 'Actual recorded test payment · October 1 · No new payment here';
   el('source-status').textContent = buyer ? 'Loaded buyer output. The file supplies its challenge. The installed public pin verifies the device. Chain verification remains separate.' : 'Installed buyer pin remains the trust root.';
   el('measured').textContent = new Date(next.receipt.completed_at * 1000).toISOString().replace('T', ' ').replace('.000Z', ' UTC');

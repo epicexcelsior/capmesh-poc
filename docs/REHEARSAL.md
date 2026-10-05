@@ -108,7 +108,7 @@ Keep this scene optional in the timed video. The main purchase still uses one bo
 ## Record one 150-second walkthrough
 
 Use this route for the Germany MVP. The local start page links one recording script and the actual October 5 paid excerpt.
-Use the [recording script](RECORDING_SCRIPT.md) for four scenes, exact live actions, OBS setup, and simultaneous phone recording.
+Use the [recording script](RECORDING_SCRIPT.md) for four separate clips, plain spoken text, exact actions, and OBS setup.
 You need the existing ESP32, laptop, and optional Seeker. No new hardware is required.
 For a fresh checkout, use the [expiry illustration](assets/fieldproof-evidence-window.svg), [payment diagram](assets/fieldproof-payment-to-observation.svg), and [pilot plan](STRATEGY.md#validate-one-relationship).
 The founder's recording frames and paid capture stay local. The repository includes the public evidence and captioned technical fallback.
@@ -127,8 +127,10 @@ The paid inspector reads saved output and queries Solana. Reloading sends no fun
 If port 4021 is unavailable, use the exported inspector and import its October 5 public JSON.
 Follow the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) only when you need another actual purchase.
 
-The script owns four scenes: problem, live physical input, actual payment and rejection, and next pilot.
-Use the problem and pilot frames briefly. Keep the product on screen for most of the video.
+The script owns four clips: opening, physical input, actual payment and rejection, and ending.
+Use your face for the opening and ending. Keep the physical action and its result together within the hardware clip.
+The focused screens show the reading, signature, payment, age, and decision. They contain no robot or gate illustration.
+Parcel pickup is a possible application. The live hardware uses BOOT as a test input, not a package sensor.
 The physical page's `?present=1` view keeps its payment mode visible and changes only presentation.
 The inspector's focused view emphasizes payment, signature, age, and decision.
 Select **Show full page** for the challenge, sample, and additional attack controls. All verification checks still run in focused view.

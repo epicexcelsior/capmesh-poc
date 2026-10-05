@@ -30,7 +30,8 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
     } finally { releaseHealth(); }
     await page.waitForFunction(() => !document.getElementById('quote').disabled);
     await page.unroute('**/health');
-    assert.match(await page.textContent('#instruction'), new RegExp(health.provider));
+    if (presenting) assert.equal(await page.textContent('#instruction'), 'Get a quote, then request a reading.');
+    else assert.match(await page.textContent('#instruction'), new RegExp(health.provider));
     const requestCreated = page.waitForResponse(response => new URL(response.url()).pathname === '/requests');
     await page.click('#quote');
     const request = await requestCreated;
@@ -52,7 +53,7 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
     assert.match(await page.textContent('#mode'), /SIMULATED PAYMENT · NO FUNDS MOVED/);
     if (expected === 'DISPATCH') {
       await page.click('#quote');
-      await page.waitForFunction(() => document.getElementById('reason').textContent === '402 quote received. No evidence yet.');
+      await page.waitForFunction(() => document.getElementById('reason').textContent === (document.body.classList.contains('presentation') ? 'Quote received. No reading yet.' : '402 quote received. No evidence yet.'));
       assert.equal(await page.textContent('#decision'), 'WAIT');
       assert.equal(await page.getAttribute('#decision', 'class'), 'decision wait', 'A new quote must remove the prior DISPATCH style');
       assert.equal(await page.textContent('#state'), '—');
@@ -63,6 +64,9 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
     if (presenting) {
       assert.equal(await page.isVisible('.hero'), false);
       assert.equal(await page.isVisible('.stage-title'), true);
+      assert.equal(await page.isVisible('#gate'), false, 'The recording view must show the actual reading without a pretend gate');
+      assert.equal(await page.textContent('#reading-freshness'), 'FRESH');
+      assert.equal(await page.textContent('#reading-signature'), 'Simulated proof');
       assert.equal(await page.textContent('#observe'), 'Request observation');
       for (const viewport of [{ width: 1280, height: 900 }, { width: 1920, height: 1080 }]) {
         await page.setViewportSize(viewport);
@@ -75,6 +79,12 @@ const origin = process.argv[3] || 'http://127.0.0.1:4022';
     await page.screenshot({ path: resolve(root, presenting ? '.local/purchase-focus-desktop.png' : '.local/purchase-desktop.png'), fullPage: true });
     await page.waitForFunction(() => document.getElementById('reason').textContent.includes('Evidence expired'), {}, { timeout: 16000 });
     assert.equal(await page.textContent('#decision'), 'WAIT');
+    if (presenting) {
+      assert.equal(await page.textContent('#reading-freshness'), 'EXPIRED');
+      assert.equal(await page.getAttribute('#reading-track', 'aria-valuenow'), '10');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      assert.equal(await page.locator('#reading-fill').evaluate(node => getComputedStyle(node).transitionDuration), '0s');
+    }
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.screenshot({ path: resolve(root, presenting ? '.local/purchase-focus-mobile.png' : '.local/purchase-mobile.png'), fullPage: true });

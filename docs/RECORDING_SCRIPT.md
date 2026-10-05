@@ -1,90 +1,99 @@
-# Record one clear FieldProof video
+# Record FieldProof in four short clips
 
-Record your voice and screen. Use a phone camera for your hand on BOOT during the same take.
-Aim for 2:30. Your explanation and the live interaction carry the video.
+Use your own words. Record the opening and ending on camera.
+Record the two demonstrations separately. Add your explanation as voiceover if that feels easier.
+Aim for 2–3 minutes after editing. A slide deck is optional.
 
-**One story:** A robot needs a current answer from another operator's gate. Payment stays confirmed after that answer expires.
+**One point:** A confirmed payment and a valid signature do not make an old physical reading current.
 
-**Hardware status:** The added leads are removed. The saved BOOT application is restored and its flash hash verified.
-New held/released browser checks passed CLOSED/WAIT and OPEN/DISPATCH with five matching samples.
-The new OPEN answer expired to WAIT at eleven seconds. Keep BOOT released during reset.
-The foil fixture is unreliable. Keep the verified gate-contact story.
+Use parcel pickup as a possible application. The working hardware uses BOOT as a test input.
+It does not detect a parcel. The unreliable foil contact stays out of this take.
 
-## 1. Explain the problem / 0:00–0:20
+## 1. Opening / about 25 seconds
 
-**Show:** Your face or the problem frame. Keep the robot and gate visible.
+**Record:** Your face. Save this as `01-opening.mp4`.
 
 **Say:**
 
-> A delivery robot arrives at another company's warehouse. It can pay, but payment doesn't tell it whether the gate is open now. FieldProof lets the buyer verify a fresh physical answer before its next decision.
+> I built FieldProof for a simple problem: payment can stay confirmed while a physical reading goes out of date. Think of a robot checking whether a parcel is ready for pickup. It needs a current answer before it acts.
 
-## 2. Show the physical input / 0:20–1:15
+## 2. Hardware / about 60 seconds
 
-**Show:** The focused physical page at `http://127.0.0.1:4023/?present=1`.
-Film your hand and board with the phone at the same time.
+**Record:** The screen at `http://127.0.0.1:4023/?present=1`.
+Save this as `02-hardware-screen.mkv`.
+If you use the phone, film your hand and board at the same time. Save that as `02-hardware-phone.mp4`.
+Clap once to align these two recordings.
 
 1. Hold BOOT.
 2. Select **Get payment quote**.
 3. Select **Request observation**.
-4. Keep BOOT held until the page shows CLOSED and WAIT.
+4. Keep BOOT held until CLOSED and WAIT appear.
 5. Release BOOT.
 6. Select **Get payment quote** again.
 7. Select **Request observation** again.
-8. Point to OPEN and DISPATCH.
-9. Wait for the evidence age to exceed ten seconds.
-10. Point to WAIT.
+8. Point to OPEN, FRESH, and DISPATCH.
+9. Leave the answer alone until its age exceeds ten seconds.
+10. Point to EXPIRED and WAIT.
 
 **Say:**
 
-> This ESP32 is the observer. BOOT stands in for a gate contact. This live hardware rehearsal uses simulated payment. Holding it gives CLOSED, so the buyer waits. I release it and request a new observation. OPEN gives DISPATCH. Now I leave that answer alone. After ten seconds, it expires. The buyer waits again.
+> For this prototype, I use the ESP32 button as a test input. This live part uses simulated payment. I hold it and request a reading. CLOSED. I release it and request another. OPEN. The demo accepts that reading. Now I wait. After ten seconds, it expires, and the decision returns to WAIT.
 
-**Keep clear:** Pressing BOOT alone does not update the page. Each state needs a new request.
-DISPATCH is a prototype recommendation. This demo controls no gate and moves no robot.
-If a request fails, stop the take. Preserve the error and diagnose it before another request.
+Keep this hardware clip continuous from the button action through the result.
+You can record the spoken explanation afterward.
+Pressing the button alone does not update the page. Each state needs a new request.
+DISPATCH is the demo's decision label. No machine moves.
+If a request fails, preserve the error. Stop the take and diagnose the failure.
 
-## 3. Show the real Solana proof / 1:15–2:05
+## 3. Actual payment / about 45 seconds
 
-**Show:** Play the short October 5 paid excerpt from the local start page.
-Then open `http://127.0.0.1:4021/proof?live=1&present=1`.
-Verify the displayed transfer result before you describe it.
-Select **Flip contact state**. Point to REJECTED and WAIT.
+**Record:** The saved inspector at `http://127.0.0.1:4021/proof?live=1&present=1`.
+Save this as `03-payment-screen.mkv`.
 
-**Say:**
-
-> Here is the actual payment run from today. The buyer sends 0.001 test USDC on Solana Devnet. After settlement, the laptop requests the ESP32 answer over Bluetooth. The device signs that answer. Here, the browser independently verifies the receipt and the transfer. The payment remains confirmed and the signature remains valid, but the answer expires. If I change the signed state, verification rejects it.
-
-**Keep clear:** Label the excerpt **Recorded actual Devnet purchase · October 5**.
-It preserves the original clock and continuous fresh-to-expired transition.
-The excerpt omits the initial waiting period. Keep the full capture as supporting evidence.
-The saved inspector never pays or measures hardware. The saved answer is expired now.
-If the current chain query fails, state the failure. Use the recorded result and Explorer link as historical evidence.
-
-## 4. Explain the next useful test / 2:05–2:30
-
-**Show:** The pilot frame or your face. Keep the ending personal.
+1. Wait for **VERIFIED TRANSFER** and **VALID**.
+2. Point to EXPIRED and WAIT.
+3. Open **Inspect the Devnet transaction** if you want to show Explorer.
+4. Return to the inspector.
+5. Select **Flip contact state**.
+6. Point to REJECTED and WAIT.
 
 **Say:**
 
-> The next test is one fleet and one authorized facility, then a second facility using the same integration. I want to test paid integration and support first. Customer demand is unvalidated. The goal is one interface for machines to transact with infrastructure they don't own.
+> Here is an actual purchase: 0.001 Devnet USDC on Solana. After payment, the ESP32 signs the reading. The browser verifies the transfer and the device signature. The payment is confirmed, but this saved reading is expired. If I change what it says, the signature check fails.
 
-The four sections are rehearsal targets. Speak naturally and measure the take.
-Pause while results load. Trim setup pauses, but keep the physical action and resulting answer together.
+The saved inspector sends no payment and requests no measurement.
+If the chain query fails, state the failure. Use Explorer and the recorded result as historical evidence.
+The existing October 5 paid excerpt is optional supporting footage. Label it as recorded footage.
+Its original visuals remain unchanged. Do not imply that an old capture uses the new screen design.
+
+## 4. Ending / about 25 seconds
+
+**Record:** Your face. Save this as `04-ending.mp4`.
+
+**Say:**
+
+> Next, I want to test a real pickup sensor with one operator, then repeat it at a second site. The question is whether this saves a buyer another custom integration. I still need to validate that with customers.
+
+Edit these paragraphs before recording. Keep sentences that sound like you.
+Record two takes of the opening and ending. Choose the clearer take.
+Leave two quiet seconds before and after each clip for editing.
 
 ## Record screen and hardware together
 
 Use OBS for the screen and voice. Use the Seeker's ordinary camera for the hand and board.
 The phone acts as a camera in this take. Its separate verifier role remains optional.
 
-1. Open OBS. Run **Tools → Auto-Configuration Wizard** for recording.
+1. Open OBS. Use the existing screen and microphone sources if they work.
 2. Add a screen or window capture source for the FieldProof browser.
 3. On Wayland, use the PipeWire capture source and select the browser or display.
-4. Select your microphone in **Settings → Audio**.
-5. Speak and verify movement in the microphone meter.
-6. Mute desktop audio to avoid notification sounds.
-7. Set the recording path in **Settings → Output**.
-8. Select MKV as the recording format.
-9. Use 1920 × 1080 at 30 fps if the five-second test plays smoothly.
-10. Keep the native screen resolution if 1080p makes text small or adds scaling blur.
+4. Enable Preview. Use **Transform → Fit to Screen** on the selected capture source.
+5. Select your microphone in **Settings → Audio**.
+6. Speak and verify movement in the microphone meter.
+7. Mute desktop audio to avoid notification sounds.
+8. Set the recording path in **Settings → Output**.
+9. Select MKV as the recording format.
+10. Use 1920 × 1080 at 30 fps if the five-second test plays smoothly.
+11. Keep the native screen resolution if 1080p makes text small or adds scaling blur.
 
 OBS documents source setup, audio meters, and a test recording in its [quick-start guide](https://obsproject.com/kb/quick-start-guide).
 OBS recommends MKV for interrupted-recording recovery. Use **File → Remux Recordings** to export MP4 without re-encoding.
@@ -104,7 +113,7 @@ The clap aligns the two recordings. Use OBS audio as the final voice track.
 Overlay the phone view during BOOT without covering the state, age, or decision.
 Keep the action and result synchronized. Keep a short wide shot as evidence of the live setup.
 
-Do not build another slide deck. Use the problem and pilot frames briefly.
+Use your face for the opening and ending. A slide deck is optional.
 Keep the product on screen for most of the video. Skip music and decorative transitions.
 Keep private wallets, terminals, notifications, and unrelated tabs outside both recordings.
 

@@ -17,6 +17,29 @@ body.presentation .receipt dl{display:none}body.presentation .gate-scene svg{hei
 body.presentation header{padding-top:16px;padding-bottom:16px}body.presentation .stage-title p{max-width:none}body.presentation .check{padding:10px 0}body.presentation .receipt button{padding:10px 12px;font-size:14px}
 body.presentation .advanced-check,body.presentation .advanced-experiment,body.presentation .detail-note,body.presentation .header-actions a,body.presentation #live-payment-row{display:none}body.presentation .scene-result strong{display:none}body.presentation .age-readout strong{font-size:36px}body.presentation .decision{font-size:88px}
 .package-fixture{display:none}body[data-view="package"] .gate-fixture{display:none}body[data-view="package"] .package-fixture{display:block}.package-box{display:none}.gate-scene[data-claim="package_present"] .package-box{display:block}
+/* Quiet recording view: signed state, payment, and age. */
+body.presentation header,body.presentation main{max-width:1040px}
+body.presentation .gate-scene,body.presentation #receipt-source,body.presentation #stage-source,body.presentation #payment{display:none}
+body.presentation .stage-title h1{font:600 36px/1.2 system-ui,sans-serif;letter-spacing:-.03em}
+body.presentation .workspace{border:1px solid var(--line);grid-template-columns:1fr 1.1fr}
+body.presentation .receipt,body.presentation .checks{padding:28px}
+body.presentation .checks{background:white;border-left:1px solid var(--line)}
+body.presentation .receipt h2{font-size:18px;font-weight:500;color:#39576b;margin:0}
+body.presentation .receipt dl{display:block;margin:18px 0 24px}
+body.presentation .receipt dl>div{display:none}
+body.presentation .receipt dl>div:first-child{display:block}
+body.presentation .receipt dt{display:none}
+body.presentation .receipt dd{font:600 48px/1.2 ui-monospace,monospace}
+body.presentation .payment-strip{font:14px/1.5 system-ui,sans-serif;padding:16px 0;margin-bottom:18px}
+body.presentation .decision{font:600 58px/1.2 system-ui,sans-serif;letter-spacing:-.04em}
+body.presentation .decision::before{content:'Demo decision';display:block;font:13px/1.5 system-ui,sans-serif;letter-spacing:0;color:#39576b;margin-bottom:4px}
+body.presentation .checks>.label{display:none}
+body.presentation #reason{font-size:17px}
+body.presentation .age-readout strong{font:600 32px/1.2 ui-monospace,monospace}
+body.presentation .age-caption{font-size:12px}
+body.presentation .age-track{height:8px;border:0;background:#edf1f3}
+body.presentation #transaction{font-size:14px}
+@media(max-width:700px){body.presentation .workspace{grid-template-columns:1fr}body.presentation .checks{border-left:0;border-top:1px solid var(--line)}body.presentation .receipt,body.presentation .checks{padding:22px}body.presentation .stage-title h1{font-size:28px}}
 </style>
 </head>
 <body>
@@ -35,6 +58,7 @@ body.presentation .advanced-check,body.presentation .advanced-experiment,body.pr
 <div class="stage-title"><div id="stage-source" class="label">Recorded device evidence / actual Devnet test payment</div><h1 id="stage-heading">Is the answer still useful?</h1><p id="stage-note">Real ESP32 contact stand-in. Read-only inspection. No robot motion.</p></div>
 <div id="receipt" class="workspace">
 <section class="receipt" aria-label="Receipt inspection"><div id="receipt-source" class="label">Recorded purchase / demo-gate</div><h2 id="receipt-question">Is the gate open?</h2>
+<dl><div><dt>Contact state</dt><dd id="state">Pending</dd></div><div><dt>Configured price</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd id="observer-label">ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">Pending</dd></div></dl>
 <figure id="gate-scene" class="gate-scene" data-decision="wait" data-claim="unknown" aria-label="Illustrated receipt claim and buyer decision">
 <div class="scene-owners"><span>Fleet's visiting robot</span><span id="scene-owner">Another operator's gate</span></div>
 <svg viewBox="0 0 480 150" aria-hidden="true" focusable="false">
@@ -58,7 +82,7 @@ body.presentation .advanced-check,body.presentation .advanced-experiment,body.pr
 </figure>
 <div class="payment-strip"><span>Solana · <span id="proof-payment-amount">0.001 Devnet USDC</span></span><strong id="proof-payment-check">NOT QUERIED</strong></div>
 <p id="experiment-label" class="experiment">Original recorded answer</p>
-<dl><div><dt>Contact state</dt><dd id="state">Pending</dd></div><div><dt>Configured price</dt><dd>0.001 Devnet USDC</dd></div><div><dt>Observer</dt><dd id="observer-label">ESP32-C6 / GPIO9</dd></div><div><dt>Measured at</dt><dd id="measured">Pending</dd></div></dl>
+
 <p id="path-note" class="note detail-note">Live path: x402 settlement, then a BLE contact observation. BOOT represents the contact.</p>
 <p><a id="transaction" href="#">Inspect the Devnet transaction</a></p>
 <div role="group" aria-label="Receipt experiments"><button id="original" aria-pressed="true" disabled>Verify original</button><button id="tamper" class="secondary" aria-pressed="false" disabled>Flip contact state</button><button id="challenge" class="secondary advanced-experiment" aria-pressed="false" disabled>Change challenge</button><button id="identity" class="secondary advanced-experiment" aria-pressed="false" disabled>Use another key</button></div>

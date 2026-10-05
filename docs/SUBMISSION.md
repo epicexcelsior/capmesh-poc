@@ -114,7 +114,7 @@ Simulated payments and Devnet tokens do not establish real revenue.
 ## Judging walkthrough
 
 Record one narrated 2–3 minute MVP walkthrough. Use the [recording route](REHEARSAL.md#record-one-150-second-walkthrough) in your own words.
-The [recording script](RECORDING_SCRIPT.md) provides four scenes, exact live actions, and simultaneous screen/phone recording instructions.
+The [recording script](RECORDING_SCRIPT.md) provides four separate clips, editable spoken text, and exact screen and hardware actions.
 Show the problem, actual purchase, expiry, one attack, and the next pilot.
 The local start page links the script and a ten-second excerpt of the October 5 paid capture.
 The excerpt preserves the continuous fresh-to-expired transition at original speed. The complete 32.8-second capture remains available.
