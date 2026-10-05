@@ -5,7 +5,7 @@ Audience: the operator who prepares the fixture and the buyer who selects its ev
 Use this guide after the [board, sensor, and wiring checks](HARDWARE_NEXT.md#resolve-the-board-before-wiring).
 On October 5, the attached board changed to GPIO20 for a prototype foil-contact check.
 The application-only flash passed hash verification. The open check and a paid ABSENT proof passed. The first reported foil closure still read ABSENT.
-A direct lead-contact check remains pending. No PRESENT proof exists yet.
+A direct lead-contact check returned authenticated PRESENT and DISPATCH. The foil fixture and paid PRESENT request remain unverified.
 The original GPIO9 application backup preserves the button fallback. Its archived receipts remain unchanged.
 
 ## Understand the four settings

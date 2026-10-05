@@ -91,7 +91,8 @@ An isolated GPIO20 input-with-pull-up build passed. An application-only flash pa
 The attached board now reads GPIO20. Its original GPIO9 application backup preserves the button fallback.
 The operator can make two insulated leads. The physical foil checks remain pending.
 Package-policy software and browser fixtures passed. A paid ABSENT reading passed with the existing signing key.
-The first reported foil closure still read ABSENT. No PRESENT proof or complete package flow passed yet.
+The first reported foil closure still read ABSENT. Direct wire-tip closure then returned authenticated PRESENT and DISPATCH.
+The foil fixture and paid PRESENT request remain unverified.
 
 1. Disconnect the bare LED until its series resistor and wiring are identified.
 2. Photograph both board faces and all visible model and pin labels.

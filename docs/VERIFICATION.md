@@ -33,8 +33,10 @@ Purchase ID: `6416e1a74caf4906`.
 [Actual ABSENT payment](https://explorer.solana.com/tx/3vJfYMKSveVA6UXSWeCjmjaev3eAYsdP14TLzqEAEYGdjRCkPEbbUStwWUe2Fr5ZFbS2nwGrbTavaoTDBA4nM4Lz?cluster=devnet).
 
 When the operator reported touching foil, a second unpaid reading still returned authenticated ABSENT with five matching samples.
-The electrical closure remains unverified. A direct bare-lead contact check will isolate foil contact from board/lead continuity.
-The second payment remains paused. No PRESENT proof or complete two-state package flow exists yet.
+The next direct bare-lead contact check returned authenticated PRESENT, DISPATCH, and five matching samples at age four seconds.
+This isolates the initial failure to foil contact. The board and original leads respond to electrical closure.
+The operator then described moving a breadboard connection. The connection location remains unclear, so further hardware reads and spending remain paused.
+The second payment remains unstarted. No paid PRESENT receipt or complete paid two-state package flow exists yet.
 The actual GPIO9 backup provides the button fallback through an application restore. BOOT does not control the current GPIO20 input.
 The unchanged signed wire labels remain `gate.closed` and `demo-gate`. Package meaning comes from the explicit local buyer policy.
 The README and recording narrative still describe the verified gate demo. They will change only after the new physical flow passes.
