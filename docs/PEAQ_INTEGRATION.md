@@ -1,7 +1,7 @@
 # peaq integration decision
 
 **October 4, 2026: Agung readiness passed. Offline key/service input preparation exists. No peaq transaction occurred.**
-Keep the Solana contact MVP frozen through the October 5 Germany submission.
+Preserve the verified Solana contact MVP while defining the next integration acceptance gates.
 The next peaq flow connects the observer's identity to its public signing key and permitted observation service.
 This document owns peaq interfaces, readiness, and activation gates.
 

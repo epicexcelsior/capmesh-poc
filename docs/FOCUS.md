@@ -1,9 +1,10 @@
 # FieldProof: start here
 
-**Decision: submit the verified Germany MVP first.**
-As of October 5, 2026. The deadline is October 5 at 23:59:59 CEST.
-Open [the illustrated founder guide](HOW_IT_WORKS.html) first. Learn one transaction and run one rehearsal.
-Use [the documentation map](README.md) only to find a specific reference.
+**Current focus: preserve the verified MVP and define the next bounty's acceptance gates.**
+As of October 9, 2026. The recorded Germany MVP deadline was October 5.
+No submission confirmation exists in this repository. Do not infer submission from completed technical packaging.
+The repository, recorded inspector, guide, and technical video have public links in [submission preparation](SUBMISSION.md).
+Open [the documentation map](README.md) for the runbook, evidence, and remaining tasks.
 
 ## The thesis to keep
 
@@ -38,7 +39,7 @@ The [strategy](STRATEGY.md#the-wedge-to-test-first) owns the pilot, alternatives
 | Public Solana Devnet purchases and real ESP32-signed receipts. Laptop and Seeker verified the October 5 fresh result and expiry. | Test tokens establish no revenue. Payment and measurement remain separate. |
 | Both held/released BOOT states | BOOT represents a contact. No external gate is installed. |
 | Browser signature, challenge, expiry, and attack checks | The installed buyer pin remains the trust root. The device key is not protected against flash extraction. |
-| No-hardware simulator and standalone recorded inspector | Public test/video links and human registration remain owner actions. |
+| No-hardware simulator and standalone recorded inspector | Public inspector and technical-video links exist. Human registration and founder narration remain unverified. |
 | Agung readiness and offline key/service input preparation | No peaq identity is activated. Full preflight and explicit write approval remain open. |
 | Two-observer software policy and bounded BLE runner | Actual paired hardware timing and independent sensing remain unverified. |
 
@@ -47,24 +48,21 @@ The [short rehearsal](REHEARSAL.md) provides timed recording cues. The HTML guid
 
 ## Do next
 
-One clear transaction is the submission priority. The ESP32 and Seeker already support it.
-Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough) with actual paid footage, expiry, and one attack.
+1. Select the next bounty and check its current eligibility, deadline, required integration, and submission fields.
+2. Record those acceptance gates in [the bounty plan](BOUNTY_PLAN.md) before changing the implementation.
+3. Reuse the simulator, recorded inspector, and existing paid evidence for the starting demonstration.
+4. Implement only the gap between the verified prototype and the selected bounty's requirements.
+5. Complete the founder presentation, project page, and contact fields in [submission preparation](SUBMISSION.md).
 
-1. Rehearse quote, simulated purchase, expiry, real BOOT input, and recorded receipt attacks yourself.
-2. Complete human Germany registration and the FieldProof Colosseum project page.
-3. Publish and verify the prepared test and video links.
-4. Complete human submission before October 5 at 23:59:59 CEST.
-5. Test one actual buyer incident, workaround, operator permission, useful-time limit, and pilot budget alongside packaging.
+The historical plan lists a peaq deadline on October 13. Recheck that listing before using the date for a new commitment.
+The [peaq integration decision](PEAQ_INTEGRATION.md) records read-only readiness and the remaining activation gates.
+No peaq transaction, protected device identity, external gate installation, or paired physical verification exists.
 
-The [bounty plan](BOUNTY_PLAN.md) owns acceptance gates. [Submission preparation](SUBMISSION.md) owns required fields and owner publication steps.
-The [hardware plan](HARDWARE_NEXT.md#highest-value-with-almost-no-lab-time) provides the available-board fallback and optional quick pickup.
-The founder now identifies Munich Maker Lab, a different lab, and has little sourcing time. Skip the trip unless parts are ready for pickup.
-MakerSpace's published closure applies only to MakerSpace. [MakerSpace hours](https://www.maker-space.de/oeffnungszeiten/).
-The attached Seeker now runs the portable browser verifier through USB forwarding. It supplies no sensor data or payment signature.
-Use the [paid-run procedure](DEMO.md#show-one-new-paid-buyer-run) for a new approved purchase. The recorded fallback remains valid.
-Another sensor type requires a separate contract and trust setup.
+Keep the contact question, receipt format, payment rail, buyer trust root, and recorded fallback stable.
+External contacts remain optional until their physical checks pass.
+Use [contact setup](CONTACT_SETUP.md) and [the hardware plan](HARDWARE_NEXT.md) for those checks.
+The Seeker acts as a browser verifier. It supplies no sensor data and signs no payment.
+Use [the demo runbook](DEMO.md) for local rehearsal and recovery.
 
-**Stop rule:** keep the contact question, receipt format, payment rail, and recorded fallback stable through the Germany submission.
-Reopen scope for a failed acceptance gate, unresolved requirement, or concrete buyer objection.
-External contacts remain optional until their physical checks pass. Broad research and more device types do not replace buyer evidence.
-The [dated research](research/2026-10-04-physical-services.md) preserves sources and reasoning.
+A buyer test remains open: one actual incident, current workaround, operator permission, useful-time limit, and pilot budget.
+The [strategy](STRATEGY.md) owns that test. More endpoint types do not establish demand.

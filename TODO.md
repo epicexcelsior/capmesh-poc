@@ -41,7 +41,7 @@ The previous phase tracker overstated payment, provider trust, and physical trut
 - [x] Prepare a bounded unpaid BLE pair runner with one scan, concurrent invocation, fixed challenges, and explicit cleanup failure.
 
 Production provisioning, calibrated confidence, independent observers, and customer pilots remain later milestones.
-Publication, repository rename, and submission require explicit authorization.
+The public repository rename and static inspector publication are complete. New publication and human submission require explicit authorization.
 
 ## Product decisions that require stronger evidence
 
@@ -53,10 +53,15 @@ Publication, repository rename, and submission require explicit authorization.
 
 The [product review](docs/STRATEGY.md#product-risks-and-decisions) explains these priorities.
 
-## October 2 bounty priority
+## Next bounty preparation
 
-Follow [the execution plan](docs/BOUNTY_PLAN.md). Broad research stops at [the current decision](docs/research/2026-10-02-fieldproof.md).
-The signed-receipt technical video is ready locally. Registration, founder presentation, public links, buyer validation, and human submissions remain open.
+Follow [the current focus](docs/FOCUS.md) and [the execution plan](docs/BOUNTY_PLAN.md).
+The public inspector, guide, repository, and technical video are available. Founder narration, buyer validation, and human submissions remain unverified.
+
+- [ ] Select the next bounty and verify its current requirements and deadline.
+- [ ] Define the missing acceptance gates before extending the prototype.
+- [ ] Complete the founder presentation and human project/contact fields.
+- [ ] Save submission confirmation after the owner completes the human form.
 
 ## Bounded physical extension
 

@@ -1,6 +1,9 @@
 # FieldProof bounty execution plan
 
-**Decision date: October 2, 2026.** Complete the Germany MVP package first.
+**Current status: October 9, 2026.** The Germany MVP technical package is complete and its recorded deadline passed.
+Human submission remains unverified. Select the next bounty through [current focus](FOCUS.md).
+
+The requirements and dates below preserve the October 2–5 preparation. Recheck the official listing before a new commitment.
 The [adversarial research](research/2026-10-02-fieldproof.md) supports this bounded build and records commercial uncertainty.
 The October 4 [product story](STRATEGY.md#the-story-to-explain) connects this observation purchase to cross-operator physical services.
 Keep the implemented purchase scope explicit. Access, reservations, actuation, and completed-service verification remain future work.
@@ -24,15 +27,15 @@ It keeps this question, receipt format, payment rail, and recorded fallback. Unv
 | 1 | Human eligibility and registration | Germany selected, World's Fair joined, FieldProof project page available | Owner will handle it. Completion and project URL are not yet verified. |
 | 2 | Judge test path | A fresh checkout runs both CLI contact states and browser simulation without hardware or wallet funding | Fresh checkout passed CLI states, browser simulation, expiry, receipt attacks, and video access. |
 | 3 | Current technical walkthrough | 2–3 minutes, playable, states what is recorded and what is simulated | October 4 signed-receipt video is 149.88 seconds. Full decode and visual inspection passed. Captioned, no audio. |
-| 4 | Review links | Judges can open test instructions, repository, presentation, and technical evidence without private credentials | Whitelisted inspector ZIP, public-key verification, live chain query, and video pass locally. Public links require owner publication. |
-| 5 | Human MVP submission | Every required field is complete and receipt retained before October 5, 23:59:59 CEST | Not submitted. |
+| 4 | Review links | Judges can open test instructions, repository, presentation, and technical evidence without private credentials | Whitelisted inspector ZIP, public-key verification, live chain query, and video pass locally. Public inspector, guide, and technical-video links are recorded in submission preparation. |
+| 5 | Human MVP submission | Every required field is complete and receipt retained before October 5, 23:59:59 CEST | No submission confirmation exists in this repository. |
 | 6 | Buyer test | One real decision, current alternative, useful-time window, operator permission, and price/budget evidence | Not completed. Start alongside packaging before adding endpoint types. |
 | 7 | Final hackathon presentation | Founder explains buyer, alternatives, evidence, hypothesis, and next test in 2–3 minutes | Prepare after the MVP package. It does not block using the technical walkthrough for Germany MVP. |
 | 8 | peaq integration decision | One useful adapter flow or an explicit activation limitation | Read-only Agung registry readiness passed. Prepare exact identity/key/service inputs in isolation. Activation and activity events remain unimplemented. |
-| 9 | Human final submissions | peaq and Colosseum submissions complete before October 13, 08:59 CEST | Not submitted. |
+| 9 | Human final submissions | peaq and Colosseum submissions complete before October 13, 08:59 CEST | No submission confirmation exists in this repository. |
 
 The October 4 package now includes an illustrated founder guide and a bounded rehearsal launcher.
-Use the remaining time for founder rehearsal, public-link verification, and human submission recovery.
+Founder narration, registration, and submission confirmation remain open.
 Aim to finish final Colosseum and peaq materials by October 11 at 18:00 CEST.
 
 Bound the next peaq preparation session to 60 minutes of engineering work.
@@ -92,30 +95,14 @@ Use the complete simulator rehearsal to demonstrate a purchase. Use the inspecto
 For the founder explanation, read [Understand the product](HOW_IT_WORKS.html#understand).
 For the peaq path, read the [integration decision](PEAQ_INTEGRATION.md).
 
-## Publish the test package: owner steps
+## Public test package
 
-The exported inspector is ready for owner review. These steps are instructions, not a record of publication.
-
-1. Open the local exported `index.html` through the README's localhost server.
-2. Verify the original receipt, three attacks, and recorded payment query.
-3. Open the current captioned walkthrough.
-4. Extract the exported ZIP into an empty folder.
-5. Create a separate public GitHub repository for the static demo.
-6. Upload the extracted contents with `index.html` at the repository root.
-7. Preserve the `assets` and `evidence` directories during upload.
-8. In GitHub Settings, open Pages.
-9. Select deployment from the uploaded branch and its root directory.
-10. Select **Save**.
-11. Open the resulting HTTPS URL after GitHub finishes deployment.
-12. Repeat the receipt, attack, payment-query, and video checks at that public URL.
-13. Use that verified URL as recorded-evidence test access.
-
-Do not upload the ZIP as the website itself. GitHub Pages needs its extracted files.
-The inspector contains recorded evidence. Include the repository README link for the full simulated purchase rehearsal.
-The reviewed inspector and rehearsal source at `a7cba3d` is pushed. The remote branch hash was checked after the push.
-Later source checkpoints belong in the [verification record](VERIFICATION.md).
-Registration and contest terms remain human actions. Do not mark them complete from a technical rehearsal.
-The upload and Pages settings match [GitHub's upload instructions](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository) and [publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+The recorded inspector, guide, and technical video have published links in [submission preparation](SUBMISSION.md).
+The static site lives on `gh-pages`. Source lives on `main`.
+A source push does not update the static site. Export and review a new package before a separately authorized site update.
+Use [the README export instructions](../README.md#inspect-the-recorded-physical-purchase) to reproduce the package locally.
+Keep wallets, ledgers, environment files, and hardware control outside the public export.
+Registration and contest terms remain human actions. Technical rehearsal does not establish submission.
 
 ## Founder presentation outline
 

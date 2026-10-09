@@ -2,11 +2,11 @@
 
 Status: verified technical prototype, incomplete human submission.
 The public repository contains actual Devnet settlement and ESP32-signed evidence.
-Eligibility confirmation, founder narration, public viewing links, Colosseum registration, the project page, and contact details remain open.
+Public inspector, guide, and technical-video links are available. Eligibility confirmation, founder narration, Colosseum registration, project page, and contact details remain unverified.
 Use [one 150-second recording route](REHEARSAL.md#record-one-150-second-walkthrough), then complete the fields below.
 The [bounty execution plan](BOUNTY_PLAN.md) owns deadlines and acceptance gates.
 
-## Verified requirements and deadlines
+## Requirements and deadlines recorded October 4–5
 
 Requirements and deadlines were checked again from both complete public `__NEXT_DATA__` listing payloads on October 4, 2026.
 Both listings specify Germany regional eligibility and `agentAccess: HUMAN_ONLY`. The founder must complete human submission.
@@ -155,20 +155,22 @@ Verify the public test link, repository, and exact Devnet transaction from a sig
 State which test path uses simulation and which path inspects recorded physical evidence.
 Complete the human form. Save its receipt or confirmation page.
 
-## Required fields that remain incomplete
+<a id="required-fields-that-remain-incomplete"></a>
+
+## Submission fields and remaining actions
 
 | Field | Current state | Required next action |
 |---|---|---|
-| Germany eligibility | Founder reports an Earn location-change cooldown. No organizer exception is confirmed. | Ask Carlo to confirm eligibility and the submission route before the deadline |
+| Germany eligibility | Founder reports an Earn location-change cooldown. No organizer exception is confirmed. | Confirm eligibility and any late-submission route with the organizer |
 | Public repository | Public at `https://github.com/epicexcelsior/fieldproof` | Paste the link into the submission form |
 | Test access | [Public recorded inspector](https://epicexcelsior.github.io/fieldproof/?submission=20261005) and [interactive guide](https://epicexcelsior.github.io/fieldproof/guide.html). Verified without sign-in on October 5. | Paste the inspector link. Label recorded evidence and teaching models accurately |
 | Presentation link | [Public captioned 2:30 technical fallback](https://epicexcelsior.github.io/fieldproof/assets/fieldproof-signed-receipt.webm). Founder video remains a separate task. | Use the final founder video when available and verify its public link |
 | Payment evidence | Verified Devnet transaction and real GPIO9 receipt | Link the committed evidence and include it in the final walkthrough |
 | Colosseum project | No verified project page | Register under Germany and provide the project link |
 | Team contact | No submission contact selected | Supply the contact directly in the submission form |
-| peaq submission answer | No submission occurred | Answer accurately at submission time |
+| peaq submission answer | No submission confirmation exists in this repository | Answer accurately at submission time |
 
-These links and details are intentionally absent. No placeholder is a valid submission value.
+The remaining project and contact details have no verified values. No placeholder is a valid submission value.
 Video upload, account registration, and submission require explicit authorization.
 
 ## Owner publication steps

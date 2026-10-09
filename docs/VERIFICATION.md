@@ -1,8 +1,24 @@
 # FieldProof verification record
 
-Current continuation: October 5, 2026, Europe/Berlin. Public paid evidence dates to October 1 and October 5.
+Current continuation: October 9, 2026, Europe/Berlin. Public paid evidence dates to October 1 and October 5.
 The local MVP completes a public Devnet purchase, a real ESP32 observation, and both human-controlled contact states.
 This record does not claim production security, safety certification, or standards compliance.
+
+## October 9 repository wrapup
+
+Starting source: `c196b24` on `main`, with a clean working tree and matching `origin/main` after fetch.
+The local `receipt-identity` branch contains no commits absent from `main`. One registered worktree exists.
+Current focus and submission routing now separate completed public packaging from unverified human submissions.
+The October 5 deadline is historical. Future bounty requirements need a new listing check before implementation.
+Source synchronization uses `main`. The existing static inspector uses `gh-pages` and needs a separate reviewed export for updates.
+
+- `uv run --project host pytest -q`: 208 passed, 10 skipped.
+- `npm --prefix gateway test`: 57 passed.
+- `python3 scripts/demo.py check`: Node/SQLite, installed gateway dependencies, and Python CLI passed.
+
+No hardware tests, new payment, firmware build, flash, or live chain query ran during this documentation cleanup.
+No Python formatter or type checker is declared. The gateway declares no separate lint, type-check, or build command.
+Local wallets, ledgers, recordings, and firmware experiments remain ignored and preserved for recovery.
 
 ## October 5 compact paid screen and targeted Bluetooth
 
@@ -1046,7 +1062,7 @@ Node's built-in SQLite emits an experimental-feature warning.
 
 Historical receipts use the public demo HMAC key. Current physical receipts use the provisioned P-256 identity with unencrypted device storage.
 Host-anchored time, reboot-cleared replay state, and the single observer remain prototype limits.
-No external gate sensor, protected identity, calibrated confidence, vehicle controller, customer pilot, peaq activation, or public deployment exists.
+No external gate sensor, protected identity, calibrated confidence, vehicle controller, customer pilot, peaq activation, or hosted live hardware gateway exists. The recorded static inspector is public.
 The [product review](STRATEGY.md#product-risks-and-decisions) identifies the decisions that require further evidence.
 
 Git, sockets, USB, and BLE access are restored. No current access restriction blocks the completed local integration.
